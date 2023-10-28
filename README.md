@@ -1,2 +1,1 @@
-# ppwalker
-Prime Path Walker
+# ppwalker: Prime Path Walker
