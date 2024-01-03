@@ -1,18 +1,18 @@
 include padkit/compile.mk
 
-all: bin/ppwalker
+all: bin/gwplus
 
 .PHONY: all clean
 
 bin: ; mkdir bin
 
-bin/ppwalker:               \
+bin/gwplus:                 \
     bin                     \
     padkit/compile.mk       \
     padkit/lib/libpadkit.a  \
     padkit/include/padkit.h \
-    src/ppwalker.c          \
-    ; ${COMPILE} -Ipadkit/include padkit/lib/libpadkit.a src/ppwalker.c -o bin/ppwalker
+    src/gwplus.c            \
+    ; ${COMPILE} -Ipadkit/include padkit/lib/libpadkit.a src/gwplus.c -o bin/gwplus
 
 clean: ; rm -rf bin padkit
 
