@@ -1,1 +1,1 @@
-# ppwalker: Prime Path Walker
+# gwplus: GraphWalker Plus
