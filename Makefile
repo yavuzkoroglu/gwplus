@@ -1,20 +1,42 @@
 include padkit/compile.mk
 
+INCLUDES=-Iinclude -Ipadkit/include
+OBJECTS=obj/gwmodel.o obj/gwplus.o
+
 all: bin/gwplus
 
-.PHONY: all clean
+.PHONY: all clean objects
 
 bin: ; mkdir bin
 
-bin/gwplus:                 \
-    bin                     \
-    padkit/compile.mk       \
-    padkit/lib/libpadkit.a  \
-    padkit/include/padkit.h \
-    src/gwplus.c            \
-    ; ${COMPILE} -Ipadkit/include padkit/lib/libpadkit.a src/gwplus.c -o bin/gwplus
+bin/gwplus:                             \
+    bin                                 \
+    padkit/compile.mk                   \
+    padkit/lib/libpadkit.a              \
+    objects                             \
+    ; ${COMPILE} padkit/lib/libpadkit.a ${OBJECTS} -o bin/gwplus
 
-clean: ; rm -rf bin padkit
+clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov
+
+obj: ; mkdir obj
+
+obj/gwmodel.o: obj                      \
+    include/gwmodel.h                   \
+    padkit/include/padkit/chunk.h       \
+    padkit/include/padkit/chunktable.h  \
+    padkit/include/padkit/debug.h       \
+    padkit/include/padkit/graphmatrix.h \
+    padkit/include/padkit/jsonparser.h  \
+    src/gwmodel.c                       \
+    ; ${COMPILE} ${INCLUDES} src/gwmodel.c -c -o obj/gwmodel.o
+
+obj/gwplus.o: obj                       \
+    include/gwmodel.h                   \
+    padkit/include/padkit/debug.h       \
+    src/gwplus.c                        \
+    ; ${COMPILE} ${INCLUDES} src/gwplus.c -c -o obj/gwplus.o
+
+objects: ${OBJECTS}
 
 padkit: ; git clone https://github.com/yavuzkoroglu/padkit.git
 
