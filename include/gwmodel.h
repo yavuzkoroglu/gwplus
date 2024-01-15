@@ -4,17 +4,28 @@
     #include "padkit/chunktable.h"
     #include "padkit/graphmatrix.h"
 
+    #define GWM_CHUNK_INFO_MAX_STRINGS  6
+    #define GWM_INITIAL_STR_LEN         64
+    #define GWM_INITIAL_ELEMENT_COUNT   1024
+
     #define GWM_CHUNK_INFO  0
-    #define GWM_CHUNK_GIDS  1
+    #define GWM_CHUNK_IDS   1
     #define GWM_CHUNK_NAMES 2
     #define GWM_CHUNK_LAST  GWM_CHUNK_NAMES
     typedef struct GWModelBody {
         Chunk chunks[3];
         ChunkTable idTable[1];
         GraphMatrix edgeMtx[1];
-        uint32_t start_node_gwid;
-        uint32_t start_node_rnid;
+        uint32_t start_vertex_cid;
+        uint32_t nVertices;
     } GWModel;
+
+    #ifndef NDEBUG
+    bool
+    #else
+    void
+    #endif
+    constructEmpty_gwm(GWModel* const gwm);
 
     void free_gwm(GWModel* const gwm);
 

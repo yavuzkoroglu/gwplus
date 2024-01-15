@@ -13,7 +13,7 @@ bin/gwplus:                             \
     bin                                 \
     padkit/compile.mk                   \
     padkit/lib/libpadkit.a              \
-    objects                             \
+    ${OBJECTS}                          \
     ; ${COMPILE} padkit/lib/libpadkit.a ${OBJECTS} -o bin/gwplus
 
 clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov
@@ -27,6 +27,7 @@ obj/gwmodel.o: obj                      \
     padkit/include/padkit/debug.h       \
     padkit/include/padkit/graphmatrix.h \
     padkit/include/padkit/jsonparser.h  \
+    padkit/include/padkit/reallocate.h  \
     src/gwmodel.c                       \
     ; ${COMPILE} ${INCLUDES} src/gwmodel.c -c -o obj/gwmodel.o
 
