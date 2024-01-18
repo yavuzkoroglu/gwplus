@@ -14,7 +14,9 @@ int main(int argc, char* argv[]) {
     constructFromJSON_gwma(gwma, 1, jsonFile);
 
     printf("# MODELS = %zu\n", gwma->size);
-    printf("# Vertices = %u\n", gwma->array[0].nVertices);
+    printf("# Vertices = %u\n", gwma->array[0].size_vertices);
+    printf("s = %u\n", get_s_id_gwm(gwma->array));
+    printf("# t = %u\n", gwma->array[0].sz_t);
 
     fclose(jsonFile);
 

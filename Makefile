@@ -25,7 +25,6 @@ obj/gwmodel.o: obj                      \
     padkit/include/padkit/chunk.h       \
     padkit/include/padkit/chunktable.h  \
     padkit/include/padkit/debug.h       \
-    padkit/include/padkit/graphmatrix.h \
     padkit/include/padkit/jsonparser.h  \
     padkit/include/padkit/reallocate.h  \
     src/gwmodel.c                       \
