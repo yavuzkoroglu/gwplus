@@ -63,12 +63,10 @@ coverage.info
 # Program outputs
 *.csv
 *.xml
-*.dot
 *.cg.dot
 *.cg.xml
 *.cfg.dot
 *.cfg.xml
-*.pdf
 
 # Kernel Module Compile Results
 *.mod*
@@ -82,3 +80,6 @@ dkms.conf
 # PADKIT
 padkit/**
 padkit
+
+# Secret material! 
+material

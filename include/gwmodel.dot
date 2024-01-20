@@ -1,0 +1,131 @@
+graph G {
+    rankdir=TB;
+    graph [fontname="Menlo Bold"];
+    node [fontname="Menlo Bold"];
+    edge [fontname="Menlo Bold",dir="forward"];
+    nodesep=1.5;
+    subgraph cluster_legend {
+        graph [label="Legend"];
+        node [shape="none"];
+        reset_legend [width=0,height=0,label=""];
+        reset_legend--
+        "1: atArrayEnd"--
+        "2: atArrayStart"--
+        "3: atFalse"--
+        "4: atNameEnd"--
+        "5: atNameStart"--
+        "6: atNull"--
+        "7: atNumber"--
+        "8: atObjectEnd"--
+        "9: atObjectStart"--
+        "10: atRootEnd"--
+        "11: atRootStart"--
+        "12: atString"--
+        "13: atTrue"--
+        "14: atValueEnd"--
+        "15: atValueStart";
+    }
+    subgraph cluster_readVertices {
+        graph [label="readVertices"];
+        s02 [peripheries=2];
+        s05 [shape="record",label="{<s05>s05|{<models>'models'|<else>else}}"];
+        s09 [shape="record",label="{<s09>s09|<skip>level = stack_sz}"];
+        s11 [shape="record",label="{<s11>s11|{<end>level == stack_sz|<cont>else}}"];
+        s12 [shape="record",label="{<s12>s12|{<id>'id'|<name>'name'|<vertices>'vertices'|<else>else}}"];
+        s17 [shape="record",label="{<s17>s17|{<id>'id'|<name>'name'|<else>else}}"];
+        reset_readVertices [width=0,shape=none,height=0,label=""];
+        reset_readVertices -- s00 [label="11"];
+        s00 -- s01 [label="9"];
+        s00 -- s02 [label="10"];
+        s01 -- s03 [label="5"];
+        s01 -- s04 [label="8"];
+        s03 -- s05:s05 [label="12"];
+        s04 -- s02 [label="10"];
+        s05:models -- s06 [label="2"];
+        s05:else -- s07 [label="4"];
+        s06 -- s01 [label="1"];
+        s06 -- s08 [label="9"];
+        s07 -- s09:s09 [label="2 | 9"];
+        s07 -- s01 [label="14"];
+        s08 -- s06 [label="8"];
+        s08 -- s10 [label="5"];
+        s09:skip -- s11:s11 [label="1 | 8"];
+        s10 -- s12:s12 [label="12"];
+        s11:end -- s03 [label="5"];
+        s11:end -- s04 [label="8"];
+        s12:id -- s13 [label="12"];
+        s12:"name" -- s13 [label="12"];
+        s12:vertices -- s14 [label="2"];
+        s12:else -- s06 [label="8"];
+        s12:else -- s10 [label="5"];
+        s13 -- s06 [label="8"];
+        s13 -- s10 [label="5"];
+        s14 -- s08 [label="1"];
+        s14 -- s15 [label="9"];
+        s15 -- s14 [label="8"];
+        s15 -- s16 [label="5"];
+        s16 -- s17:s17 [label="12"];
+        s17:id -- s18 [label="12"];
+        s17:"name" -- s19 [label="12"];
+        s17:else -- s14 [label="8"];
+        s17:else -- s16 [label="5"];
+        s18--s14 [label="8"];
+        s18--s16 [label="5"];
+        s19--s14 [label="8"];
+        s19--s16 [label="5"];
+    }
+    subgraph cluster_readEdges {
+        graph [label="readEdges"];
+        s22 [peripheries=2];
+        s29 [shape="record",label="{<s29>s29|<skip>level = stack_sz}"];
+        s31 [shape="record",label="{<s31>s31|{<end>level == stack_sz|<cont>else}}"];
+        s32 [shape="record",label="{<s32>s32|{<id>'startElementId'|<edges>'edges'|<else>else}}"];
+        s37 [shape="record",label="{<s37>s37|{<id>'id'|<name>'name'|<source>'sourceVertexId'|<target>'targetVertexId'|<else>else}}"];
+        reset_readEdges [width=0,shape=none,height=0,label=""];
+        reset_readEdges -- s20 [label="11"];
+        s20 -- s21 [label = "9"];
+        s20 -- s22 [label = "10"];
+        s21 -- s23 [label="5"];
+        s21 -- s24 [label="8"];
+        s23 -- s25:s25 [label="12"];
+        s24 -- s22 [label="10"];
+        s25 [shape="record",label="{<s25>s25|{<models>'models'|<else>else}}"];
+        s25:models -- s26 [label="2"];
+        s25:else -- s27 [label="4"];
+        s26 -- s21 [label="1"];
+        s26 -- s28 [label="9"];
+        s27 -- s29:s29 [label="2 | 9"];
+        s27 -- s21 [label="14"];
+        s28 -- s26 [label="8"];
+        s28 -- s30 [label="5"];
+        s29:skip -- s31:s31 [label="1 | 8"];
+        s30 -- s32:s32 [label="12"];
+        s31:end -- s23 [label="5"];
+        s31:end -- s24 [label="8"];
+        s32:id -- s33 [label="12"];
+        s32:edges -- s34 [label="2"];
+        s32:else -- s26 [label="8"];
+        s32:else -- s30 [label="5"];
+        s33 -- s26 [label="8"];
+        s33 -- s30 [label="5"];
+        s34 -- s28 [label="1"];
+        s34 -- s35 [label="9"];
+        s35 -- s34 [label="8"];
+        s35 -- s36 [label="5"];
+        s36 -- s37:s37 [label="12"];
+        s37:id -- s38 [label="12"];
+        s37:"name" -- s39 [label="12"];
+        s37:source -- s40 [label="12"];
+        s37:target -- s41 [label="12"];
+        s37:else -- s34 [label="8"];
+        s37:else -- s36 [label="5"];
+        s38--s34 [label="8"];
+        s38--s36 [label="5"];
+        s39--s34 [label="8"];
+        s39--s36 [label="5"];
+        s40--s34 [label="8"];
+        s40--s36 [label="5"];
+        s41--s34 [label="8"];
+        s41--s36 [label="5"];
+    }
+}
