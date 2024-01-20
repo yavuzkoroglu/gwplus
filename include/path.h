@@ -19,6 +19,8 @@
 
     #define PATH_DEFAULT_FLAGS  0
 
+    #define PATH_RECOMMENDED_PARAMETERS     PATH_DEFAULT_INITIAL_CAP, PATH_DEFAULT_FLAGS
+
     typedef struct PathBody {
         uint32_t cap;
         uint32_t len;
@@ -27,37 +29,23 @@
         uint64_t flags;
     } Path;
 
-    #ifndef NDEBUG
-    bool
-    #else
-    void
-    #endif
-    constructEmpty_path(Path* const path, uint32_t const initial_cap, uint64_t const flags);
+    void constructEmpty_path(Path* const path, uint32_t const initial_cap, uint64_t const flags);
 
     bool contains_path(Path const* const path, uint32_t const vertex_id);
 
-    #ifndef NDEBUG
-    bool
-    #else
-    void
-    #endif
-    flush_path(Path* const path);
-
-    #ifndef NDEBUG
-    bool
-    #else
-    void
-    #endif
-    free_path(Path* const path);
-
-    #ifndef NDEBUG
-        #define PATH_INSERT_ERROR           -1
-    #endif
     #define PATH_INSERT_OK                  0
     #define PATH_INSERT_MAKES_IT_NON_SIMPLE 1
-    int insert_path(Path* const path, uint32_t const vertex_id, bool const respectFlags);
+    int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFlags);
+
+    void flush_path(Path* const path);
+
+    void free_path(Path* const path);
+
+    void invalidate_path(Path* const path);
 
     bool isValid_path(Path const* const path);
+
+    bool isSubPath_path(Path const* const sub, Path const* const super);
 
     uint32_t search_path(Path const* const path, uint32_t const vertex_id);
 
@@ -67,33 +55,13 @@
         Path* array;
     } PathArray;
 
-    #ifndef NDEBUG
-    bool
-    #else
-    void
-    #endif
-    constructEmpty_patha(PathArray* const pathArray, uint32_t const initial_cap);
+    void constructEmpty_patha(PathArray* const pathArray, uint32_t const initial_cap);
 
-    #ifndef NDEBUG
-    bool
-    #else
-    void
-    #endif
-    flush_patha(PathArray* const pathArray);
+    void flush_patha(PathArray* const pathArray);
 
-    #ifndef NDEBUG
-    bool
-    #else
-    void
-    #endif
-    free_patha(PathArray* const pathArray);
+    void free_patha(PathArray* const pathArray);
 
     bool isValid_patha(PathArray const* const pathArray);
 
-    #ifndef NDEBUG
-    bool
-    #else
-    void
-    #endif
-    simplePathsFromGWModel_patha(PathArray* const pathArray, GWModel const* const gwm);
+    void simplePathsFromGWModel_patha(PathArray* const pathArray, GWModel const* const gwm);
 #endif

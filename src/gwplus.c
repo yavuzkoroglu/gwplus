@@ -1,5 +1,6 @@
 #include "gwmodel.h"
 #include "padkit/debug.h"
+#include "padkit/streq.h"
 
 int main(int argc, char* argv[]) {
     GWModelArray gwma[1];
@@ -9,7 +10,8 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    printf("sizeof(gwma) = %zu bytes\n", sizeof(gwma));
+    printf("sizeof(GWModelArray) = %zu bytes\n", sizeof(GWModelArray));
+    printf("sizeof(GWModel) = %zu bytes\n", sizeof(GWModel));
 
     constructFromJSON_gwma(gwma, 1, jsonFile);
 

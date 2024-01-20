@@ -40,8 +40,6 @@ static void checkStack_vertex(JSONParser* const jp);                            
 static void checkStack_edge(JSONParser* const jp);                                                  /* s24 */
 
 static void checkStack_edge(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(skip_level == 0)
 
@@ -53,12 +51,9 @@ static void checkStack_edge(JSONParser* const jp) {
     jp->atValueEnd  = emptyVoidEvent_jsonp;
 }
 static void checkStack_model(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(skip_level == 0)
 
-    DEBUG_MSG("skip_level = %zu, jp->stack_size = %zu\n", skip_level, jp->stack_size)
     if (skip_level != jp->stack_size) return;
 
     jp->atArrayEnd  = emptyVoidEvent_jsonp;
@@ -67,8 +62,6 @@ static void checkStack_model(JSONParser* const jp) {
     jp->atValueEnd  = emptyVoidEvent_jsonp;
 }
 static void checkStack_models(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(skip_level == 0)
 
@@ -80,8 +73,6 @@ static void checkStack_models(JSONParser* const jp) {
     jp->atValueEnd  = emptyVoidEvent_jsonp;
 }
 static void checkStack_vertex(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(skip_level == 0)
 
@@ -93,8 +84,6 @@ static void checkStack_vertex(JSONParser* const jp) {
     jp->atValueEnd  = emptyVoidEvent_jsonp;
 }
 static void continueReading_model(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atNameStart     = searchName_model;
@@ -102,8 +91,6 @@ static void continueReading_model(JSONParser* const jp) {
     jp->atObjectStart   = emptyVoidEvent_jsonp;
 }
 static void readEdgeId(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -122,8 +109,6 @@ static void readEdgeId(JSONParser* const jp, char const* const string, size_t co
     jp->atString = emptyStringEvent_jsonp;
 }
 static void readEdgeName(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -137,8 +122,6 @@ static void readEdgeName(JSONParser* const jp, char const* const string, size_t 
     jp->atString = emptyStringEvent_jsonp;
 }
 static void readEdgeSourceId(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -158,8 +141,6 @@ static void readEdgeSourceId(JSONParser* const jp, char const* const string, siz
     jp->atString = emptyStringEvent_jsonp;
 }
 static void readEdgeTargetId(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -184,8 +165,6 @@ static void readEdgeTargetId(JSONParser* const jp, char const* const string, siz
     jp->atString = emptyStringEvent_jsonp;
 }
 static void readModelInfo(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -199,8 +178,6 @@ static void readModelInfo(JSONParser* const jp, char const* const string, size_t
     jp->atString = emptyStringEvent_jsonp;
 }
 static void readVertexId(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -223,8 +200,6 @@ static void readVertexId(JSONParser* const jp, char const* const string, size_t 
     jp->atString = emptyStringEvent_jsonp;
 }
 static void readVertexName(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -238,36 +213,26 @@ static void readVertexName(JSONParser* const jp, char const* const string, size_
     jp->atString = emptyStringEvent_jsonp;
 }
 static void searchName_edge(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atString = searchString_edge;
 }
 static void searchName_model(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atString = searchString_model;
 }
 static void searchName_vertex(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atString = searchString_vertex;
 }
 static void searchName_models(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atString = searchString_models;
 }
 static void searchString_edge(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -288,8 +253,6 @@ static void searchString_edge(JSONParser* const jp, char const* const string, si
     }
 }
 static void searchString_model(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -323,8 +286,6 @@ static void searchString_model(JSONParser* const jp, char const* const string, s
     }
 }
 static void searchString_vertex(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -341,8 +302,6 @@ static void searchString_vertex(JSONParser* const jp, char const* const string, 
     }
 }
 static void searchString_models(JSONParser* const jp, char const* const string, size_t const len) {
-    DEBUG_MSG("%s('%s')", __func__, string)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
@@ -358,8 +317,6 @@ static void searchString_models(JSONParser* const jp, char const* const string, 
     }
 }
 static void startReading_edge(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     DEBUG_ASSERT(isValid_gwm(current_gwm))
@@ -376,8 +333,6 @@ static void startReading_edge(JSONParser* const jp) {
     DEBUG_ASSERT(e_id == e_name_id)
 }
 static void startReading_edges(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atArrayEnd      = continueReading_model;
@@ -385,8 +340,6 @@ static void startReading_edges(JSONParser* const jp) {
     jp->atObjectStart   = startReading_edge;
 }
 static void startReading_model(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     REALLOC_IF_NECESSARY(GWModel, current_gwma->array, size_t, current_gwma->cap, current_gwma->size, {REALLOC_ERROR;})
@@ -398,8 +351,6 @@ static void startReading_model(JSONParser* const jp) {
     jp->atObjectStart   = emptyVoidEvent_jsonp;
 }
 static void startReading_models(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atArrayEnd      = stopReading_gwma;
@@ -408,8 +359,6 @@ static void startReading_models(JSONParser* const jp) {
     current_gwm         = NULL;
 }
 static void startReading_vertex(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     DEBUG_ASSERT(isValid_gwm(current_gwm))
@@ -421,8 +370,6 @@ static void startReading_vertex(JSONParser* const jp) {
     addVertex_gwm(current_gwm, "", 0, "", 0);
 }
 static void startReading_vertices(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atArrayEnd      = continueReading_model;
@@ -430,8 +377,6 @@ static void startReading_vertices(JSONParser* const jp) {
     jp->atObjectStart   = startReading_vertex;
 }
 static void stopReading_gwma(JSONParser* const jp) {
-    DEBUG_MSG("%s", __func__)
-
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     /* Identify t-type vertices in every model
@@ -518,23 +463,24 @@ void addVertex_gwm(
 
         uint32_t const guess_new_cap_outEdges = current_gwm->cap_outEdges[0];
 
-        void* ptr = realloc(current_gwm->transitions, new_cap_vertices * sizeof(uint32_t*));
-        DEBUG_ERROR_IF(ptr == NULL)
+        if (REALLOCATE(current_gwm->transitions, current_gwm->cap_vertices, new_cap_vertices, uint32_t*) == NULL)
+            {REALLOC_ERROR;}
 
-        ptr = realloc(current_gwm->size_outEdges, new_cap_vertices * sizeof(uint32_t));
-        DEBUG_ERROR_IF(ptr == NULL)
+        if (REALLOCATE(current_gwm->size_outEdges, current_gwm->cap_vertices, new_cap_vertices, uint32_t) == NULL)
+            {REALLOC_ERROR;}
 
-        ptr = realloc(current_gwm->cap_outEdges, new_cap_vertices * sizeof(uint32_t));
-        DEBUG_ERROR_IF(ptr == NULL)
+        if (REALLOCATE(current_gwm->cap_outEdges, current_gwm->cap_vertices, new_cap_vertices, uint32_t) == NULL)
+            {REALLOC_ERROR;}
 
         for (uint32_t i = current_gwm->cap_vertices; i < new_cap_vertices; i++) {
-            ptr = malloc(guess_new_cap_outEdges * sizeof(uint32_t));
-            DEBUG_ERROR_IF(ptr == NULL)
-            current_gwm->transitions[i] = ptr;
+            current_gwm->transitions[i] = malloc(guess_new_cap_outEdges * sizeof(uint32_t));
+            DEBUG_ERROR_IF(current_gwm->transitions[i] == NULL)
 
             current_gwm->size_outEdges[i]   = 0;
             current_gwm->cap_outEdges[i]    = guess_new_cap_outEdges;
         }
+
+        current_gwm->cap_vertices = new_cap_vertices;
     }
 
     add_chunk(chunk_vertex_ids, v_id, v_id_len);
@@ -684,8 +630,6 @@ bool isValid_gwm(GWModel const* const gwm) {
 }
 
 void constructFromJSON_gwma(GWModelArray* const gwma, size_t const initial_cap, FILE* const jsonFile) {
-    DEBUG_MSG("%s", __func__)
-
     JSONParser jp[1];
 
     DEBUG_ERROR_IF(gwma == NULL)

@@ -32,9 +32,18 @@ obj/gwmodel.o: obj                      \
 
 obj/gwplus.o: obj                       \
     include/gwmodel.h                   \
+    include/path.h                      \
     padkit/include/padkit/debug.h       \
     src/gwplus.c                        \
     ; ${COMPILE} ${INCLUDES} src/gwplus.c -c -o obj/gwplus.o
+
+obj/path.o: obj                         \
+    include/gwmodel.h                   \
+    include/path.h                      \
+    padkit/include/padkit/debug.h       \
+    padkit/include/padkit/reallocate.h  \
+    src/path.c                          \
+    ; ${COMPILE} ${INCLUDES} src/path.c -c -o obj/path.o
 
 objects: ${OBJECTS}
 
