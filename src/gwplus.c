@@ -20,7 +20,8 @@ int main(int argc, char* argv[]) {
     printf("s = %u\n", get_s_id_gwm(gwma->array));
     printf("# t = %u\n", gwma->array[0].sz_t);
 
-    fclose(jsonFile);
+    DEBUG_ASSERT(fclose(jsonFile) == 0)
+    NDEBUG_EXECUTE(fclose(jsonFile))
 
     return EXIT_SUCCESS;
 }
