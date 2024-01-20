@@ -11,7 +11,123 @@ static size_t skip_level            = 0;
 static uint32_t source_id           = 0xFFFFFFFF;
 static uint32_t target_id           = 0xFFFFFFFF;
 
-static void readVertices_s00(JSONParser* const jp) {
+/* See include/gwmodel.(dot|pdf) */
+static void s00(JSONParser* const jp);
+static void s01(JSONParser* const jp);
+static void s02(JSONParser* const jp);
+static void s03(JSONParser* const jp);
+static void s04(JSONParser* const jp);
+static void s05(JSONParser* const jp, char const* const string, size_t const len);
+static void s06(JSONParser* const jp);
+static void s07(JSONParser* const jp);
+static void s08(JSONParser* const jp);
+static void s09(JSONParser* const jp);
+static void s10(JSONParser* const jp);
+static void s11(JSONParser* const jp);
+static void s12(JSONParser* const jp, char const* const string, size_t const len);
+static void s13(JSONParser* const jp);
+static void s14(JSONParser* const jp);
+static void s15(JSONParser* const jp);
+static void s16(JSONParser* const jp);
+static void s17(JSONParser* const jp, char const* const string, size_t const len);
+static void s18(JSONParser* const jp);
+static void s19(JSONParser* const jp);
+static void s20(JSONParser* const jp);
+static void s21(JSONParser* const jp);
+static void s22(JSONParser* const jp);
+static void s23(JSONParser* const jp);
+static void s24(JSONParser* const jp);
+static void s25(JSONParser* const jp, char const* const string, size_t const len);
+static void s26(JSONParser* const jp);
+static void s27(JSONParser* const jp);
+static void s28(JSONParser* const jp);
+static void s29(JSONParser* const jp);
+static void s30(JSONParser* const jp);
+static void s31(JSONParser* const jp);
+static void s32(JSONParser* const jp, char const* const string, size_t const len);
+static void s33(JSONParser* const jp);
+static void s34(JSONParser* const jp);
+static void s35(JSONParser* const jp);
+static void s36(JSONParser* const jp);
+static void s37(JSONParser* const jp, char const* const string, size_t const len);
+static void s38(JSONParser* const jp);
+static void s39(JSONParser* const jp);
+static void s40(JSONParser* const jp);
+static void s41(JSONParser* const jp);
+
+static void s00(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ASSERT(isValid_gwma(current_gwma))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = s01;
+    jp->atRootEnd       = s02;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+
+    current_gwm         = NULL;
+    skip_level          = 0;
+    source_id           = 0xFFFFFFFF;
+    target_id           = 0xFFFFFFFF;
+}
+
+static void s01(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = s03;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s04;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s02(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ASSERT(isValid_gwma(current_gwma))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+
+    current_gwm         = NULL;
+    skip_level          = 0;
+    source_id           = 0xFFFFFFFF;
+    target_id           = 0xFFFFFFFF;
+}
+
+static void s03(JSONParser* const jp) {
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atArrayEnd      = emptyVoidEvent_jsonp;
@@ -22,36 +138,16 @@ static void readVertices_s00(JSONParser* const jp) {
     jp->atNull          = emptyVoidEvent_jsonp;
     jp->atNumber        = emptyNumberEvent_jsonp;
     jp->atObjectEnd     = emptyVoidEvent_jsonp;
-    jp->atObjectStart   = readVertices_s01;
-    jp->atRootEnd       = readVertices_s02;
-    jp->atRootStart     = emptyVoidEvent_jsonp;
-    jp->atString        = emptyStringEvent_jsonp;
-    jp->atTrue          = emptyVoidEvent_jsonp;
-    jp->atValueEnd      = emptyVoidEvent_jsonp;
-    jp->atValueStart    = emptyVoidEvent_jsonp;
-}
-
-static void readVertices_s01(JSONParser* const jp) {
-    DEBUG_ASSERT(isValid_jsonp(jp))
-
-    jp->atArrayEnd      = emptyVoidEvent_jsonp;
-    jp->atArrayStart    = emptyVoidEvent_jsonp;
-    jp->atFalse         = emptyVoidEvent_jsonp;
-    jp->atNameEnd       = emptyVoidEvent_jsonp;
-    jp->atNameStart     = readVertices_s03;
-    jp->atNull          = emptyVoidEvent_jsonp;
-    jp->atNumber        = emptyNumberEvent_jsonp;
-    jp->atObjectEnd     = readVertices_s04;
     jp->atObjectStart   = emptyVoidEvent_jsonp;
     jp->atRootEnd       = emptyVoidEvent_jsonp;
     jp->atRootStart     = emptyVoidEvent_jsonp;
-    jp->atString        = emptyStringEvent_jsonp;
+    jp->atString        = s05;
     jp->atTrue          = emptyVoidEvent_jsonp;
     jp->atValueEnd      = emptyVoidEvent_jsonp;
     jp->atValueStart    = emptyVoidEvent_jsonp;
 }
 
-static void readVertices_s02(JSONParser* const jp) {
+static void s04(JSONParser* const jp) {
     DEBUG_ASSERT(isValid_jsonp(jp))
 
     jp->atArrayEnd      = emptyVoidEvent_jsonp;
@@ -63,7 +159,7 @@ static void readVertices_s02(JSONParser* const jp) {
     jp->atNumber        = emptyNumberEvent_jsonp;
     jp->atObjectEnd     = emptyVoidEvent_jsonp;
     jp->atObjectStart   = emptyVoidEvent_jsonp;
-    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = s02;
     jp->atRootStart     = emptyVoidEvent_jsonp;
     jp->atString        = emptyStringEvent_jsonp;
     jp->atTrue          = emptyVoidEvent_jsonp;
@@ -71,33 +167,13 @@ static void readVertices_s02(JSONParser* const jp) {
     jp->atValueStart    = emptyVoidEvent_jsonp;
 }
 
-static void readVertices_s03(JSONParser* const jp) {
-    DEBUG_ASSERT(isValid_jsonp(jp))
-
-    jp->atArrayEnd      = emptyVoidEvent_jsonp;
-    jp->atArrayStart    = emptyVoidEvent_jsonp;
-    jp->atFalse         = emptyVoidEvent_jsonp;
-    jp->atNameEnd       = emptyVoidEvent_jsonp;
-    jp->atNameStart     = emptyVoidEvent_jsonp;
-    jp->atNull          = emptyVoidEvent_jsonp;
-    jp->atNumber        = emptyNumberEvent_jsonp;
-    jp->atObjectEnd     = emptyVoidEvent_jsonp;
-    jp->atObjectStart   = emptyVoidEvent_jsonp;
-    jp->atRootEnd       = emptyVoidEvent_jsonp;
-    jp->atRootStart     = emptyVoidEvent_jsonp;
-    jp->atString        = readVertices_s05;
-    jp->atTrue          = emptyVoidEvent_jsonp;
-    jp->atValueEnd      = emptyVoidEvent_jsonp;
-    jp->atValueStart    = emptyVoidEvent_jsonp;
-}
-
-static void readVertices_s05(JSONParser* const jp, char const* const string, size_t const len) {
+static void s05(JSONParser* const jp, char const* const string, size_t const len) {
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ERROR_IF(string == NULL)
 
     if (STR_EQ_CONST(string, "models")) {
         jp->atArrayEnd      = emptyVoidEvent_jsonp;
-        jp->atArrayStart    = readVertices_s06;
+        jp->atArrayStart    = s06;
         jp->atFalse         = emptyVoidEvent_jsonp;
         jp->atNameEnd       = emptyVoidEvent_jsonp;
         jp->atNameStart     = emptyVoidEvent_jsonp;
@@ -115,7 +191,7 @@ static void readVertices_s05(JSONParser* const jp, char const* const string, siz
         jp->atArrayEnd      = emptyVoidEvent_jsonp;
         jp->atArrayStart    = emptyVoidEvent_jsonp;
         jp->atFalse         = emptyVoidEvent_jsonp;
-        jp->atNameEnd       = readVertices_s07;
+        jp->atNameEnd       = s07;
         jp->atNameStart     = emptyVoidEvent_jsonp;
         jp->atNull          = emptyVoidEvent_jsonp;
         jp->atNumber        = emptyNumberEvent_jsonp;
@@ -130,33 +206,649 @@ static void readVertices_s05(JSONParser* const jp, char const* const string, siz
     }
 }
 
-static void stopReading_gwma(JSONParser* const jp);                                                 /* end */
-static void searchName_models(JSONParser* const jp);                                                /* s00 */
-static void searchString_models(JSONParser* const jp, char const* const string, size_t const len);  /* s01 */
-static void startReading_models(JSONParser* const jp);                                              /* s02 */
-static void continueReading_model(JSONParser* const jp);                                            /* s03 shared */
-static void startReading_model(JSONParser* const jp);                                               /* s03 shared */
-static void searchName_model(JSONParser* const jp);                                                 /* s04 */
-static void searchString_model(JSONParser* const jp, char const* const string, size_t const len);   /* s05 */
-static void readModelInfo(JSONParser* const jp, char const* const string, size_t const len);        /* s06 */
-static void startReading_edges(JSONParser* const jp);                                               /* s07 */
-static void startReading_vertices(JSONParser* const jp);                                            /* s08 */
-static void startReading_vertex(JSONParser* const jp);                                              /* s09 */
-static void startReading_edge(JSONParser* const jp);                                                /* s10 */
-static void searchName_vertex(JSONParser* const jp);                                                /* s11 */
-static void searchName_edge(JSONParser* const jp);                                                  /* s12 */
-static void searchString_vertex(JSONParser* const jp, char const* const string, size_t const len);  /* s13 */
-static void searchString_edge(JSONParser* const jp, char const* const string, size_t const len);    /* s14 */
-static void readVertexId(JSONParser* const jp, char const* const string, size_t const len);         /* s15 */
-static void readVertexName(JSONParser* const jp, char const* const string, size_t const len);       /* s16 */
-static void readEdgeId(JSONParser* const jp, char const* const string, size_t const len);           /* s17 */
-static void readEdgeName(JSONParser* const jp, char const* const string, size_t const len);         /* s18 */
-static void readEdgeSourceId(JSONParser* const jp, char const* const string, size_t const len);     /* s19 */
-static void readEdgeTargetId(JSONParser* const jp, char const* const string, size_t const len);     /* s20 */
-static void checkStack_models(JSONParser* const jp);                                                /* s21 */
-static void checkStack_model(JSONParser* const jp);                                                 /* s22 */
-static void checkStack_vertex(JSONParser* const jp);                                                /* s23 */
-static void checkStack_edge(JSONParser* const jp);                                                  /* s24 */
+static void s06(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    /* Start a new model */
+    REALLOC_IF_NECESSARY(
+        GWModel, current_gwma->array,
+        size_t, current_gwma->cap, current_gwma->size,
+        {REALLOC_ERROR;}
+    )
+    constructEmpty_gwm(
+        (current_gwm = current_gwma->array + current_gwma->size++),
+        GWM_RECOMMENDED_PARAMETERS
+    );
+
+    jp->atArrayEnd      = s01;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = s08;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s07(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = s09;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = s09;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = s01;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s08(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ASSERT(isValid_gwma(current_gwma))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = s10;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s06;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s09(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    skip_level = jp->stack_size;
+
+    jp->atArrayEnd      = s11;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s11;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s10(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = s12;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s11(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ERROR_IF(skip_level == 0)
+    DEBUG_ERROR_IF(skip_level > jp->stack_size)
+
+    if (skip_level == jp->stack_size) {
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = emptyVoidEvent_jsonp;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = emptyVoidEvent_jsonp;
+        jp->atNameStart     = s03;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = s04;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = emptyStringEvent_jsonp;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    }
+}
+
+static void s12(JSONParser* const jp, char const* const string, size_t const len) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ERROR_IF(string == NULL)
+
+    DEBUG_ASSERT(isValid_gwm(current_gwm))
+
+    Chunk* const chunk_info = current_gwm->chunks + GWM_CHUNKS_INFO;
+
+    if (STR_EQ_CONST(string, "id") || STR_EQ_CONST(string, "name")) {
+        /* This is new info */
+        DEBUG_ERROR_IF(add_chunk(chunk_info, string, len) == 0xFFFFFFFF)
+        NDEBUG_EXECUTE(add_chunk(chunk_info, string, len))
+
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = emptyVoidEvent_jsonp;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = emptyVoidEvent_jsonp;
+        jp->atNameStart     = emptyVoidEvent_jsonp;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = emptyVoidEvent_jsonp;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = s13;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    } else if (STR_EQ_CONST(string, "vertices")) {
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = s14;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = emptyVoidEvent_jsonp;
+        jp->atNameStart     = emptyVoidEvent_jsonp;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = emptyVoidEvent_jsonp;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = emptyStringEvent_jsonp;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    } else {
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = emptyVoidEvent_jsonp;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = emptyVoidEvent_jsonp;
+        jp->atNameStart     = s10;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = s06;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = emptyStringEvent_jsonp;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    }
+}
+
+static void s13(JSONParser* const jp, char const* const string, size_t const len) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ERROR_IF(string == NULL)
+
+    DEBUG_ASSERT(isValid_gwm(current_gwm))
+
+    Chunk* const chunk_info = current_gwm->chunks + GWM_CHUNKS_INFO;
+
+    /* Add the info value */
+    DEBUG_ERROR_IF(add_chunk(chunk_info, string, len) == 0xFFFFFFFF)
+    NDEBUG_EXECUTE(add_chunk(chunk_info, string, len))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = s10;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s06;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s14(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = s08;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = s15;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s15(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ASSERT(isValid_gwm(current_gwm))
+
+    addVertex_gwm(current_gwm);
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = s16;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s14;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s16(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = s17;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s17(JSONParser* const jp, char const* const string, size_t const len) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ERROR_IF(string == NULL)
+
+    DEBUG_ASSERT(isValid_gwm(current_gwm))
+
+    if (STR_EQ_CONST(string, "id")) {
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = emptyVoidEvent_jsonp;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = emptyVoidEvent_jsonp;
+        jp->atNameStart     = emptyVoidEvent_jsonp;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = emptyVoidEvent_jsonp;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = s18;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    } else if (STR_EQ_CONST(string, "name")) {
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = emptyVoidEvent_jsonp;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = emptyVoidEvent_jsonp;
+        jp->atNameStart     = emptyVoidEvent_jsonp;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = emptyVoidEvent_jsonp;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = s19;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    } else {
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = emptyVoidEvent_jsonp;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = emptyVoidEvent_jsonp;
+        jp->atNameStart     = s16;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = s14;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = emptyStringEvent_jsonp;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    }
+}
+
+static void s18(JSONParser* const jp, char const* const string, size_t const len) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ERROR_IF(string == NULL)
+
+    DEBUG_ASSERT(isValid_gwm(current_gwm))
+
+    Chunk* const chunk_vertex_ids   = current_gwm->chunks + GWM_CHUNK_VERTEX_IDS;
+    ChunkTable* const tbl_vertices  = current_gwm->tables + GWM_TBL_VERTICES;
+
+    DEBUG_ERROR_IF(append_chunk(chunk_vertex_ids, string, len) == NULL)
+    NDEBUG_EXECUTE(append_chunk(chunk_vertex_ids, string, len))
+
+    uint32_t const v_id = current_gwm->size_vertices - 1;
+    DEBUG_ASSERT(
+        insert_ctbl(
+            tbl_vertices, chunk_vertex_ids, v_id, v_id, CTBL_BEHAVIOR_UNIQUE
+        ) == CTBL_INSERT_OK
+    )
+    NDEBUG_EXECUTE(
+        insert_ctbl(tbl_vertices, chunk_vertex_ids, v_id, v_id, CTBL_BEHAVIOR_UNIQUE)
+    )
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = s16;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s14;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s19(JSONParser* const jp, char const* const string, size_t const len) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ERROR_IF(string == NULL)
+
+    DEBUG_ASSERT(isValid_gwm(current_gwm))
+
+    Chunk* const chunk_vertex_names = current_gwm->chunks + GWM_CHUNK_VERTEX_NAMES;
+
+    DEBUG_ERROR_IF(append_chunk(chunk_vertex_names, string, len) == NULL)
+    NDEBUG_EXECUTE(append_chunk(chunk_vertex_names, string, len))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = s16;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s14;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s20(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ASSERT(isValid_gwma(current_gwma))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = s21;
+    jp->atRootEnd       = s22;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+
+    current_gwm         = NULL;
+    skip_level          = 0;
+    source_id           = 0xFFFFFFFF;
+    target_id           = 0xFFFFFFFF;
+}
+
+static void s21(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = s23;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s24;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s22(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    if (current_gwma->size > 0)
+        free_gwm(current_gwma->array[--current_gwma->size]);
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+
+    current_gwm         = NULL;
+    skip_level          = 0;
+    source_id           = 0xFFFFFFFF;
+    target_id           = 0xFFFFFFFF;
+}
+
+static void s23(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = s25;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s24(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = s22;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s25(JSONParser* const jp, char const* const string, size_t const len) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ERROR_IF(string == NULL)
+
+    if (STR_EQ_CONST(string, "models")) {
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = s26;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = emptyVoidEvent_jsonp;
+        jp->atNameStart     = emptyVoidEvent_jsonp;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = emptyVoidEvent_jsonp;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = emptyStringEvent_jsonp;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    } else {
+        jp->atArrayEnd      = emptyVoidEvent_jsonp;
+        jp->atArrayStart    = emptyVoidEvent_jsonp;
+        jp->atFalse         = emptyVoidEvent_jsonp;
+        jp->atNameEnd       = s27;
+        jp->atNameStart     = emptyVoidEvent_jsonp;
+        jp->atNull          = emptyVoidEvent_jsonp;
+        jp->atNumber        = emptyNumberEvent_jsonp;
+        jp->atObjectEnd     = emptyVoidEvent_jsonp;
+        jp->atObjectStart   = emptyVoidEvent_jsonp;
+        jp->atRootEnd       = emptyVoidEvent_jsonp;
+        jp->atRootStart     = emptyVoidEvent_jsonp;
+        jp->atString        = emptyStringEvent_jsonp;
+        jp->atTrue          = emptyVoidEvent_jsonp;
+        jp->atValueEnd      = emptyVoidEvent_jsonp;
+        jp->atValueStart    = emptyVoidEvent_jsonp;
+    }
+}
+
+static void s26(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+    DEBUG_ASSERT(isValid_gwma(current_gwma))
+
+    current_gwm
+        = (current_gwm == NULL) ? current_gwma->array : current_gwm + 1;
+
+    jp->atArrayEnd      = s21;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = s28;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s27(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = s29;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = emptyVoidEvent_jsonp;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = emptyVoidEvent_jsonp;
+    jp->atObjectStart   = s29;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = s21;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+static void s28(JSONParser* const jp) {
+    DEBUG_ASSERT(isValid_jsonp(jp))
+
+    jp->atArrayEnd      = emptyVoidEvent_jsonp;
+    jp->atArrayStart    = emptyVoidEvent_jsonp;
+    jp->atFalse         = emptyVoidEvent_jsonp;
+    jp->atNameEnd       = emptyVoidEvent_jsonp;
+    jp->atNameStart     = s30;
+    jp->atNull          = emptyVoidEvent_jsonp;
+    jp->atNumber        = emptyNumberEvent_jsonp;
+    jp->atObjectEnd     = s26;
+    jp->atObjectStart   = emptyVoidEvent_jsonp;
+    jp->atRootEnd       = emptyVoidEvent_jsonp;
+    jp->atRootStart     = emptyVoidEvent_jsonp;
+    jp->atString        = emptyStringEvent_jsonp;
+    jp->atTrue          = emptyVoidEvent_jsonp;
+    jp->atValueEnd      = emptyVoidEvent_jsonp;
+    jp->atValueStart    = emptyVoidEvent_jsonp;
+}
+
+
+
+
+
+
+
+
+
+
 
 static void checkStack_edge(JSONParser* const jp) {
     DEBUG_ASSERT(isValid_jsonp(jp))
@@ -564,46 +1256,41 @@ void addTransition_gwm(GWModel* const gwm, uint32_t const source, uint32_t const
     gwm->size_outEdges[source]++;
 }
 
-void addVertex_gwm(
-    GWModel* const gwm,
-    char const* const v_id, uint64_t const v_id_len,
-    char const* const v_name, uint64_t const v_name_len
-) {
+void addVertex_gwm(GWModel* const gwm) {
     DEBUG_ASSERT(isValid_gwm(gwm))
 
-    Chunk* const chunk_vertex_ids   = current_gwm->chunks + GWM_CHUNK_VERTEX_IDS;
-    Chunk* const chunk_vertex_names = current_gwm->chunks + GWM_CHUNK_VERTEX_NAMES;
+    Chunk* const chunk_vertex_ids   = gwm->chunks + GWM_CHUNK_IDS;
+    Chunk* const chunk_vertex_names = gwm->chunks + GWM_CHUNK_NAMES;
 
-    current_gwm->size_vertices++;
+    if (gwm->size_vertices == gwm->cap_vertices) {
+        uint32_t const new_cap_vertices = gwm->cap_vertices << 1;
+        if (new_cap_vertices < gwm->cap_vertices) {REALLOC_ERROR;}
 
-    if (current_gwm->size_vertices == current_gwm->cap_vertices) {
-        uint32_t const new_cap_vertices = current_gwm->cap_vertices << 1;
-        if (new_cap_vertices < current_gwm->cap_vertices) {REALLOC_ERROR;}
+        uint32_t const guess_new_cap_outEdges = gwm->cap_outEdges[0];
 
-        uint32_t const guess_new_cap_outEdges = current_gwm->cap_outEdges[0];
-
-        if (REALLOCATE(current_gwm->transitions, current_gwm->cap_vertices, new_cap_vertices, uint32_t*) == NULL)
+        if (REALLOCATE(gwm->transitions, gwm->cap_vertices, new_cap_vertices, uint32_t*) == NULL)
             {REALLOC_ERROR;}
 
-        if (REALLOCATE(current_gwm->size_outEdges, current_gwm->cap_vertices, new_cap_vertices, uint32_t) == NULL)
+        if (REALLOCATE(gwm->size_outEdges, gwm->cap_vertices, new_cap_vertices, uint32_t) == NULL)
             {REALLOC_ERROR;}
 
-        if (REALLOCATE(current_gwm->cap_outEdges, current_gwm->cap_vertices, new_cap_vertices, uint32_t) == NULL)
+        if (REALLOCATE(gwm->cap_outEdges, gwm->cap_vertices, new_cap_vertices, uint32_t) == NULL)
             {REALLOC_ERROR;}
 
-        for (uint32_t i = current_gwm->cap_vertices; i < new_cap_vertices; i++) {
-            current_gwm->transitions[i] = malloc(guess_new_cap_outEdges * sizeof(uint32_t));
-            DEBUG_ERROR_IF(current_gwm->transitions[i] == NULL)
+        for (uint32_t i = gwm->cap_vertices; i < new_cap_vertices; i++) {
+            gwm->transitions[i] = malloc(guess_new_cap_outEdges * sizeof(uint32_t));
+            DEBUG_ERROR_IF(gwm->transitions[i] == NULL)
 
-            current_gwm->size_outEdges[i]   = 0;
-            current_gwm->cap_outEdges[i]    = guess_new_cap_outEdges;
+            gwm->size_outEdges[i]   = 0;
+            gwm->cap_outEdges[i]    = guess_new_cap_outEdges;
         }
 
-        current_gwm->cap_vertices = new_cap_vertices;
+        gwm->cap_vertices = new_cap_vertices;
     }
 
-    add_chunk(chunk_vertex_ids, v_id, v_id_len);
-    add_chunk(chunk_vertex_names, v_name, v_name_len);
+    DEBUG_ERROR_IF(add_chunk(chunk_vertex_ids, "", 0) == 0xFFFFFFFF)
+    DEBUG_ERROR_IF(add_chunk(chunk_vertex_names, "", 0) == 0xFFFFFFFF)
+    gwm->size_vertices++;
 }
 
 void constructEmpty_gwm(GWModel* const gwm, uint32_t const initial_cap_vertices, uint32_t const initial_cap_edges, uint32_t initial_cap_t) {
@@ -778,7 +1465,7 @@ void constructFromJSON_gwma(GWModelArray* const gwma, size_t const initial_cap, 
             emptyVoidEvent_jsonp,   /* atObjectEnd */
             emptyVoidEvent_jsonp,   /* atObjectStart */
             emptyVoidEvent_jsonp,   /* atRootEnd */
-            readVertices_s00,       /* atRootStart */
+            s00,                    /* atRootStart */
             emptyStringEvent_jsonp, /* atString */
             emptyVoidEvent_jsonp,   /* atTrue */
             emptyVoidEvent_jsonp,   /* atValueEnd */
@@ -786,10 +1473,7 @@ void constructFromJSON_gwma(GWModelArray* const gwma, size_t const initial_cap, 
         )
     )
 
-    current_gwm     = NULL;
-    current_gwma    = gwma;
-    source_id       = 0xFFFFFFFF;
-    target_id       = 0xFFFFFFFF;
+    current_gwma = gwma;
 
     if (parseStream_jsonp(jp) != JSON_PARSER_OK) {
         TERMINATE_ERROR_MSG("JSON_PARSER_ERROR!!");
@@ -808,16 +1492,11 @@ void constructFromJSON_gwma(GWModelArray* const gwma, size_t const initial_cap, 
     jp->atObjectEnd     = emptyVoidEvent_jsonp;
     jp->atObjectStart   = emptyVoidEvent_jsonp;
     jp->atRootEnd       = emptyVoidEvent_jsonp;
-    jp->atRootStart     = readEdges_s00;
+    jp->atRootStart     = s20;
     jp->atString        = emptyStringEvent_jsonp;
     jp->atTrue          = emptyVoidEvent_jsonp;
     jp->atValueEnd      = emptyVoidEvent_jsonp;
     jp->atValueStart    = emptyVoidEvent_jsonp;
-
-    current_gwm     = NULL;
-    current_gwma    = gwma;
-    source_id       = 0xFFFFFFFF;
-    target_id       = 0xFFFFFFFF;
 
     if (parseStream_jsonp(jp) != JSON_PARSER_OK) {
         TERMINATE_ERROR_MSG("JSON_PARSER_ERROR!!");
