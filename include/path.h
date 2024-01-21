@@ -12,10 +12,11 @@
     #define FLAG_PATH_TEST_PATH (1 << 4)
 
     #define FLAG_PATH_AS_NOT_SIMPLE(path)   path->flags &= !(FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
-    #define FLAG_PATH_AS_PRIME(path)        path->flags |= FLAG_PATH_SIMPLE & FLAG_PATH_PRIME
+    #define FLAG_PATH_AS_PRIME(path)        path->flags |= (FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
+    #define FLAG_PATH_AS_SIMPLE(path)       path->flags |= (FLAG_PATH_SIMPLE)
 
     #define IS_PATH_SIMPLE(path) (path->flags & FLAG_PATH_SIMPLE)
-    #define IS_PATH_PRIME(path)  (path->flags & FLAG_PATH_PRIME) && IS_PATH_SIMPLE(path)
+    #define IS_PATH_PRIME(path)  ((path->flags & FLAG_PATH_PRIME) && IS_PATH_SIMPLE(path))
 
     #define PATH_DEFAULT_FLAGS  0
 
@@ -29,12 +30,14 @@
         uint64_t flags;
     } Path;
 
+    void clone_path(Path* const clone, Path const* const original);
+
     void constructEmpty_path(Path* const path, uint32_t const initial_cap, uint64_t const flags);
 
     bool contains_path(Path const* const path, uint32_t const vertex_id);
 
-    #define PATH_INSERT_OK                  0
-    #define PATH_INSERT_MAKES_IT_NON_SIMPLE 1
+    #define PATH_EXTEND_OK                  0
+    #define PATH_EXTEND_MAKES_IT_NON_SIMPLE 1
     int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFlags);
 
     void flush_path(Path* const path);
@@ -63,5 +66,5 @@
 
     bool isValid_patha(PathArray const* const pathArray);
 
-    void simplePathsFromGWModel_patha(PathArray* const pathArray, GWModel const* const gwm);
+    void primePathsFromGWModel_patha(PathArray* const pathArray, GWModel const* const gwm);
 #endif

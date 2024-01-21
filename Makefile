@@ -1,7 +1,7 @@
 include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
-OBJECTS=obj/gwmodel.o obj/gwplus.o
+OBJECTS=obj/gwmodel.o obj/gwplus.o obj/path.o
 
 all: bin/gwplus
 

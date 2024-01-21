@@ -1,7 +1,15 @@
 #ifndef GWMODEL_H
     #define GWMODEL_H
-    #include "padkit/chunk.h"
     #include "padkit/chunktable.h"
+
+    #define INVALID_EDGE (GWEdge){ 0xFFFFFFFF, 0xFFFFFFFF }
+
+    typedef struct GWEdgeBody {
+        uint32_t source;
+        uint32_t target;
+    } GWEdge;
+
+    bool isValid_gwedge(GWEdge const* const edge);
 
     #define GWM_CHUNK_INFO_MAX_STRINGS  6
     #define GWM_INITIAL_STR_LEN         64
@@ -22,8 +30,7 @@
     #define GWM_CHUNK_EDGE_NAMES    4
     #define GWM_CHUNK_LAST          GWM_CHUNK_EDGE_NAMES
     #define GWM_TBL_VERTICES        0
-    #define GWM_TBL_EDGES           1
-    #define GWM_TBL_LAST            GWM_TBL_EDGES
+    #define GWM_TBL_LAST            GWM_TBL_VERTICES
     typedef struct GWModelBody {
         Chunk chunks[GWM_CHUNK_LAST + 1];
         ChunkTable tables[GWM_TBL_LAST + 1];
@@ -32,18 +39,19 @@
         uint32_t* cap_outEdges;
         uint32_t size_vertices;
         uint32_t cap_vertices;
+        GWEdge* edges;
+        uint32_t size_edges;
+        uint32_t cap_edges;
         uint32_t* t_ids;
         uint32_t sz_t;
         uint32_t cap_t;
     } GWModel;
 
+    void addEdge_gwm(GWModel* const gwm);
+
     void addTransition_gwm(GWModel* const gwm, uint32_t const source, uint32_t const sink);
 
-    void addVertex_gwm(
-        GWModel* const gwm,
-        char const* const v_id, uint64_t const v_id_len,
-        char const* const v_name, uint64_t const v_name_len
-    );
+    void addVertex_gwm(GWModel* const gwm);
 
     void constructEmpty_gwm(
         GWModel* const gwm,
