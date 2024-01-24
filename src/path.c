@@ -28,7 +28,7 @@ void clone_path(Path* const clone, Path const* const original) {
     DEBUG_ASSERT(isValid_path(original))
     DEBUG_ERROR_IF(clone == original)
 
-    if (!isValid_path(clone)) {
+    if (!IS_PATH_ALLOCATED(clone)) {
         constructEmpty_path(clone, original->cap, original->flags);
     } else if (clone->cap < original->len) {
         uint32_t new_cap = clone->cap << 1;
@@ -37,8 +37,11 @@ void clone_path(Path* const clone, Path const* const original) {
             if (new_cap < clone->cap) {REALLOC_ERROR;}
         }
 
-        if (REALLOCATE(clone->array, clone->cap, new_cap, uint32_t) == NULL)                {REALLOC_ERROR;}
-        if (REALLOCATE(clone->vertex_ids_sorted, clone->cap, new_cap, uint32_t) == NULL)    {REALLOC_ERROR;}
+        if (REALLOCATE(clone->array, clone->cap, new_cap, uint32_t) == NULL)
+            {REALLOC_ERROR;}
+
+        if (REALLOCATE(clone->vertex_ids_sorted, clone->cap, new_cap, uint32_t) == NULL)
+            {REALLOC_ERROR;}
 
         clone->cap = new_cap;
     }
@@ -152,8 +155,6 @@ void free_path(Path* const path) {
 void invalidate_path(Path* const path) {
     DEBUG_ASSERT(isValid_path(path))
 
-    free_path(path);
-    path->cap   = 0xFFFFFFFF;
     path->len   = 0xFFFFFFFF;
     path->flags = PATH_DEFAULT_FLAGS;
 }
@@ -247,7 +248,7 @@ void primePathsFromGWModel_patha(PathArray* const primePaths, GWModel const* con
     constructEmpty_patha(primePaths, guess_initial_cap);
 
     PathArray pathStack[1];
-    constructEmpty_patha(pathStack, gwm->size_vertices << 1);
+    constructEmpty_patha(pathStack, guess_initial_cap);
 
     Path path_at_hand[1];
     constructEmpty_path(path_at_hand, gwm->size_vertices, PATH_DEFAULT_FLAGS);
@@ -277,7 +278,11 @@ void primePathsFromGWModel_patha(PathArray* const primePaths, GWModel const* con
                 uint32_t const candidate_target = targets[i];
 
                 /* Push path_to_extend to pathStack */
-                RECALLOC_IF_NECESSARY(Path, pathStack->array, uint32_t, pathStack->cap, pathStack->size, {RECALLOC_ERROR;})
+                RECALLOC_IF_NECESSARY(
+                    Path, pathStack->array,
+                    uint32_t, pathStack->cap, pathStack->size,
+                    {RECALLOC_ERROR;}
+                )
                 Path* const path_to_extend = pathStack->array + pathStack->size++;
                 clone_path(path_to_extend, path_at_hand);
 

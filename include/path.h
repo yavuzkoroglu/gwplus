@@ -10,15 +10,18 @@
     #define FLAG_PATH_TYPE_S    (1 << 2)
     #define FLAG_PATH_TYPE_T    (1 << 3)
     #define FLAG_PATH_TEST_PATH (1 << 4)
+    #define FLAG_PATH_ALLOCATED (1 << 5)
 
     #define FLAG_PATH_AS_NOT_SIMPLE(path)   path->flags &= !(FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
     #define FLAG_PATH_AS_PRIME(path)        path->flags |= (FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
     #define FLAG_PATH_AS_SIMPLE(path)       path->flags |= (FLAG_PATH_SIMPLE)
+    #define FLAG_PATH_AS_ALLOCATED(path)    path->flags |= (FLAG_PATH_ALLOCATED)
 
-    #define IS_PATH_SIMPLE(path) (path->flags & FLAG_PATH_SIMPLE)
-    #define IS_PATH_PRIME(path)  ((path->flags & FLAG_PATH_PRIME) && IS_PATH_SIMPLE(path))
+    #define IS_PATH_SIMPLE(path)    (path->flags & FLAG_PATH_SIMPLE)
+    #define IS_PATH_PRIME(path)     ((path->flags & FLAG_PATH_PRIME) && IS_PATH_SIMPLE(path))
+    #define IS_PATH_ALLOCATED(path) (path->flags & FLAG_PATH_ALLOCATED)
 
-    #define PATH_DEFAULT_FLAGS  0
+    #define PATH_DEFAULT_FLAGS  FLAG_PATH_ALLOCATED
 
     #define PATH_RECOMMENDED_PARAMETERS     PATH_DEFAULT_INITIAL_CAP, PATH_DEFAULT_FLAGS
 
