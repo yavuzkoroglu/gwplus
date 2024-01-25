@@ -1,3 +1,8 @@
+/**
+ * @file gwplus.c
+ * @brief Implements the main function for the gwplus executable.
+ * @author Yavuz Koroglu
+ */
 #include "path.h"
 #include "padkit/debug.h"
 #include "padkit/streq.h"

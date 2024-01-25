@@ -5,7 +5,7 @@ OBJECTS=obj/gwmodel.o obj/gwplus.o obj/path.o
 
 all: bin/gwplus
 
-.PHONY: all clean objects
+.PHONY: all clean documentation objects
 
 bin: ; mkdir bin
 
@@ -17,6 +17,8 @@ bin/gwplus:                             \
     ; ${COMPILE} padkit/lib/libpadkit.a ${OBJECTS} -o bin/gwplus
 
 clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov
+
+documentation: ; doxygen
 
 obj: ; mkdir obj
 

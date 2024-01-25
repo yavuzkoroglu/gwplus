@@ -1,28 +1,11 @@
+/**
+ * @file path.c
+ * @brief Implements the functions defined in path.h
+ * @author Yavuz Koroglu
+ */
 #include "padkit/reallocate.h"
 #include "padkit/streq.h"
 #include "path.h"
-
-/*
-static void dump_path(Path const* const path) {
-    if (isValid_path(path)) {
-        fprintf(stderr, "  [");
-        for (uint32_t i = 0; i < path->len - 1; i++) {
-            fprintf(stderr, "%u, ", path->array[i]);
-        }
-        if (path->len > 0) fprintf(stderr, "%u", path->array[path->len - 1]);
-        fputs("]\n", stderr);
-    } else {
-        fputs("  INVALID_PATH\n", stderr);
-    }
-}
-
-static void dump_patha(PathArray const* const paths) {
-    DEBUG_ASSERT(isValid_patha(paths))
-
-    for (Path* path = paths->array + paths->size - 1; path >= paths->array; path--)
-        dump_path(path);
-}
-*/
 
 void clone_path(Path* const clone, Path const* const original) {
     DEBUG_ASSERT(isValid_path(original))

@@ -1,3 +1,8 @@
+/**
+ * @file gwmodel.c
+ * @brief Implements the functions defined in gwmodel.h
+ * @author Yavuz Koroglu
+ */
 #include "gwmodel.h"
 #include "padkit/chunk.h"
 #include "padkit/graphmatrix.h"
@@ -608,19 +613,17 @@ static void s18(JSONParser* const jp, char const* const string, size_t const len
 
     Chunk* const chunk_vertex_ids   = current_gwm->chunks + GWM_CHUNK_VERTEX_IDS;
     ChunkTable* const tbl_vertices  = current_gwm->tables + GWM_TBL_VERTICES;
+    uint32_t const v_id             = current_gwm->size_vertices - 1;
 
     DEBUG_ERROR_IF(append_chunk(chunk_vertex_ids, string, len) == NULL)
     NDEBUG_EXECUTE(append_chunk(chunk_vertex_ids, string, len))
 
-    uint32_t const v_id = current_gwm->size_vertices - 1;
     DEBUG_ASSERT(
         insert_ctbl(
             tbl_vertices, chunk_vertex_ids, v_id, v_id, CTBL_BEHAVIOR_UNIQUE
         ) == CTBL_INSERT_OK
     )
-    NDEBUG_EXECUTE(
-        insert_ctbl(tbl_vertices, chunk_vertex_ids, v_id, v_id, CTBL_BEHAVIOR_UNIQUE)
-    )
+    NDEBUG_EXECUTE(insert_ctbl(tbl_vertices, chunk_vertex_ids, v_id, v_id, CTBL_BEHAVIOR_UNIQUE))
 
     jp->atArrayEnd      = emptyVoidEvent_jsonp;
     jp->atArrayStart    = emptyVoidEvent_jsonp;
@@ -1693,7 +1696,7 @@ void addEdge_gwm(GWModel* const gwm) {
     NDEBUG_EXECUTE(add_chunk(chunk_edge_names, "", 0))
 
     REALLOC_IF_NECESSARY(GWEdge, gwm->edges, uint32_t, gwm->cap_edges, gwm->size_edges, {REALLOC_ERROR;})
-    gwm->edges[gwm->size_edges++] = INVALID_EDGE;
+    gwm->edges[gwm->size_edges++] = NOT_A_GWEDGE;
 }
 
 void addTransition_gwm(GWModel* const gwm, uint32_t const source, uint32_t const sink) {
