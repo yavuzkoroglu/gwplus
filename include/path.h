@@ -66,6 +66,12 @@
     #define FLAG_PATH_ALLOCATED (1 << 5)
 
     /**
+     * @def FLAG_PATH_TYPE_C
+     *   This flag should become 1 as soon as the first and the last vertices are the same.
+     */
+    #define FLAG_PATH_TYPE_C (1 << 6)
+
+    /**
      * @def FLAG_PATH_AS_NOT_SIMPLE
      *   Notice that a non-simple path can never be a prime path.
      */
@@ -90,6 +96,24 @@
     #define FLAG_PATH_AS_ALLOCATED(path)    path->flags |= (FLAG_PATH_ALLOCATED)
 
     /**
+     * @def FLAG_PATH_AS_TYPE_S
+     *   Flags the path as it traverses the starting vertex.
+     */
+    #define FLAG_PATH_AS_TYPE_S(path)       path->flags |= (FLAG_PATH_TYPE_S)
+
+    /**
+     * @def FLAG_PATH_AS_TYPE_T
+     *   Flags the path as it traverses the terminal vertex.
+     */
+    #define FLAG_PATH_AS_TYPE_T(path)       path->flags |= (FLAG_PATH_TYPE_T)
+
+    /**
+     * @def FLAG_PATH_AS_TYPE_C
+     *   Flags the path as it becomes a cycle.
+     */
+    #define FLAG_PATH_AS_TYPE_C(path)       path->flags |= (FLAG_PATH_TYPE_C)
+
+    /**
      * @def IS_PATH_SIMPLE
      *   This value is 1 if the path is flagged as simple.
      */
@@ -106,6 +130,30 @@
      *   This value is 1 if the path is flagged as allocated.
      */
     #define IS_PATH_ALLOCATED(path) (path->flags & FLAG_PATH_ALLOCATED)
+
+    /**
+     * @def IS_PATH_TYPE_C
+     *   This value is 1 if the path is flagged as type_c.
+     */
+    #define IS_PATH_TYPE_C(path)    (path->flags & FLAG_PATH_TYPE_C)
+
+    /**
+     * @def IS_PATH_TYPE_S
+     *   This value is 1 if the path is flagged as type_s.
+     */
+    #define IS_PATH_TYPE_S(path)    (path->flags & FLAG_PATH_TYPE_S)
+
+    /**
+     * @def IS_PATH_TYPE_T
+     *   This value is 1 if the path is flagged as type_t.
+     */
+    #define IS_PATH_TYPE_T(path)    (path->flags & FLAG_PATH_TYPE_T)
+
+    /**
+     * @def IS_PATH_TYPE_P
+     *   This value is 1 if the path is flagged as type_p.
+     */
+    #define IS_PATH_TYPE_P(path)    (!IS_PATH_TYPE_S(path) && !IS_PATH_TYPE_T(path))
 
     /**
      * @def PATH_DEFAULT_FLAGS
@@ -264,4 +312,17 @@
      * @param gwm A pointer to the GWModel.
      */
     void primePathsFromGWModel_patha(PathArray* const pathArray, GWModel const* const gwm);
+
+    /**
+     * @brief Finds the shortest Path between two vertices, under a GWModel.
+     * @param shortestPath A pointer to the about-to-be-computed shortest Path.
+     * @param pathQueue A pointer to a PathArray that will be flushed and used as a Path queue.
+     * @param gwm A pointer to the GraphWalker model.
+     * @param from The starting vertex index.
+     * @param to The final vertex index.
+     */
+    Path* shortest_path(
+        Path* const shortestPath, PathArray* const pathQueue, GWModel const* const gwm,
+        uint32_t const from, uint32_t const to
+    );
 #endif

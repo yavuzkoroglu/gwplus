@@ -70,6 +70,7 @@ int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFl
 
     if (path->len == 0) {
         FLAG_PATH_AS_SIMPLE(path);
+        if (vertex_id == GWM_ID_S) FLAG_PATH_AS_TYPE_S(path);
 
         path->array[0]              = vertex_id;
         path->vertex_ids_sorted[0]  = vertex_id;
@@ -105,6 +106,7 @@ int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFl
     ) {
         if (path->array[0] == vertex_id) {
             FLAG_PATH_AS_PRIME(path);
+            FLAG_PATH_AS_TYPE_C(path);
         } else if (!respectFlags) {
             FLAG_PATH_AS_NOT_SIMPLE(path);
         } else {
@@ -118,6 +120,7 @@ int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFl
     *position = vertex_id;
 
     path->array[path->len++] = vertex_id;
+    if (vertex_id == GWM_ID_T) FLAG_PATH_AS_TYPE_T(path);
     return PATH_EXTEND_OK;
 }
 
@@ -146,14 +149,25 @@ bool isSubPath_path(Path const* const sub, Path const* const super) {
     DEBUG_ASSERT(isValid_path(sub))
     DEBUG_ASSERT(isValid_path(super))
 
+    bool const isSubTypeS   = IS_PATH_TYPE_S(sub);
+    bool const isSuperTypeS = IS_PATH_TYPE_S(super);
+    bool const isSubTypeT   = IS_PATH_TYPE_T(sub);
+    bool const isSuperTypeT = IS_PATH_TYPE_T(super);
+
+    if (isSubTypeS && !isSuperTypeS) return 0;
+    if (isSubTypeT && !isSuperTypeT) return 0;
     if (sub->len > super->len) return 0;
 
-    size_t const sub_size_in_bytes = (size_t)sub->len * sizeof(uint32_t);
-    for (
-        uint32_t* ptr = super->array + super->len - sub->len;
-        ptr >= super->array;
-        ptr--
-    ) if (mem_eq_n((char const*)ptr, (char const*)sub->array, sub_size_in_bytes)) return 1;
+    char const* const sub_start         = (char const*)(sub->array + isSubTypeS);
+    size_t const sub_size               = sub->len - isSubTypeS - isSubTypeT;
+    size_t const super_size             = super->len - isSuperTypeS - isSuperTypeT;
+    size_t const sub_size_in_bytes      = sub_size * sizeof(uint32_t);
+    uint32_t const* const super_start   = super->array + isSuperTypeS;
+    uint32_t* const super_end           = super->array + isSuperTypeS + super_size - sub_size;
+
+    for (uint32_t* ptr = super_end; ptr >= super_start; ptr--)
+        if (mem_eq_n((char const*)ptr, sub_start, sub_size_in_bytes))
+            return 1;
 
     return 0;
 }
@@ -236,9 +250,14 @@ void primePathsFromGWModel_patha(PathArray* const primePaths, GWModel const* con
     Path path_at_hand[1];
     constructEmpty_path(path_at_hand, gwm->size_vertices, PATH_DEFAULT_FLAGS);
 
-    pathStack->size = gwm->size_vertices;
-    for (uint32_t i = 0; i < pathStack->size; i++) {
-        Path* const path = pathStack->array + pathStack->size - i - 1;
+    pathStack->size = gwm->size_vertices - 1;
+    Path* const firstPath = pathStack->array + pathStack->size - 1;
+    constructEmpty_path(firstPath, gwm->size_vertices, PATH_DEFAULT_FLAGS);
+    DEBUG_ASSERT(extend_path(firstPath, GWM_ID_S, 1) == PATH_EXTEND_OK)
+    NDEBUG_EXECUTE(extend_path(firstPath, GWM_ID_S, 1))
+
+    for (uint32_t i = GWM_ID_T + 1; i < gwm->size_vertices; i++) {
+        Path* const path = pathStack->array + pathStack->size - i;
 
         constructEmpty_path(path, gwm->size_vertices, PATH_DEFAULT_FLAGS);
 
@@ -289,7 +308,7 @@ void primePathsFromGWModel_patha(PathArray* const primePaths, GWModel const* con
                     path >= primePaths->array;
                     path--
                 ) {
-                    if (!isValid_path(path) || IS_PATH_PRIME(path)) continue;
+                    if (!isValid_path(path) || IS_PATH_TYPE_C(path)) continue;
 
                     if (isSubPath_path(path_at_hand, path))
                         goto PATH_AT_HAND_IS_SUBSUMED__FORGET_IT;
@@ -346,3 +365,20 @@ void primePathsFromGWModel_patha(PathArray* const primePaths, GWModel const* con
     free_patha(pathStack);
     free_path(path_at_hand);
 }
+
+Path* shortest_path(Path* const shortestPath, PathArray* const pathQueue, GWModel const* const gwm, uint32_t const from, uint32_t const to) {
+    DEBUG_ASSERT(isValid_path(shortestPath))
+    DEBUG_ASSERT(isValid_patha(pathQueue))
+    DEBUG_ASSERT(isValid_gwm(gwm))
+    DEBUG_ERROR_IF(from >= gwm->size_vertices)
+    DEBUG_ERROR_IF(to >= gwm->size_vertices)
+
+    flush_path(shortestPath);
+    flush_patha(pathQueue);
+
+    DEBUG_ASSERT(extend_path(shortestPath, from, 1) == PATH_EXTEND_OK)
+    NDEBUG_EXECUTE(extend_path(shortestPath, from, 1))
+
+    return shortestPath;
+}
+

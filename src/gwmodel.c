@@ -1707,6 +1707,8 @@ void addEdge_gwm(
     Chunk* const chunk_edge_names = gwm->chunks + GWM_CHUNK_EDGE_NAMES;
 
     if (id_str == NULL) {
+        DEBUG_ERROR_IF(addRandomUUID_chunk(chunk_edge_ids, 1) == 0xFFFFFFFF)
+        NDEBUG_EXECUTE(addRandomUUID_chunk(chunk_edge_ids, 1))
     } else {
         DEBUG_ERROR_IF(add_chunk(chunk_edge_ids, "", 0) == 0xFFFFFFFF)
         NDEBUG_EXECUTE(add_chunk(chunk_edge_ids, "", 0))

@@ -49,28 +49,31 @@ int main(int argc, char* argv[]) {
         DEBUG_ASSERT(isValid_path(primePath))
 
         printf("  [ ");
-        uint32_t i = 0;
-        while (i < primePath->len - 1) {
-            uint32_t const v_id = primePath->array[i];
-            DEBUG_ASSERT(v_id < gwm->size_vertices)
-
-            char const* const name = get_chunk(chunk_vertex_names, v_id);
-            DEBUG_ERROR_IF(name == NULL)
-
-            printf("%s, ", name);
-            i++;
-        }
+        uint32_t i = !!IS_PATH_TYPE_S(primePath);
         if (i < primePath->len) {
-            uint32_t const v_id = primePath->array[i];
+            uint32_t v_id = primePath->array[i++];
             DEBUG_ASSERT(v_id < gwm->size_vertices)
 
-            char const* const name = get_chunk(chunk_vertex_names, v_id);
-            DEBUG_ERROR_IF(name == NULL)
+            if (v_id != GWM_ID_S && v_id != GWM_ID_T) {
+                char const* const name = get_chunk(chunk_vertex_names, v_id);
+                DEBUG_ERROR_IF(name == NULL)
 
-            printf("%s ", name);
+                printf("%s", name);
+            }
+
+            while (i < primePath->len) {
+                v_id = primePath->array[i++];
+                DEBUG_ASSERT(v_id < gwm->size_vertices)
+                if (v_id == GWM_ID_S || v_id == GWM_ID_T) continue;
+
+                char const* const name = get_chunk(chunk_vertex_names, v_id);
+                DEBUG_ERROR_IF(name == NULL)
+
+                printf(", %s", name);
+            }
         }
 
-        puts("]");
+        puts(" ]");
     }
 
     puts("");
