@@ -64,19 +64,12 @@
     #define GWM_RECOMMENDED_INITIAL_EDGE_CAP    8192
 
     /**
-     * @def GWM_RECOMMENDED_INITIAL_T_CAP
-     *   Allocate this many terminal vertices (t-type, in short) at construction. It is unusual to have too many t-type vertices.
-     */
-    #define GWM_RECOMMENDED_INITIAL_T_CAP       32
-
-    /**
      * @def GWM_RECOMMENDED_PARAMETERS
      *   These are the <default-parameters> for constructEmpty_gwm(gwm, <default-parameters>)
      */
     #define GWM_RECOMMENDED_PARAMETERS      \
         GWM_RECOMMENDED_INITIAL_VERTEX_CAP, \
-        GWM_RECOMMENDED_INITIAL_EDGE_CAP,   \
-        GWM_RECOMMENDED_INITIAL_T_CAP
+        GWM_RECOMMENDED_INITIAL_EDGE_CAP
 
     /**
      * @struct GWModel
@@ -102,12 +95,6 @@
      *   The total number of edges in the GWModel.
      * @var GWModel::cap_edges
      *   The maximum number of edges the GWModel can hold.
-     * @var GWModel::t_ids
-     *   The array of t-type vertices (vertices with no outgoing edges).
-     * @var GWModel::sz_t
-     *   The total number of t-type vertices in the GWModel.
-     * @var GWModel::cap_t
-     *   The maximum number of t-type vertices the GWModel can hold.
      */
     #define GWM_CHUNK_INFO          0
     #define GWM_CHUNK_VERTEX_IDS    1
@@ -117,6 +104,12 @@
     #define GWM_CHUNK_LAST          GWM_CHUNK_EDGE_NAMES
     #define GWM_TBL_VERTICES        0
     #define GWM_TBL_LAST            GWM_TBL_VERTICES
+    #define GWM_ID_S                0
+    #define GWM_ID_T                1
+    #define GWM_NAME_S              "s"
+    #define GWM_NAME_T              "t"
+    #define GWM_NAME_S_LEN          1
+    #define GWM_NAME_T_LEN          1
     typedef struct GWModelBody {
         Chunk chunks[GWM_CHUNK_LAST + 1];
         ChunkTable tables[GWM_TBL_LAST + 1];
@@ -128,16 +121,21 @@
         GWEdge* edges;
         uint32_t size_edges;
         uint32_t cap_edges;
-        uint32_t* t_ids;
-        uint32_t sz_t;
-        uint32_t cap_t;
     } GWModel;
 
     /**
      * @brief Adds a new GWEdge with unknown source and target to a GWModel.
      * @param gwm A pointer to the GWModel.
+     * @param id_str GraphWalker index string.
+     * @param id_str_len Length of the GraphWalker index string.
+     * @param name GraphWalker name string.
+     * @param name_len Length of the GraphWalker name string.
      */
-    void addEdge_gwm(GWModel* const gwm);
+    void addEdge_gwm(
+        GWModel* const gwm,
+        char const* const id_str, size_t const id_str_len,
+        char const* const name, size_t const name_len
+    );
 
     /**
      * @brief Adds a new transition with known source and target to a GWModel.
@@ -150,20 +148,26 @@
     /**
      * @brief Adds a new vertex with empty name and string index to a GWModel.
      * @param gwm A pointer to the GWModel.
+     * @param id_str GraphWalker index string.
+     * @param id_str_len Length of the GraphWalker index string.
+     * @param name GraphWalker name string.
+     * @param name_len Length of the GraphWalker name string.
      */
-    void addVertex_gwm(GWModel* const gwm);
+    void addVertex_gwm(
+        GWModel* const gwm,
+        char const* const id_str, size_t const id_str_len,
+        char const* const name, size_t const name_len
+    );
 
     /**
      * @brief Constructs an empty GWModel.
      * @param initial_cap_vertices Initial capacity of vertices.
      * @param initial_cap_edges Initial capacity of edges.
-     * @param initial_cap_t Initial capacity of t-type vertices.
      */
     void constructEmpty_gwm(
         GWModel* const gwm,
         uint32_t const initial_cap_vertices,
-        uint32_t const initial_cap_edges,
-        uint32_t const initial_cap_t
+        uint32_t const initial_cap_edges
     );
 
     /**
@@ -171,15 +175,6 @@
      * @param gwm A pointer to the GWModel.
      */
     void free_gwm(GWModel* const gwm);
-
-    /**
-     * @brief Finds the vertex index of the starting vertex of a GWModel.
-     *
-     * NOTE: A GWModel should have exactly one starting vertex.
-     *
-     * @param gwm A pointer to the GWModel.
-     */
-    uint32_t get_s_id_gwm(GWModel const* const gwm);
 
     /**
      * @brief Checks if a GWModel is valid.

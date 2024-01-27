@@ -32,8 +32,8 @@ int main(int argc, char* argv[]) {
 
     printf("# MODELS = %zu\n", gwma->size);
     printf("# Vertices = %u\n", gwm->size_vertices);
-    printf("s = %u\n", get_s_id_gwm(gwm));
-    printf("# t = %u\n", gwm->sz_t);
+    printf("s = %u\n", GWM_ID_S);
+    printf("t = %u\n", GWM_ID_T);
 
     puts("");
 

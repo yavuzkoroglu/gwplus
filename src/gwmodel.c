@@ -503,7 +503,7 @@ static void s15(JSONParser* const jp) {
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ASSERT(isValid_gwm(current_gwm))
 
-    addVertex_gwm(current_gwm);
+    addVertex_gwm(current_gwm, "", 0, "", 0);
 
     jp->atArrayEnd      = emptyVoidEvent_jsonp;
     jp->atArrayStart    = emptyVoidEvent_jsonp;
@@ -726,21 +726,6 @@ static void s22(JSONParser* const jp) {
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ASSERT(isValid_gwma(current_gwma))
 
-    /* Identify t-type vertices in every model
-     * A t-type vertex is a vertex with no outgoing edges */
-    for (uint32_t model_id = 0; model_id < current_gwma->size; model_id++) {
-        for (uint32_t vertex_id = 0; vertex_id < current_gwma->array[model_id].size_vertices; vertex_id++) {
-            if (current_gwma->array[model_id].size_outEdges[vertex_id] == 0) {
-                REALLOC_IF_NECESSARY(
-                    uint32_t, current_gwma->array[model_id].t_ids,
-                    uint32_t, current_gwma->array[model_id].cap_t, current_gwma->array[model_id].sz_t,
-                    {REALLOC_ERROR;}
-                )
-                current_gwma->array[model_id].t_ids[current_gwma->array[model_id].sz_t++] = vertex_id;
-            }
-        }
-    }
-
     jp->atArrayEnd      = emptyVoidEvent_jsonp;
     jp->atArrayStart    = emptyVoidEvent_jsonp;
     jp->atFalse         = emptyVoidEvent_jsonp;
@@ -756,6 +741,26 @@ static void s22(JSONParser* const jp) {
     jp->atTrue          = emptyVoidEvent_jsonp;
     jp->atValueEnd      = emptyVoidEvent_jsonp;
     jp->atValueStart    = emptyVoidEvent_jsonp;
+
+    for (GWModel* gwm = current_gwma->array + current_gwma->size - 1; gwm >= current_gwma->array; gwm--) {
+        DEBUG_ASSERT(isValid_gwm(gwm))
+
+        if (gwm->size_outEdges[GWM_ID_S] == 0) {
+            GWEdge* const edge = gwm->edges + gwm->size_edges;
+            addEdge_gwm(gwm, NULL, 0, "", 0);
+            edge->source = GWM_ID_S;
+            edge->target = gwm->size_vertices <= 2 ? GWM_ID_T : 2;
+            addTransition_gwm(gwm, GWM_ID_S, edge->target);
+        }
+
+        for (uint32_t v_id = GWM_ID_T + 1; v_id < gwm->size_vertices; v_id++) {
+            GWEdge* const edge = gwm->edges + gwm->size_edges;
+            addEdge_gwm(gwm, NULL, 0, GWM_NAME_T, GWM_NAME_T_LEN);
+            edge->source = v_id;
+            edge->target = GWM_ID_T;
+            addTransition_gwm(gwm, v_id, GWM_ID_T);
+        }
+    }
 
     current_gwm         = NULL;
     skip_level          = 0;
@@ -1072,6 +1077,13 @@ static void s33(JSONParser* const jp, char const* const string, size_t const len
     ChunkTableEntry const* const tblEntry = get_ctbl(tbl_vertices, chunk_vertex_ids, string, len);
     if (tblEntry == NULL) { TERMINATE_ERROR_MSG("Cannot recognize startElementId '%s'", string); }
 
+    uint32_t const v_id = tblEntry->value;
+    GWEdge* const edge  = current_gwm->edges + current_gwm->size_edges;
+    addEdge_gwm(current_gwm, NULL, 0, "", 0);
+    edge->source = GWM_ID_S;
+    edge->target = v_id;
+    addTransition_gwm(current_gwm, GWM_ID_S, v_id);
+
     jp->atArrayEnd      = emptyVoidEvent_jsonp;
     jp->atArrayStart    = emptyVoidEvent_jsonp;
     jp->atFalse         = emptyVoidEvent_jsonp;
@@ -1117,7 +1129,7 @@ static void s35(JSONParser* const jp) {
     DEBUG_ASSERT(isValid_jsonp(jp))
     DEBUG_ASSERT(isValid_gwm(current_gwm))
 
-    addEdge_gwm(current_gwm);
+    addEdge_gwm(current_gwm, "", 0, "", 0);
 
     jp->atArrayEnd      = emptyVoidEvent_jsonp;
     jp->atArrayStart    = emptyVoidEvent_jsonp;
@@ -1683,14 +1695,22 @@ bool isValid_gwedge(GWEdge const* const edge) {
             edge->target != 0xFFFFFFFF;
 }
 
-void addEdge_gwm(GWModel* const gwm) {
+void addEdge_gwm(
+    GWModel* const gwm,
+    char const* const id_str, size_t const id_str_len,
+    char const* const name, size_t const name_len
+) {
     DEBUG_ASSERT(isValid_gwm(gwm))
+    DEBUG_ERROR_IF(name == NULL)
 
     Chunk* const chunk_edge_ids = gwm->chunks + GWM_CHUNK_EDGE_IDS;
     Chunk* const chunk_edge_names = gwm->chunks + GWM_CHUNK_EDGE_NAMES;
 
-    DEBUG_ERROR_IF(add_chunk(chunk_edge_ids, "", 0) == 0xFFFFFFFF)
-    NDEBUG_EXECUTE(add_chunk(chunk_edge_ids, "", 0))
+    if (id_str == NULL) {
+    } else {
+        DEBUG_ERROR_IF(add_chunk(chunk_edge_ids, "", 0) == 0xFFFFFFFF)
+        NDEBUG_EXECUTE(add_chunk(chunk_edge_ids, "", 0))
+    }
 
     DEBUG_ERROR_IF(add_chunk(chunk_edge_names, "", 0) == 0xFFFFFFFF)
     NDEBUG_EXECUTE(add_chunk(chunk_edge_names, "", 0))
@@ -1731,8 +1751,13 @@ void addTransition_gwm(GWModel* const gwm, uint32_t const source, uint32_t const
     gwm->size_outEdges[source]++;
 }
 
-void addVertex_gwm(GWModel* const gwm) {
+void addVertex_gwm(
+    GWModel* const gwm,
+    char const* const id_str, size_t const id_str_len,
+    char const* const name, size_t const name_len
+) {
     DEBUG_ASSERT(isValid_gwm(gwm))
+    DEBUG_ERROR_IF(name == NULL)
 
     Chunk* const chunk_vertex_ids   = gwm->chunks + GWM_CHUNK_VERTEX_IDS;
     Chunk* const chunk_vertex_names = gwm->chunks + GWM_CHUNK_VERTEX_NAMES;
@@ -1763,56 +1788,68 @@ void addVertex_gwm(GWModel* const gwm) {
         gwm->cap_vertices = new_cap_vertices;
     }
 
-    DEBUG_ERROR_IF(add_chunk(chunk_vertex_ids, "", 0) == 0xFFFFFFFF)
-    DEBUG_ERROR_IF(add_chunk(chunk_vertex_names, "", 0) == 0xFFFFFFFF)
+    if (id_str == NULL) {
+        DEBUG_ERROR_IF(addRandomUUID_chunk(chunk_vertex_ids, 1) == 0xFFFFFFFF)
+        NDEBUG_EXECUTE(addRandomUUID_chunk(chunk_vertex_ids, 1))
+    } else {
+        DEBUG_ERROR_IF(add_chunk(chunk_vertex_ids, id_str, id_str_len) == 0xFFFFFFFF)
+        NDEBUG_EXECUTE(add_chunk(chunk_vertex_ids, id_str, id_str_len))
+    }
+
+    DEBUG_ERROR_IF(add_chunk(chunk_vertex_names, name, name_len) == 0xFFFFFFFF)
+    NDEBUG_EXECUTE(add_chunk(chunk_vertex_names, name, name_len))
     gwm->size_vertices++;
 }
 
 void constructEmpty_gwm(
     GWModel* const gwm,
     uint32_t const initial_cap_vertices,
-    uint32_t const initial_cap_edges,
-    uint32_t const initial_cap_t
+    uint32_t const initial_cap_edges
 ) {
     DEBUG_ERROR_IF(gwm == NULL)
     DEBUG_ERROR_IF(initial_cap_vertices == 0)
     DEBUG_ERROR_IF(initial_cap_vertices == 0xFFFFFFFF)
     DEBUG_ERROR_IF(initial_cap_edges == 0)
     DEBUG_ERROR_IF(initial_cap_edges == 0xFFFFFFFF)
-    DEBUG_ERROR_IF(initial_cap_t == 0)
-    DEBUG_ERROR_IF(initial_cap_t == 0xFFFFFFFF)
 
     uint32_t const initial_edge_cap_per_vertex = initial_cap_edges / initial_cap_vertices;
     DEBUG_ERROR_IF(initial_edge_cap_per_vertex == 0)
 
+    Chunk* const chunk_info         = gwm->chunks + GWM_CHUNK_INFO;
+    Chunk* const chunk_vertex_ids   = gwm->chunks + GWM_CHUNK_VERTEX_IDS;
+    Chunk* const chunk_vertex_names = gwm->chunks + GWM_CHUNK_VERTEX_NAMES;
+    Chunk* const chunk_edge_ids     = gwm->chunks + GWM_CHUNK_EDGE_IDS;
+    Chunk* const chunk_edge_names   = gwm->chunks + GWM_CHUNK_EDGE_NAMES;
+    ChunkTable* const tbl_vertices  = gwm->tables + GWM_TBL_VERTICES;
+
     DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
-        gwm->chunks + GWM_CHUNK_INFO,
+        chunk_info,
         GWM_INITIAL_STR_LEN * GWM_CHUNK_INFO_MAX_STRINGS,
         GWM_CHUNK_INFO_MAX_STRINGS
     ))
     DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
-        gwm->chunks + GWM_CHUNK_VERTEX_IDS,
+        chunk_vertex_ids,
         GWM_INITIAL_STR_LEN * (uint64_t)initial_cap_vertices,
         initial_cap_vertices
     ))
     DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
-        gwm->chunks + GWM_CHUNK_VERTEX_NAMES,
+        chunk_vertex_names,
         GWM_INITIAL_STR_LEN * (uint64_t)initial_cap_vertices,
         initial_cap_vertices
     ))
     DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
-        gwm->chunks + GWM_CHUNK_EDGE_IDS,
+        chunk_edge_ids,
         GWM_INITIAL_STR_LEN * (uint64_t)initial_cap_vertices,
         initial_cap_vertices
     ))
     DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
-        gwm->chunks + GWM_CHUNK_EDGE_NAMES,
+        chunk_edge_names,
         GWM_INITIAL_STR_LEN * (uint64_t)initial_cap_vertices,
         initial_cap_vertices
     ))
 
     DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_ctbl(
-        gwm->tables + GWM_TBL_VERTICES,
+        tbl_vertices,
         initial_cap_vertices,
         CHUNK_TABLE_RECOMMENDED_LOAD_PERCENT
     ))
@@ -1843,11 +1880,13 @@ void constructEmpty_gwm(
     gwm->size_edges = 0;
     gwm->cap_edges  = initial_cap_edges;
 
-    gwm->t_ids = malloc((size_t)initial_cap_t * sizeof(uint32_t));
-    DEBUG_ERROR_IF(gwm->t_ids == NULL)
+    addVertex_gwm(gwm, NULL, 0, GWM_NAME_S, GWM_NAME_S_LEN);
+    DEBUG_ASSERT(insert_ctbl(tbl_vertices, chunk_vertex_ids, GWM_ID_S, GWM_ID_S, CTBL_BEHAVIOR_UNIQUE) == CTBL_INSERT_OK)
+    NDEBUG_EXECUTE(insert_ctbl(tbl_vertices, chunk_vertex_ids, GWM_ID_S, GWM_ID_S, CTBL_BEHAVIOR_UNIQUE))
 
-    gwm->sz_t   = 0;
-    gwm->cap_t  = initial_cap_t;
+    addVertex_gwm(gwm, NULL, 0, GWM_NAME_T, GWM_NAME_T_LEN);
+    DEBUG_ASSERT(insert_ctbl(tbl_vertices, chunk_vertex_ids, GWM_ID_T, GWM_ID_T, CTBL_BEHAVIOR_UNIQUE) == CTBL_INSERT_OK)
+    NDEBUG_EXECUTE(insert_ctbl(tbl_vertices, chunk_vertex_ids, GWM_ID_T, GWM_ID_T, CTBL_BEHAVIOR_UNIQUE))
 }
 
 void free_gwm(GWModel* const gwm) {
@@ -1864,34 +1903,6 @@ void free_gwm(GWModel* const gwm) {
     free(gwm->size_outEdges);
     free(gwm->cap_outEdges);
     free(gwm->edges);
-    free(gwm->t_ids);
-}
-
-uint32_t get_s_id_gwm(GWModel const* const gwm) {
-    DEBUG_ASSERT(isValid_gwm(gwm))
-
-    Chunk const* const chunk_info           = gwm->chunks + GWM_CHUNK_INFO;
-    Chunk const* const chunk_vertex_ids     = gwm->chunks + GWM_CHUNK_VERTEX_IDS;
-    ChunkTable const* const tbl_vertices    = gwm->tables + GWM_TBL_VERTICES;
-
-    for (uint32_t i = 0; i < chunk_info->nStrings; i++) {
-        char const* const str = get_chunk(chunk_info, i);
-        DEBUG_ERROR_IF(str == NULL)
-
-        if (!STR_EQ_CONST(str, "startElementId")) continue;
-
-        if (++i >= chunk_info->nStrings) { TERMINATE_ERROR_MSG("Corrupt startElementId"); }
-        char const* const s_id = get_chunk(chunk_info, i);
-        DEBUG_ERROR_IF(s_id == NULL)
-        uint64_t const s_id_len = strlen_chunk(chunk_info, i);
-
-        ChunkTableEntry const* const tblEntry = get_ctbl(tbl_vertices, chunk_vertex_ids, s_id, s_id_len);
-        if (tblEntry == NULL) { TERMINATE_ERROR_MSG("startElementId '%s' is undefined!", s_id); }
-
-        return tblEntry->value;
-    }
-
-    return 0xFFFFFFFF;
 }
 
 bool isValid_gwm(GWModel const* const gwm) {

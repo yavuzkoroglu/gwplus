@@ -3,9 +3,9 @@ include padkit/compile.mk
 INCLUDES=-Iinclude -Ipadkit/include
 OBJECTS=obj/gwmodel.o obj/gwplus.o obj/path.o
 
-all: bin/gwplus
-
 .PHONY: all clean documentation objects
+
+all: bin/gwplus
 
 bin: ; mkdir bin
 
@@ -16,7 +16,7 @@ bin/gwplus:                             \
     ${OBJECTS}                          \
     ; ${COMPILE} padkit/lib/libpadkit.a ${OBJECTS} -o bin/gwplus
 
-clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov
+clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov html latex
 
 documentation: ; doxygen
 
@@ -29,6 +29,7 @@ obj/gwmodel.o: obj                      \
     padkit/include/padkit/debug.h       \
     padkit/include/padkit/jsonparser.h  \
     padkit/include/padkit/reallocate.h  \
+    padkit/include/padkit/repeat.h      \
     src/gwmodel.c                       \
     ; ${COMPILE} ${INCLUDES} src/gwmodel.c -c -o obj/gwmodel.o
 
