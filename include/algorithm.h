@@ -65,13 +65,13 @@
      * @def ALGO_NAIVE_DESC
      *   Descritpion of the naive algorithm.
      */
-    #define ALGO_NAIVE_DESC     "Creates one test path for every test requirement using a shortest path algorithm (Discards subpaths)"
+    #define ALGO_NAIVE_DESC     "Creates one test path for every test requirement using a shortest path algorithm"
 
     /**
      * @def ALGO_RANDOM_DESC
      *   Description of the random algorithm.
      */
-    #define ALGO_RANDOM_DESC    "Creates tests paths at random until all tests requirements are met (Discards non-contributing tests)"
+    #define ALGO_RANDOM_DESC    "Creates tests paths at random until all tests requirements are met"
 
     /**
      * @def ALGO_APPROX_DESC
