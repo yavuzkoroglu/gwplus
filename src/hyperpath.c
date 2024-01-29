@@ -1,12 +1,12 @@
 /**
- * @file superpath.c
- * @brief Implements functions defined in superpath.h
+ * @file hyperpath.c
+ * @brief Implements functions defined in hyperpath.h
  * @author Yavuz Koroglu
  */
 #include "coverage.h"
+#include "hyperpath.h"
 #include "padkit/debug.h"
 #include "padkit/reallocate.h"
-#include "superpath.h"
 
 typedef void(*Constructor_tr)(TestRequirements* const tr);
 
@@ -240,7 +240,7 @@ void construct_tr(TestRequirements* const tr, GWModel const* const gwm, int cons
     DEBUG_ASSERT(IS_VALID_COV(cov_criterion))
 
     tr->model = gwm;
-    tr->superPaths[0] = NOT_A_SP_ARRAY;
+    tr->hyperPaths[0] = NOT_A_HP_ARRAY;
 
     if (tr->model->size_vertices <= 2) {
         constructEmpty_patha(tr->paths, PATH_ARRAY_RECOMMENDED_INITIAL_CAP);
@@ -272,7 +272,7 @@ void free_tr(TestRequirements* const tr) {
     DEBUG_ASSERT(isValid_tr(tr))
 
     free_patha(tr->paths);
-    /* if (isValid_spa(tr->superPaths)) free_spa(tr->superPaths); */
+    /* if (isValid_hpa(tr->hyperPaths)) free_spa(tr->hyperPaths); */
 }
 
 bool isValid_tr(TestRequirements const* const tr) {

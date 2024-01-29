@@ -123,43 +123,43 @@
      * @def IS_PATH_SIMPLE
      *   This value is 1 if the path is flagged as simple.
      */
-    #define IS_PATH_SIMPLE(path)    (path->flags & FLAG_PATH_SIMPLE)
+    #define IS_PATH_SIMPLE(path)    !!(path->flags & FLAG_PATH_SIMPLE)
 
     /**
      * @def IS_PATH_PRIME
      *   This value is 1 if the path is flagged as prime.
      */
-    #define IS_PATH_PRIME(path)     (path->flags & FLAG_PATH_PRIME)
+    #define IS_PATH_PRIME(path)     !!(path->flags & FLAG_PATH_PRIME)
 
     /**
      * @def IS_PATH_ALLOCATED
      *   This value is 1 if the path is flagged as allocated.
      */
-    #define IS_PATH_ALLOCATED(path) (path->flags & FLAG_PATH_ALLOCATED)
+    #define IS_PATH_ALLOCATED(path) !!(path->flags & FLAG_PATH_ALLOCATED)
 
     /**
      * @def IS_PATH_TYPE_C
      *   This value is 1 if the path is flagged as type_c.
      */
-    #define IS_PATH_TYPE_C(path)    (path->flags & FLAG_PATH_TYPE_C)
+    #define IS_PATH_TYPE_C(path)    !!(path->flags & FLAG_PATH_TYPE_C)
 
     /**
      * @def IS_PATH_TYPE_S
      *   This value is 1 if the path is flagged as type_s.
      */
-    #define IS_PATH_TYPE_S(path)    (path->flags & FLAG_PATH_TYPE_S)
+    #define IS_PATH_TYPE_S(path)    !!(path->flags & FLAG_PATH_TYPE_S)
 
     /**
      * @def IS_PATH_TYPE_T
      *   This value is 1 if the path is flagged as type_t.
      */
-    #define IS_PATH_TYPE_T(path)    (path->flags & FLAG_PATH_TYPE_T)
+    #define IS_PATH_TYPE_T(path)    !!(path->flags & FLAG_PATH_TYPE_T)
 
     /**
      * @def IS_PATH_TYPE_P
      *   This value is 1 if the path is flagged as type_p.
      */
-    #define IS_PATH_TYPE_P(path)    (!IS_PATH_TYPE_S(path) && !IS_PATH_TYPE_T(path))
+    #define IS_PATH_TYPE_P(path)    !(IS_PATH_TYPE_S(path) || IS_PATH_TYPE_T(path))
 
     /**
      * @def PATH_DEFAULT_FLAGS
@@ -172,6 +172,12 @@
      *   These are the <default-parameters> for constructEmpty_path(path, <default-parameters>).
      */
     #define PATH_RECOMMENDED_PARAMETERS     PATH_DEFAULT_INITIAL_CAP, PATH_DEFAULT_FLAGS
+
+    /**
+     * @def NOT_A_PATH
+     *   A special Path denoting a NOT-Path. This Path cannot pass the isValid_path() test.
+     */
+    #define NOT_A_PATH                      (Path){ 0, 0, NULL, NULL, 0 }
 
     /**
      * @struct Path
@@ -205,6 +211,13 @@
      * @param original The original Path.
      */
     void clone_path(Path* const clone, Path const* const original);
+
+    /**
+     * @brief Concatenates two Path objects.
+     * @param head A pointer to the head Path.
+     * @param tail A pointer to the tail Path.
+     */
+    void concat_path(Path* const head, Path const* const tail);
 
     /**
      * @brief Constructs an empty Path (with zero vertices).
@@ -302,6 +315,12 @@
     } PathArray;
 
     /**
+     * @brief Combines overlapping paths to reduce the number of paths in a PathArray.
+     * @param pathArray A pointer to the PathArray.
+     */
+    void combineOverlaps_patha(PathArray* const pathArray);
+
+    /**
      * @brief Constructs an empty PathArray.
      * @param pathArray A pointer to the PathArray.
      * @param initial_cap The initial capacity of the PathArray.
@@ -314,6 +333,12 @@
      * @param names A pointer to a Chunk holding vertex names.
      */
     void dump_patha(PathArray const* const pathArray, Chunk const* const names);
+
+    /**
+     * @brief Eliminates all sub paths in a PathArray.
+     * @param pathArray A pointer to the PathArray.
+     */
+    void eliminateSubPaths_patha(PathArray* const pathArray);
 
     /**
      * @brief Empties a PathArray.

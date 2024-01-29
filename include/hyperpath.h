@@ -1,10 +1,10 @@
 /**
- * @file superpath.h
- * @brief Defines Connection, ConnectionArray, SuperPath, SuperPathArray, TestRequirements and related functions.
+ * @file hyperpath.h
+ * @brief Defines Connection, ConnectionArray, HyperPath, HyperPathArray, TestRequirements and related functions.
  * @author Yavuz Koroglu
  */
-#ifndef SUPERPATH_H
-    #define SUPERPATH_H
+#ifndef HYPERPATH_H
+    #define HYPERPATH_H
     #include "gwmodel.h"
     #include "path.h"
 
@@ -35,35 +35,35 @@
 
     bool isValid_cona(ConnectionArray const* const connections);
 
-    typedef struct SuperPathBody {
+    typedef struct HyperPathBody {
         Path            pathOfPaths[1];
         ConnectionArray connections[1];
-    } SuperPath;
+    } HyperPath;
 
-    void free_sp(SuperPath* const superPath);
+    void free_hp(HyperPath* const hyperPath);
 
-    bool isValid_sp(SuperPath const* const superPath);
+    bool isValid_hp(HyperPath const* const hyperPath);
 
-    #define SP_ARRAY_RECOMMENDED_INITIAL_CAP 64
+    #define HP_ARRAY_RECOMMENDED_INITIAL_CAP 64
 
-    #define NOT_A_SP_ARRAY  (SuperPathArray){ 0, 0, NULL }
+    #define NOT_A_HP_ARRAY  (HyperPathArray){ 0, 0, NULL }
 
-    typedef struct SuperPathArrayBody {
+    typedef struct HyperPathArrayBody {
         uint32_t    size;
         uint32_t    cap;
-        SuperPath*  array;
-    } SuperPathArray;
+        HyperPath*  array;
+    } HyperPathArray;
 
-    void constructEmpty_spa(SuperPathArray* const superPaths, uint32_t const initial_cap);
+    void constructEmpty_hpa(HyperPathArray* const hyperPaths, uint32_t const initial_cap);
 
-    void free_spa(SuperPathArray* const superPaths);
+    void free_hpa(HyperPathArray* const hyperPaths);
 
-    bool isValid_spa(SuperPathArray const* const superPaths);
+    bool isValid_hpa(HyperPathArray const* const hyperPaths);
 
     typedef struct TestRequirementsBody {
         GWModel const*  model;
         PathArray       paths[1];
-        SuperPathArray  superPaths[1];
+        HyperPathArray  hyperPaths[1];
     } TestRequirements;
 
     void construct_tr(TestRequirements* const tr, GWModel const* const gwm, int const cov_criterion);

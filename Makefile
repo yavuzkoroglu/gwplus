@@ -1,7 +1,7 @@
 include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
-OBJECTS=obj/gwmodel.o obj/gwplus.o obj/path.o obj/superpath.o
+OBJECTS=obj/algorithm.o obj/gwmodel.o obj/gwplus.o obj/hyperpath.o obj/path.o
 
 .PHONY: all clean documentation objects
 
@@ -22,6 +22,13 @@ documentation: ; doxygen
 
 obj: ; mkdir obj
 
+obj/algorithm.o: obj                    \
+    include/hyperpath.h                 \
+    padkit/include/padkit/debug.h       \
+    padkit/include/padkit/reallocate.h  \
+    src/algorithm.c                     \
+    ; ${COMPILE} ${INCLUDES} src/algorithm.c -c -o obj/algorithm.o
+
 obj/gwmodel.o: obj                      \
     include/gwmodel.h                   \
     padkit/include/padkit/chunk.h       \
@@ -34,12 +41,21 @@ obj/gwmodel.o: obj                      \
     ; ${COMPILE} ${INCLUDES} src/gwmodel.c -c -o obj/gwmodel.o
 
 obj/gwplus.o: obj                       \
+    include/algorithm.h                 \
     include/coverage.h                  \
-    include/superpath.h                 \
+    include/hyperpath.h                 \
     padkit/include/padkit/debug.h       \
     padkit/include/padkit/streq.h       \
     src/gwplus.c                        \
     ; ${COMPILE} ${INCLUDES} src/gwplus.c -c -o obj/gwplus.o
+
+obj/hyperpath.o: obj                    \
+    include/coverage.h                  \
+    include/hyperpath.h                 \
+    padkit/include/padkit/debug.h       \
+    padkit/include/padkit/reallocate.h  \
+    src/hyperpath.c                     \
+    ; ${COMPILE} ${INCLUDES} src/hyperpath.c -c -o obj/hyperpath.o
 
 obj/path.o: obj                         \
     include/path.h                      \
@@ -48,14 +64,6 @@ obj/path.o: obj                         \
     padkit/include/padkit/reallocate.h  \
     src/path.c                          \
     ; ${COMPILE} ${INCLUDES} src/path.c -c -o obj/path.o
-
-obj/superpath.o: obj                    \
-    include/coverage.h                  \
-    include/superpath.h                 \
-    padkit/include/padkit/debug.h       \
-    padkit/include/padkit/reallocate.h  \
-    src/superpath.c                     \
-    ; ${COMPILE} ${INCLUDES} src/superpath.c -c -o obj/superpath.o
 
 objects: ${OBJECTS}
 
