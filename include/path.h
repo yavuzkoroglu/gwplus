@@ -13,69 +13,69 @@
  */
 #ifndef PATH_H
     #define PATH_H
-    #include "gwmodel.h"
+    #include "padkit/chunk.h"
 
     /**
-     * @def PATH_DEFAULT_INITIAL_CAP
+     * @def PATH_RECOMMENDED_INITIAL_CAP
      *   This initial cap should work nicely in most situations.
      */
-    #define PATH_DEFAULT_INITIAL_CAP        256
+    #define PATH_RECOMMENDED_INITIAL_CAP        256
 
     /**
-     * @def PATH_ARRAY_DEFAULT_INITIAL_CAP
+     * @def PATH_ARRAY_RECOMMENDED_INITIAL_CAP
      *   This initial cap should work nicely in most situations.
      */
-    #define PATH_ARRAY_DEFAULT_INITIAL_CAP  256
+    #define PATH_ARRAY_RECOMMENDED_INITIAL_CAP  256
 
     /**
      * @def FLAG_PATH_SIMPLE
      *   A simple path is a path that traverses its vertices once, except that the initial and
      *   the final vertices can be the same.
      */
-    #define FLAG_PATH_SIMPLE    (1 << 0)
+    #define FLAG_PATH_SIMPLE    (uint64_t)(1 << 0)
 
     /**
      * @def FLAG_PATH_SIMPLE
      *   A prime path is a simple path that is not a sub path of any other simple path.
      */
-    #define FLAG_PATH_PRIME     (1 << 1)
+    #define FLAG_PATH_PRIME     (uint64_t)(1 << 1)
 
     /**
      * @def FLAG_TYPE_S
      *   A type_s path is a path that traverses the initial vertex of a graph.
      */
-    #define FLAG_PATH_TYPE_S    (1 << 2)
+    #define FLAG_PATH_TYPE_S    (uint64_t)(1 << 2)
 
     /**
      * @def FLAG_TYPE_T
      *   A type_t path is a path that traverses a terminal vertex in a graph where
      *   a terminal vertex is a vertex that has no outgoing edges.
      */
-    #define FLAG_PATH_TYPE_T    (1 << 3)
+    #define FLAG_PATH_TYPE_T    (uint64_t)(1 << 3)
 
     /**
      * @def FLAG_PATH_TEST_PATH
      *   A test path is a path that starts from the initial vertex of a graph.
      */
-    #define FLAG_PATH_TEST_PATH (1 << 4)
+    #define FLAG_PATH_TEST_PATH (uint64_t)(1 << 4)
 
     /**
      * @def FLAG_PATH_ALLOCATED
      *   This flag should become 1 as soon as its array and vertex_ids_sorted are allocated.
      */
-    #define FLAG_PATH_ALLOCATED (1 << 5)
+    #define FLAG_PATH_ALLOCATED (uint64_t)(1 << 5)
 
     /**
      * @def FLAG_PATH_TYPE_C
      *   This flag should become 1 as soon as the first and the last vertices are the same.
      */
-    #define FLAG_PATH_TYPE_C (1 << 6)
+    #define FLAG_PATH_TYPE_C (uint64_t)(1 << 6)
 
     /**
      * @def FLAG_PATH_AS_NOT_SIMPLE
      *   Notice that a non-simple path can never be a prime path.
      */
-    #define FLAG_PATH_AS_NOT_SIMPLE(path)   path->flags &= !(FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
+    #define FLAG_PATH_AS_NOT_SIMPLE(path)   path->flags &= ~(FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
 
     /**
      * @def FLAG_PATH_AS_PRIME
@@ -94,6 +94,12 @@
      *   Flags the path as allocated.
      */
     #define FLAG_PATH_AS_ALLOCATED(path)    path->flags |= (FLAG_PATH_ALLOCATED)
+
+    /**
+     * @def FLAG_PATH_AS_DEALLOCATED
+     *   Flags the path as deallocated.
+     */
+    #define FLAG_PATH_AS_DEALLOCATED(path)  path->flags &= ~(FLAG_PATH_ALLOCATED)
 
     /**
      * @def FLAG_PATH_AS_TYPE_S
@@ -216,6 +222,13 @@
     bool contains_path(Path const* const path, uint32_t const vertex_id);
 
     /**
+     * @brief Dumps a Path to stdout.
+     * @param path A pointer to the Path.
+     * @param names A pointer to a Chunk holding vertex names.
+     */
+    void dump_path(Path const* const path, Chunk const* const names);
+
+    /**
      * @brief Extends a Path by appending a vertex index.
      * @param path A pointer to the Path.
      * @param vertex_id The vertex index.
@@ -257,6 +270,13 @@
     bool isSubPath_path(Path const* const sub, Path const* const super);
 
     /**
+     * @brief Finds the overlap between two paths.
+     * @param head The head Path.
+     * @param tail The tail Path.
+     */
+    uint32_t overlap_path(Path const* const head, Path const* const tail);
+
+    /**
      * @brief Finds the hypothetical position index of a vertex if it was added to a Path.
      * @param path A pointer to the Path.
      * @param vertex_id The vertex index.
@@ -289,6 +309,13 @@
     void constructEmpty_patha(PathArray* const pathArray, uint32_t const initial_cap);
 
     /**
+     * @brief Dumps a PathArray to stdout.
+     * @param pathArray A pointer to the PathArray.
+     * @param names A pointer to a Chunk holding vertex names.
+     */
+    void dump_patha(PathArray const* const pathArray, Chunk const* const names);
+
+    /**
      * @brief Empties a PathArray.
      * @param pathArray A pointer to the PathArray.
      */
@@ -305,24 +332,4 @@
      * @param pathArray A pointer to the PathArray.
      */
     bool isValid_patha(PathArray const* const pathArray);
-
-    /**
-     * @brief Constructs an empty PathArray and then fills it with prime paths under a GWModel.
-     * @param pathArray A pointer to the PathArray.
-     * @param gwm A pointer to the GWModel.
-     */
-    void primePathsFromGWModel_patha(PathArray* const pathArray, GWModel const* const gwm);
-
-    /**
-     * @brief Finds the shortest Path between two vertices, under a GWModel.
-     * @param shortestPath A pointer to the about-to-be-computed shortest Path.
-     * @param pathQueue A pointer to a PathArray that will be flushed and used as a Path queue.
-     * @param gwm A pointer to the GraphWalker model.
-     * @param from The starting vertex index.
-     * @param to The final vertex index.
-     */
-    Path* shortest_path(
-        Path* const shortestPath, PathArray* const pathQueue, GWModel const* const gwm,
-        uint32_t const from, uint32_t const to
-    );
 #endif

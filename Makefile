@@ -1,7 +1,7 @@
 include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
-OBJECTS=obj/gwmodel.o obj/gwplus.o obj/path.o
+OBJECTS=obj/gwmodel.o obj/gwplus.o obj/path.o obj/superpath.o
 
 .PHONY: all clean documentation objects
 
@@ -34,19 +34,28 @@ obj/gwmodel.o: obj                      \
     ; ${COMPILE} ${INCLUDES} src/gwmodel.c -c -o obj/gwmodel.o
 
 obj/gwplus.o: obj                       \
-    include/gwmodel.h                   \
-    include/path.h                      \
+    include/coverage.h                  \
+    include/superpath.h                 \
     padkit/include/padkit/debug.h       \
+    padkit/include/padkit/streq.h       \
     src/gwplus.c                        \
     ; ${COMPILE} ${INCLUDES} src/gwplus.c -c -o obj/gwplus.o
 
 obj/path.o: obj                         \
-    include/gwmodel.h                   \
     include/path.h                      \
+    padkit/include/padkit/chunk.h       \
     padkit/include/padkit/debug.h       \
     padkit/include/padkit/reallocate.h  \
     src/path.c                          \
     ; ${COMPILE} ${INCLUDES} src/path.c -c -o obj/path.o
+
+obj/superpath.o: obj                    \
+    include/coverage.h                  \
+    include/superpath.h                 \
+    padkit/include/padkit/debug.h       \
+    padkit/include/padkit/reallocate.h  \
+    src/superpath.c                     \
+    ; ${COMPILE} ${INCLUDES} src/superpath.c -c -o obj/superpath.o
 
 objects: ${OBJECTS}
 

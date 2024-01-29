@@ -1907,6 +1907,38 @@ void free_gwm(GWModel* const gwm) {
     free(gwm->edges);
 }
 
+char const* getModelId_gwm(GWModel const* const gwm) {
+    DEBUG_ASSERT(isValid_gwm(gwm))
+
+    Chunk const* const chunk_info = gwm->chunks + GWM_CHUNK_INFO;
+
+    for (uint32_t i = 0; i < chunk_info->nStrings; i += 2) {
+        char const* const identifier = get_chunk(chunk_info, i);
+        DEBUG_ERROR_IF(identifier == NULL)
+
+        if (STR_EQ_CONST(identifier, "id"))
+            return get_chunk(chunk_info, i + 1);
+    }
+
+    return NULL;
+}
+
+char const* getModelName_gwm(GWModel const* const gwm) {
+    DEBUG_ASSERT(isValid_gwm(gwm))
+
+    Chunk const* const chunk_info = gwm->chunks + GWM_CHUNK_INFO;
+
+    for (uint32_t i = 0; i < chunk_info->nStrings; i += 2) {
+        char const* const identifier = get_chunk(chunk_info, i);
+        DEBUG_ERROR_IF(identifier == NULL)
+
+        if (STR_EQ_CONST(identifier, "name"))
+            return get_chunk(chunk_info, i + 1);
+    }
+
+    return NULL;
+}
+
 bool isValid_gwm(GWModel const* const gwm) {
     if (gwm == NULL) return 0;
 
@@ -1929,6 +1961,12 @@ bool isValid_gwm(GWModel const* const gwm) {
     if (gwm->size_vertices != gwm->chunks[GWM_CHUNK_VERTEX_IDS].nStrings) return 0;
 
     return 1;
+}
+
+uint32_t vertexCount_gwm(GWModel const* const gwm) {
+    DEBUG_ASSERT(isValid_gwm(gwm))
+
+    return gwm->size_vertices < 2 ? 0 : gwm->size_vertices - 2;
 }
 
 void constructFromJSON_gwma(GWModelArray* const gwma, size_t const initial_cap, FILE* const jsonFile) {

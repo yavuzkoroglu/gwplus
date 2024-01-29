@@ -1,0 +1,185 @@
+void primePathsFromGWModel_patha(PathArray* const primePaths, GWModel const* const gwm) {
+    DEBUG_ERROR_IF(primePaths == NULL)
+    DEBUG_ASSERT(isValid_gwm(gwm))
+
+    if (gwm->size_vertices < 3) {
+        constructEmpty_patha(primePaths, GWM_RECOMMENDED_INITIAL_VERTEX_CAP);
+        return;
+    }
+
+    uint32_t const guess_initial_cap = gwm->size_vertices * gwm->size_vertices;
+    DEBUG_ERROR_IF(guess_initial_cap < gwm->size_vertices)
+    constructEmpty_patha(primePaths, guess_initial_cap);
+
+    PathArray pathStack[1];
+    constructEmpty_patha(pathStack, guess_initial_cap);
+
+    Path path_at_hand[1];
+    constructEmpty_path(path_at_hand, gwm->size_vertices, PATH_DEFAULT_FLAGS);
+
+    pathStack->size = gwm->size_vertices - 2;
+    for (uint32_t i = 2; i < gwm->size_vertices; i++) {
+        Path* const path = pathStack->array + gwm->size_vertices - i - 1;
+
+        constructEmpty_path(path, gwm->size_vertices, PATH_DEFAULT_FLAGS);
+
+        DEBUG_ASSERT(extend_path(path, i, 1) == PATH_EXTEND_OK)
+        NDEBUG_EXECUTE(extend_path(path, i, 1))
+    }
+
+    while (pathStack->size > 0) {
+        /* Pop a path from pathStack */
+        clone_path(path_at_hand, pathStack->array + --pathStack->size);
+
+        /* See if we can extend path_at_hand */
+        uint32_t const last_vertex_id   = path_at_hand->array[path_at_hand->len - 1];
+        uint32_t const* const targets   = gwm->transitions[last_vertex_id];
+        uint32_t const size_outEdges    = gwm->size_outEdges[last_vertex_id];
+
+        size_t potential_extensions_count = 0;
+        if (!IS_PATH_PRIME(path_at_hand)) {
+            for (uint32_t i = size_outEdges - 1; i != 0xFFFFFFFF; i--) {
+                uint32_t const candidate_target = targets[i];
+                if (candidate_target == GWM_ID_T) continue;
+
+                /* Push path_to_extend to pathStack */
+                RECALLOC_IF_NECESSARY(
+                    Path, pathStack->array,
+                    uint32_t, pathStack->cap, pathStack->size,
+                    {RECALLOC_ERROR;}
+                )
+                Path* const path_to_extend = pathStack->array + pathStack->size++;
+                clone_path(path_to_extend, path_at_hand);
+
+                /* Attempt to extend path_to_extend with candidate_target */
+                switch (extend_path(path_to_extend, candidate_target, 1)) {
+                    case PATH_EXTEND_MAKES_IT_NON_SIMPLE:
+                        /* Non-simple path, pop it from pathStack */
+                        pathStack->size--;
+                        break;
+                    case PATH_EXTEND_OK:
+                        potential_extensions_count++;
+                }
+            }
+        }
+
+        /* Check if path_at_hand is extendable */
+        if (potential_extensions_count == 0) {
+            if (!IS_PATH_PRIME(path_at_hand)) {
+                for (
+                    Path* path = primePaths->array + primePaths->size - 1;
+                    path >= primePaths->array;
+                    path--
+                ) {
+                    if (!isValid_path(path) || IS_PATH_TYPE_C(path)) continue;
+
+                    if (isSubPath_path(path_at_hand, path))
+                        goto PATH_AT_HAND_IS_SUBSUMED__FORGET_IT;
+
+                    if (isSubPath_path(path, path_at_hand))
+                        invalidate_path(path);
+                }
+            }
+
+            /* Add path_at_hand to an available primePaths position */
+            Path* path = primePaths->array + primePaths->size - 1;
+            while (path >= primePaths->array && isValid_path(path)) path--;
+            if (path < primePaths->array) {
+                RECALLOC_IF_NECESSARY(
+                    Path, primePaths->array,
+                    uint32_t, primePaths->cap, primePaths->size,
+                    {RECALLOC_ERROR;}
+                )
+                path = primePaths->array + primePaths->size++;
+            }
+            clone_path(path, path_at_hand);
+
+            PATH_AT_HAND_IS_SUBSUMED__FORGET_IT:
+            ;
+        }
+    }
+
+    /* Flag all valid primePaths as prime
+     * while shifting over the invalidated ones */
+    for (
+        Path* p_i = primePaths->array + primePaths->size - 1;
+        p_i >= primePaths->array;
+        p_i--
+    ) {
+        if (isValid_path(p_i)) {
+            FLAG_PATH_AS_PRIME(p_i);
+        } else {
+            for (
+                Path* p_j = p_i;
+                p_j < primePaths->array + primePaths->size - 1;
+                p_j++
+            ) clone_path(p_j, p_j + 1);
+        }
+    }
+
+    /* Recalculate primePaths->size */
+    for (uint32_t i = 0; i < primePaths->size; i++) {
+        if (isValid_path(primePaths->array + i)) continue;
+
+        primePaths->size = i;
+        break;
+    }
+
+    free_patha(pathStack);
+    free_path(path_at_hand);
+}
+
+Path* shortest_path(
+    Path* const shortestPath, GWModel const* const gwm,
+    uint32_t const from, uint32_t const to
+) {
+    DEBUG_ASSERT(isValid_path(shortestPath))
+    DEBUG_ASSERT(isValid_gwm(gwm))
+    DEBUG_ERROR_IF(from >= gwm->size_vertices)
+    DEBUG_ERROR_IF(to >= gwm->size_vertices)
+
+    uint32_t const guess_initial_cap = gwm->size_vertices * gwm->size_vertices;
+    DEBUG_ERROR_IF(guess_initial_cap < gwm->size_vertices)
+
+    PathArray pathStack[1];
+    constructEmpty_patha(pathStack, guess_initial_cap);
+    constructEmpty_path(pathStack->array, gwm->size_vertices, PATH_DEFAULT_FLAGS);
+
+    DEBUG_ASSERT(extend_path(pathStack->array, from, 1) == PATH_EXTEND_OK)
+    NDEBUG_EXECUTE(extend_path(pathStack->array, from, 1))
+
+    pathStack->size++;
+    while (pathStack->size > 0) {
+        clone_path(shortestPath, pathStack->array + --pathStack->size);
+        uint32_t const last_vertex_id = shortestPath->array[shortestPath->len - 1];
+
+        for (uint32_t i = gwm->size_outEdges[last_vertex_id] - 1; i != 0xFFFFFFFF; i--) {
+            uint32_t next_vertex_id = gwm->transitions[last_vertex_id][i];
+
+            RECALLOC_IF_NECESSARY(
+                Path, pathStack->array,
+                uint32_t, pathStack->cap, pathStack->size,
+                {RECALLOC_ERROR;}
+            )
+            Path* const path_at_hand = pathStack->array + pathStack->size++;
+            clone_path(path_at_hand, shortestPath);
+
+            switch (extend_path(path_at_hand, next_vertex_id, 1)) {
+                case PATH_EXTEND_MAKES_IT_NON_SIMPLE:
+                    pathStack->size--;
+                    break;
+                case PATH_EXTEND_OK:
+                    if (next_vertex_id == to) {
+                        clone_path(shortestPath, path_at_hand);
+                        free_patha(pathStack);
+                        return shortestPath;
+                    } else if (IS_PATH_TYPE_C(path_at_hand)) {
+                        pathStack->size--;
+                    }
+            }
+        }
+    }
+
+    free_patha(pathStack);
+    return NULL;
+}

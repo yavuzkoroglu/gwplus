@@ -177,10 +177,34 @@
     void free_gwm(GWModel* const gwm);
 
     /**
+     * @brief Gets the GraphWalker index string of a GWModel.
+     * @param gwm A pointer to the GWModel.
+     */
+    char const* getModelId_gwm(GWModel const* const gwm);
+
+    /**
+     * @brief Gets the name string of a GWModel.
+     * @param gwm A pointer to the GWModel.
+     */
+    char const* getModelName_gwm(GWModel const* const gwm);
+
+    /**
      * @brief Checks if a GWModel is valid.
      * @param gwm A pointer to the GWModel.
      */
     bool isValid_gwm(GWModel const* const gwm);
+
+    /**
+     * @brief Returns the number of vertices in a GWModel.
+     * @param gwm A pointer to the GWModel.
+     */
+    uint32_t vertexCount_gwm(GWModel const* const gwm);
+
+    /**
+     * @def GWM_ARRAY_RECOMMENDED_INITIAL_CAP
+     *   This initial cap should work nicely in most situations.
+     */
+    #define GWM_ARRAY_RECOMMENDED_INITIAL_CAP   8
 
     /**
      * @struct GWModelArray
