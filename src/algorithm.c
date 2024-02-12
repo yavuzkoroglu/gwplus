@@ -211,8 +211,17 @@ void generate_naive(PathArray* const testPaths, TestRequirements* const tr) {
         DEBUG_ASSERT(isValid_path(path))
         DEBUG_ASSERT(path->len > 0)
 
-        if (path->array[0] == tr->models->s_id) continue;
-        generateShortestPath(prefixPath, tr->models, tr->models->s_id, path->array[0]);
+        uint32_t const first_e_id = path->array[0];
+        DEBUG_ASSERT(first_e_id < tr->models->size_edges)
+
+        GWEdge const* const first_edge = tr->models->edges + first_e_id;
+        DEBUG_ASSERT(isValid_gwedge(first_edge))
+
+        uint32_t const first_v_id = first_edge->source;
+        DEBUG_ASSERT(first_v_id < tr->models->size_vertices)
+
+        if (first_v_id == tr->models->s_id) continue;
+        generateShortestPath(prefixPath, tr->models, tr->models->s_id, first_v_id);
         DEBUG_ASSERT(isValid_path(prefixPath))
         concat_path(prefixPath, path);
         clone_path(path, prefixPath);
