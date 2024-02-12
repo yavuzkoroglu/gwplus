@@ -1,9 +1,9 @@
 include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
-OBJECTS=obj/algorithm.o obj/gwmodel.o obj/gwplus.o obj/hyperpath.o obj/path.o
+OBJECTS=obj/algorithm.o obj/gwmodel.o obj/gwplus.o obj/path.o obj/testrequirements.o
 
-.PHONY: all clean documentation objects
+.PHONY: all clean cleanobjects documentation objects
 
 all: bin/gwplus
 
@@ -18,12 +18,14 @@ bin/gwplus:                             \
 
 clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov html latex
 
+cleanobjects: ; rm -rf obj
+
 documentation: ; doxygen
 
 obj: ; mkdir obj
 
 obj/algorithm.o: obj                    \
-    include/hyperpath.h                 \
+    include/testrequirements.h          \
     padkit/include/padkit/debug.h       \
     padkit/include/padkit/reallocate.h  \
     src/algorithm.c                     \
@@ -49,14 +51,6 @@ obj/gwplus.o: obj                       \
     src/gwplus.c                        \
     ; ${COMPILE} ${INCLUDES} src/gwplus.c -c -o obj/gwplus.o
 
-obj/hyperpath.o: obj                    \
-    include/coverage.h                  \
-    include/hyperpath.h                 \
-    padkit/include/padkit/debug.h       \
-    padkit/include/padkit/reallocate.h  \
-    src/hyperpath.c                     \
-    ; ${COMPILE} ${INCLUDES} src/hyperpath.c -c -o obj/hyperpath.o
-
 obj/path.o: obj                         \
     include/path.h                      \
     padkit/include/padkit/chunk.h       \
@@ -64,6 +58,17 @@ obj/path.o: obj                         \
     padkit/include/padkit/reallocate.h  \
     src/path.c                          \
     ; ${COMPILE} ${INCLUDES} src/path.c -c -o obj/path.o
+
+obj/testrequirements.o: obj             \
+    include/coverage.h                  \
+    include/gwmodel.h                   \
+    include/hyperpath.h                 \
+    include/path.h                      \
+    include/testrequirements.h          \
+    padkit/include/padkit/debug.h       \
+    padkit/include/padkit/reallocate.h  \
+    src/testrequirements.c              \
+    ; ${COMPILE} ${INCLUDES} src/testrequirements.c -c -o obj/testrequirements.o
 
 objects: ${OBJECTS}
 

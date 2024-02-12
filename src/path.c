@@ -3,6 +3,7 @@
  * @brief Implements the functions defined in path.h
  * @author Yavuz Koroglu
  */
+#include <inttypes.h>
 #include "padkit/reallocate.h"
 #include "padkit/streq.h"
 #include "path.h"
@@ -17,21 +18,21 @@ void clone_path(Path* const clone, Path const* const original) {
         uint32_t new_cap = clone->cap;
         while (new_cap < original->len) {
             new_cap <<= 1;
-            if (new_cap < clone->cap) {REALLOC_ERROR;}
+            if (new_cap < clone->cap) REALLOC_ERROR
         }
 
         if (REALLOCATE(clone->array, clone->cap, new_cap, uint32_t) == NULL)
-            {REALLOC_ERROR;}
+            REALLOC_ERROR
 
-        if (REALLOCATE(clone->vertex_ids_sorted, clone->cap, new_cap, uint32_t) == NULL)
-            {REALLOC_ERROR;}
+        if (REALLOCATE(clone->e_ids_sorted, clone->cap, new_cap, uint32_t) == NULL)
+            REALLOC_ERROR
 
         clone->cap = new_cap;
     }
 
     size_t const size_in_bytes = (size_t)original->len * sizeof(uint32_t);
     memcpy(clone->array, original->array, size_in_bytes);
-    memcpy(clone->vertex_ids_sorted, original->vertex_ids_sorted, size_in_bytes);
+    memcpy(clone->e_ids_sorted, original->e_ids_sorted, size_in_bytes);
 
     clone->len      = original->len;
     clone->flags    = original->flags;
@@ -51,14 +52,14 @@ void concat_path(Path* const head, Path const* const tail) {
         uint32_t new_cap = head->cap;
         while (new_cap < new_len) {
             new_cap <<= 1;
-            if (new_cap < head->cap) {REALLOC_ERROR;}
+            if (new_cap < head->cap) REALLOC_ERROR
         }
 
         if (REALLOCATE(head->array, head->cap, new_cap, uint32_t) == NULL)
-            {REALLOC_ERROR;}
+            REALLOC_ERROR
 
-        if (REALLOCATE(head->vertex_ids_sorted, head->cap, new_cap, uint32_t) == NULL)
-            {REALLOC_ERROR;}
+        if (REALLOCATE(head->e_ids_sorted, head->cap, new_cap, uint32_t) == NULL)
+            REALLOC_ERROR
 
         head->cap = new_cap;
     }
@@ -78,56 +79,32 @@ void constructEmpty_path(Path* const path, uint32_t const initial_cap, uint64_t 
     path->array = malloc(cap_in_bytes);
     DEBUG_ERROR_IF(path->array == NULL)
 
-    path->vertex_ids_sorted = malloc(cap_in_bytes);
-    DEBUG_ERROR_IF(path->vertex_ids_sorted == NULL)
+    path->e_ids_sorted = malloc(cap_in_bytes);
+    DEBUG_ERROR_IF(path->e_ids_sorted == NULL)
 
     path->cap   = initial_cap;
     path->len   = 0;
     path->flags = flags;
 }
 
-bool contains_path(Path const* const path, uint32_t const vertex_id) {
+bool contains_path(Path const* const path, uint32_t const e_id) {
     DEBUG_ASSERT(isValid_path(path))
-    DEBUG_ERROR_IF(vertex_id == 0xFFFFFFFF)
+    DEBUG_ERROR_IF(e_id == 0xFFFFFFFF)
 
-    uint32_t const position = search_path(path, vertex_id);
+    uint32_t const position = search_path(path, e_id);
 
-    return position != 0 && path->vertex_ids_sorted[position - 1] == vertex_id;
+    return position != 0 && path->e_ids_sorted[position - 1] == e_id;
 }
 
-void dump_path(Path const* const path, Chunk const* const names) {
+int extend_path(Path* const path, uint32_t const e_id, bool const respectFlags) {
     DEBUG_ASSERT(isValid_path(path))
-    DEBUG_ASSERT(isValid_chunk(names))
-
-    printf("  [ ");
-    uint32_t i = 0;
-    if (path->len > 0) {
-        while (i < path->len - 1) {
-            uint32_t const v_id     = path->array[i];
-            char const* const name  = get_chunk(names, v_id);
-            DEBUG_ERROR_IF(name == NULL)
-
-            printf("%s, ", name);
-            i++;
-        }
-        uint32_t const v_id     = path->array[i];
-        char const* const name  = get_chunk(names, v_id);
-        DEBUG_ERROR_IF(name == NULL)
-
-        printf("%s ", name);
-    }
-    puts("]");
-}
-
-int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFlags) {
-    DEBUG_ASSERT(isValid_path(path))
-    DEBUG_ERROR_IF(vertex_id == 0xFFFFFFFF)
+    DEBUG_ERROR_IF(e_id == 0xFFFFFFFF)
 
     if (path->len == 0) {
         FLAG_PATH_AS_SIMPLE(path);
 
-        path->array[0]              = vertex_id;
-        path->vertex_ids_sorted[0]  = vertex_id;
+        path->array[0]          = e_id;
+        path->e_ids_sorted[0]   = e_id;
         path->len = 1;
         return PATH_EXTEND_OK;
     }
@@ -144,21 +121,21 @@ int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFl
         uint32_t new_cap = path->cap << 1;
 
         if (REALLOCATE(path->array, path->cap, new_cap, sizeof(uint32_t)) == NULL)
-            {REALLOC_ERROR;}
+            REALLOC_ERROR
 
-        if (REALLOCATE(path->vertex_ids_sorted, path->cap, new_cap, sizeof(uint32_t)) == NULL)
-            {REALLOC_ERROR;}
+        if (REALLOCATE(path->e_ids_sorted, path->cap, new_cap, sizeof(uint32_t)) == NULL)
+            REALLOC_ERROR
 
         path->cap = new_cap;
     }
 
-    uint32_t const hypothetical_sorted_position = search_path(path, vertex_id);
+    uint32_t const hypothetical_sorted_position = search_path(path, e_id);
     if (
-        IS_PATH_SIMPLE(path)                                                    &&
-        hypothetical_sorted_position > 0                                        &&
-        path->vertex_ids_sorted[hypothetical_sorted_position - 1] == vertex_id
+        IS_PATH_SIMPLE(path)                                            &&
+        hypothetical_sorted_position > 0                                &&
+        path->e_ids_sorted[hypothetical_sorted_position - 1] == e_id
     ) {
-        if (path->array[0] == vertex_id) {
+        if (path->array[0] == e_id) {
             FLAG_PATH_AS_PRIME(path);
             FLAG_PATH_AS_TYPE_C(path);
         } else if (!respectFlags) {
@@ -168,12 +145,12 @@ int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFl
         }
     }
 
-    uint32_t* const position    = path->vertex_ids_sorted + hypothetical_sorted_position;
+    uint32_t* const position    = path->e_ids_sorted + hypothetical_sorted_position;
     size_t const nElements      = path->len - hypothetical_sorted_position;
     memmove(position + 1, position, nElements * sizeof(uint32_t));
-    *position = vertex_id;
+    *position = e_id;
 
-    path->array[path->len++] = vertex_id;
+    path->array[path->len++] = e_id;
     return PATH_EXTEND_OK;
 }
 
@@ -189,9 +166,9 @@ void free_path(Path* const path) {
     DEBUG_ASSERT(IS_PATH_ALLOCATED(path))
 
     free(path->array);
-    free(path->vertex_ids_sorted);
+    free(path->e_ids_sorted);
 
-    FLAG_PATH_AS_DEALLOCATED(path);
+    *path = NOT_A_PATH;
 }
 
 void invalidate_path(Path* const path) {
@@ -249,48 +226,123 @@ uint32_t overlap_path(Path const* const head, Path const* const tail) {
     return overlap_start_pos;
 }
 
-uint32_t search_path(Path const* const path, uint32_t const vertex_id) {
+uint32_t search_path(Path const* const path, uint32_t const e_id) {
     DEBUG_ASSERT(isValid_path(path))
-    DEBUG_ERROR_IF(vertex_id == 0xFFFFFFFF)
+    DEBUG_ERROR_IF(e_id == 0xFFFFFFFF)
 
-    /* Perform rightmost binary search amongst the sorted vertex indices */
+    /* Perform rightmost binary search amongst the sorted edge indices */
     uint32_t l = 0;
     uint32_t r = path->len;
     while (l < r) {
         uint32_t m = (l + r) >> 1;
-        if (path->vertex_ids_sorted[m] > vertex_id) r = m; else l = m + 1;
+        if (path->e_ids_sorted[m] > e_id) r = m; else l = m + 1;
     }
 
     return r;
 }
 
+void clone_patha(PathArray* const clone, PathArray const* const original) {
+    DEBUG_ASSERT(isValid_patha(clone))
+    DEBUG_ASSERT(isValid_patha(original))
+
+    flush_patha(clone);
+    for (uint32_t i = 0; i < original->size; i++) {
+        RECALLOC_IF_NECESSARY(Path, clone->array, uint32_t, clone->cap, clone->size, REALLOC_ERROR)
+
+        Path const* const original_p    = original->array + i;
+        Path* const clone_p             = clone->array + clone->size++;
+
+        clone_path(clone_p, original_p);
+    }
+}
+
 void combineOverlaps_patha(PathArray* const pathArray) {
     DEBUG_ASSERT(isValid_patha(pathArray))
 
-    for (Path* head = pathArray->array + pathArray->size - 1; head >= pathArray->array; head--) {
-        for (Path* tail = pathArray->array + pathArray->size - 1; tail >= pathArray->array; tail--) {
-            if (head == tail) continue;
+    if (pathArray->size <= 1) return;
 
-            uint32_t overlap_start_pos = overlap_path(head, tail);
-            if (overlap_start_pos == 0xFFFFFFFF) continue;
+    while (1) {
+        uint32_t head_id        = 0xFFFFFFFF;
+        uint32_t tail_id        = 0xFFFFFFFF;
+        uint32_t overlap_len    = 0;
+        uint32_t start_pos      = 0xFFFFFFFF;
 
-            /* Cut the head from overlap */
-            head->len = overlap_start_pos;
+        /* Find the largest overlap */
+        for (uint32_t i = 0; i < pathArray->size - 1; i++) {
+            Path const* const head = pathArray->array + i;
+            DEBUG_ASSERT(isValid_path(head))
 
-            /* Concat the tail */
-            concat_path(head, tail);
+            for (uint32_t j = i + 1; j < pathArray->size; j++) {
+                Path const* const tail = pathArray->array + j;
+                DEBUG_ASSERT(isValid_path(tail))
 
-            /* Shift over the old tail */
-            for (
-                Path* path = tail;
-                path < pathArray->array + pathArray->size - 1;
-                path++
-            ) clone_path(path, path + 1);
+                uint32_t const overlap_start_pos            = overlap_path(head, tail);
+                uint32_t const reverse_overlap_start_pos    = overlap_path(tail, head);
 
-            /* Adjust size and restart combining */
-            head = pathArray->array + --pathArray->size;
-            break;
+                if (overlap_start_pos != 0xFFFFFFFF) {
+                    uint32_t const candidate_len = head->len - overlap_start_pos;
+                    if (reverse_overlap_start_pos != 0xFFFFFFFF) {
+                        uint32_t const reverse_candidate_len = tail->len - reverse_overlap_start_pos;
+                        if (candidate_len > reverse_candidate_len && candidate_len > overlap_len) {
+                            head_id     = i;
+                            tail_id     = j;
+                            overlap_len = candidate_len;
+                            start_pos   = overlap_start_pos;
+                        } else if (reverse_candidate_len > candidate_len && reverse_candidate_len > overlap_len) {
+                            head_id     = j;
+                            tail_id     = i;
+                            overlap_len = reverse_candidate_len;
+                            start_pos   = reverse_overlap_start_pos;
+                        }
+                    } else if (candidate_len > overlap_len) {
+                        head_id     = i;
+                        tail_id     = j;
+                        overlap_len = candidate_len;
+                        start_pos   = overlap_start_pos;
+                    }
+                } else if (reverse_overlap_start_pos != 0xFFFFFFFF) {
+                    uint32_t const reverse_candidate_len = tail->len - reverse_overlap_start_pos;
+                    if (reverse_candidate_len > overlap_len) {
+                        head_id     = j;
+                        tail_id     = i;
+                        overlap_len = reverse_candidate_len;
+                        start_pos   = reverse_overlap_start_pos;
+                    }
+                }
+            }
         }
+
+        /* Terminate if no overlap */
+        if (start_pos >= pathArray->size) return;
+
+        DEBUG_ERROR_IF(head_id == 0xFFFFFFFF)
+        Path* const head = pathArray->array + head_id;
+        DEBUG_ASSERT(isValid_path(head))
+
+        DEBUG_ERROR_IF(tail_id == 0xFFFFFFFF)
+        Path* const tail = pathArray->array + tail_id;
+        DEBUG_ASSERT(isValid_path(tail))
+
+        /* Cut the head from overlap */
+        head->len = start_pos;
+
+        /* Concat the tail */
+        concat_path(head, tail);
+
+        /* Remember the tail */
+        Path tmp[1];
+        memcpy(tmp, tail, sizeof(Path));
+
+        /* Decrement the path array size */
+        pathArray->size--;
+
+        /* Shift over the old tail */
+        size_t const size_in_bytes = (size_t)(pathArray->size - tail_id) * sizeof(Path);
+        memmove(tail, tail + 1, size_in_bytes);
+
+        /* Flush and then put the tail at the end */
+        flush_path(tmp);
+        memcpy(pathArray->array + pathArray->size, tmp, sizeof(Path));
     }
 }
 
@@ -306,43 +358,50 @@ void constructEmpty_patha(PathArray* const pathArray, uint32_t const initial_cap
     pathArray->size = 0;
 }
 
-void dump_patha(PathArray const* const pathArray, Chunk const* const names) {
-    DEBUG_ASSERT(isValid_patha(pathArray))
-    DEBUG_ASSERT(isValid_chunk(names))
-
-    for (uint32_t p_id = 0; p_id < pathArray->size; p_id++) {
-        Path const* const path = pathArray->array + p_id;
-        printf("  p%u:", p_id);
-        dump_path(path, names);
-    }
-
-    puts("");
-}
-
 void eliminateSubPaths_patha(PathArray* const pathArray) {
     DEBUG_ASSERT(isValid_patha(pathArray))
 
-    for (uint32_t sub_id = 0; sub_id < pathArray->size; sub_id++) {
-        Path* const sub = pathArray->array + sub_id;
-        DEBUG_ASSERT(isValid_path(sub))
+    if (pathArray->size <= 1) return;
 
-        for (uint32_t super_id = 0; super_id < pathArray->size; super_id++) {
-            if (sub_id == super_id) continue;
+    for (uint32_t i = 0; i < pathArray->size - 1; i++) {
+        Path* const p_i = pathArray->array + i;
+        DEBUG_ASSERT(isValid_path(p_i))
 
-            Path* const super = pathArray->array + super_id;
-            if (!isValid_path(super)) continue;
+        for (uint32_t j = i + 1; j < pathArray->size; j++) {
+            Path* const p_j = pathArray->array + j;
+            DEBUG_ASSERT(isValid_path(p_j))
 
-            if (isSubPath_path(sub, super)) {
+            if (isSubPath_path(p_i, p_j)) {
+                /* Remember p_i */
+                Path tmp[1];
+                memcpy(tmp, p_i, sizeof(Path));
+
                 /* Shift paths */
-                for (
-                    Path* path = sub;
-                    path < pathArray->array + pathArray->size - 1;
-                    path++
-                ) clone_path(path, path + 1);
-
                 pathArray->size--;
-                sub_id--;
+                size_t const size_in_bytes = (size_t)(pathArray->size - i) * sizeof(Path);
+                memmove(p_i, p_i + 1, size_in_bytes);
+
+                /* Flush and put p_i at the end */
+                flush_path(tmp);
+                memcpy(pathArray->array + pathArray->size, tmp, sizeof(Path));
+
+                i--;
                 break;
+            } else if (isSubPath_path(p_j, p_i)) {
+                /* Remember p_j */
+                Path tmp[1];
+                memcpy(tmp, p_j, sizeof(Path));
+
+                /* Shift paths */
+                pathArray->size--;
+                size_t const size_in_bytes = (size_t)(pathArray->size - j) * sizeof(Path);
+                memmove(p_j, p_j + 1, size_in_bytes);
+
+                /* Flush and put p_j at the end */
+                flush_path(tmp);
+                memcpy(pathArray->array + pathArray->size, tmp, sizeof(Path));
+
+                j--;
             }
         }
     }
@@ -350,7 +409,6 @@ void eliminateSubPaths_patha(PathArray* const pathArray) {
 
 void flush_patha(PathArray* const pathArray) {
     DEBUG_ASSERT(isValid_patha(pathArray))
-
     pathArray->size = 0;
 }
 
@@ -364,6 +422,8 @@ void free_patha(PathArray* const pathArray) {
     ) if (IS_PATH_ALLOCATED(path)) free_path(path);
 
     free(pathArray->array);
+
+    *pathArray = NOT_A_PATH_ARRAY;
 }
 
 bool isValid_patha(PathArray const* const pathArray) {

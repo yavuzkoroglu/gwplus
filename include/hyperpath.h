@@ -1,11 +1,10 @@
 /**
  * @file hyperpath.h
- * @brief Defines Connection, ConnectionArray, HyperPath, HyperPathArray, TestRequirements and related functions.
+ * @brief Defines Connection, ConnectionArray, HyperPath, HyperPathArray, and related functions.
  * @author Yavuz Koroglu
  */
 #ifndef HYPERPATH_H
     #define HYPERPATH_H
-    #include "gwmodel.h"
     #include "path.h"
 
     typedef struct ConnectionBody {
@@ -21,7 +20,7 @@
 
     #define CON_ARRAY_RECOMMENDED_INITIAL_CAP 8
 
-    #define NOT_A_CON_ARRAY  (ConnectionArray){ 0, 0, NULL }
+    #define NOT_A_CON_ARRAY  ((ConnectionArray){ 0, 0, NULL })
 
     typedef struct ConnectionArrayBody {
         uint32_t    size;
@@ -35,6 +34,8 @@
 
     bool isValid_cona(ConnectionArray const* const connections);
 
+    #define NOT_A_HYPER_PATH ((HyperPath){ {NOT_A_PATH}, {NOT_A_CON_ARRAY} })
+
     typedef struct HyperPathBody {
         Path            pathOfPaths[1];
         ConnectionArray connections[1];
@@ -46,7 +47,7 @@
 
     #define HP_ARRAY_RECOMMENDED_INITIAL_CAP 64
 
-    #define NOT_A_HP_ARRAY  (HyperPathArray){ 0, 0, NULL }
+    #define NOT_A_HP_ARRAY  ((HyperPathArray){ 0, 0, NULL })
 
     typedef struct HyperPathArrayBody {
         uint32_t    size;
@@ -59,18 +60,4 @@
     void free_hpa(HyperPathArray* const hyperPaths);
 
     bool isValid_hpa(HyperPathArray const* const hyperPaths);
-
-    typedef struct TestRequirementsBody {
-        GWModel const*  model;
-        PathArray       paths[1];
-        HyperPathArray  hyperPaths[1];
-    } TestRequirements;
-
-    void construct_tr(TestRequirements* const tr, GWModel const* const gwm, int const cov_criterion);
-
-    void dump_tr(TestRequirements const* const tr);
-
-    void free_tr(TestRequirements* const tr);
-
-    bool isValid_tr(TestRequirements const* const tr);
 #endif

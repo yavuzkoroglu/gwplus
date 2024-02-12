@@ -13,7 +13,8 @@
  */
 #ifndef PATH_H
     #define PATH_H
-    #include "padkit/chunk.h"
+    #include <stdbool.h>
+    #include <stdint.h>
 
     /**
      * @def PATH_RECOMMENDED_INITIAL_CAP
@@ -32,172 +33,172 @@
      *   A simple path is a path that traverses its vertices once, except that the initial and
      *   the final vertices can be the same.
      */
-    #define FLAG_PATH_SIMPLE    (uint64_t)(1 << 0)
+    #define FLAG_PATH_SIMPLE                    (uint64_t)(1 << 0)
 
     /**
      * @def FLAG_PATH_SIMPLE
      *   A prime path is a simple path that is not a sub path of any other simple path.
      */
-    #define FLAG_PATH_PRIME     (uint64_t)(1 << 1)
+    #define FLAG_PATH_PRIME                     (uint64_t)(1 << 1)
 
     /**
      * @def FLAG_TYPE_S
      *   A type_s path is a path that traverses the initial vertex of a graph.
      */
-    #define FLAG_PATH_TYPE_S    (uint64_t)(1 << 2)
+    #define FLAG_PATH_TYPE_S                    (uint64_t)(1 << 2)
 
     /**
      * @def FLAG_TYPE_T
      *   A type_t path is a path that traverses a terminal vertex in a graph where
      *   a terminal vertex is a vertex that has no outgoing edges.
      */
-    #define FLAG_PATH_TYPE_T    (uint64_t)(1 << 3)
+    #define FLAG_PATH_TYPE_T                    (uint64_t)(1 << 3)
 
     /**
      * @def FLAG_PATH_TEST_PATH
      *   A test path is a path that starts from the initial vertex of a graph.
      */
-    #define FLAG_PATH_TEST_PATH (uint64_t)(1 << 4)
+    #define FLAG_PATH_TEST_PATH                 (uint64_t)(1 << 4)
 
     /**
      * @def FLAG_PATH_ALLOCATED
      *   This flag should become 1 as soon as its array and vertex_ids_sorted are allocated.
      */
-    #define FLAG_PATH_ALLOCATED (uint64_t)(1 << 5)
+    #define FLAG_PATH_ALLOCATED                 (uint64_t)(1 << 5)
 
     /**
      * @def FLAG_PATH_TYPE_C
      *   This flag should become 1 as soon as the first and the last vertices are the same.
      */
-    #define FLAG_PATH_TYPE_C (uint64_t)(1 << 6)
+    #define FLAG_PATH_TYPE_C                    (uint64_t)(1 << 6)
 
     /**
      * @def FLAG_PATH_AS_NOT_SIMPLE
      *   Notice that a non-simple path can never be a prime path.
      */
-    #define FLAG_PATH_AS_NOT_SIMPLE(path)   path->flags &= ~(FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
+    #define FLAG_PATH_AS_NOT_SIMPLE(path)       path->flags &= ~(FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
 
     /**
      * @def FLAG_PATH_AS_PRIME
      *   Notice that every prime path is also a simple path.
      */
-    #define FLAG_PATH_AS_PRIME(path)        path->flags |= (FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
+    #define FLAG_PATH_AS_PRIME(path)            path->flags |= (FLAG_PATH_SIMPLE | FLAG_PATH_PRIME)
 
     /**
      * @def FLAG_PATH_AS_SIMPLE
      *   Flags the path as simple.
      */
-    #define FLAG_PATH_AS_SIMPLE(path)       path->flags |= (FLAG_PATH_SIMPLE)
+    #define FLAG_PATH_AS_SIMPLE(path)           path->flags |= (FLAG_PATH_SIMPLE)
 
     /**
      * @def FLAG_PATH_AS_ALLOCATED
      *   Flags the path as allocated.
      */
-    #define FLAG_PATH_AS_ALLOCATED(path)    path->flags |= (FLAG_PATH_ALLOCATED)
+    #define FLAG_PATH_AS_ALLOCATED(path)        path->flags |= (FLAG_PATH_ALLOCATED)
 
     /**
      * @def FLAG_PATH_AS_DEALLOCATED
      *   Flags the path as deallocated.
      */
-    #define FLAG_PATH_AS_DEALLOCATED(path)  path->flags &= ~(FLAG_PATH_ALLOCATED)
+    #define FLAG_PATH_AS_DEALLOCATED(path)      path->flags &= ~(FLAG_PATH_ALLOCATED)
 
     /**
      * @def FLAG_PATH_AS_TYPE_S
      *   Flags the path as it traverses the starting vertex.
      */
-    #define FLAG_PATH_AS_TYPE_S(path)       path->flags |= (FLAG_PATH_TYPE_S)
+    #define FLAG_PATH_AS_TYPE_S(path)           path->flags |= (FLAG_PATH_TYPE_S)
 
     /**
      * @def FLAG_PATH_AS_TYPE_T
      *   Flags the path as it traverses the terminal vertex.
      */
-    #define FLAG_PATH_AS_TYPE_T(path)       path->flags |= (FLAG_PATH_TYPE_T)
+    #define FLAG_PATH_AS_TYPE_T(path)           path->flags |= (FLAG_PATH_TYPE_T)
 
     /**
      * @def FLAG_PATH_AS_TYPE_C
      *   Flags the path as it becomes a cycle.
      */
-    #define FLAG_PATH_AS_TYPE_C(path)       path->flags |= (FLAG_PATH_TYPE_C)
+    #define FLAG_PATH_AS_TYPE_C(path)           path->flags |= (FLAG_PATH_TYPE_C)
 
     /**
      * @def IS_PATH_SIMPLE
      *   This value is 1 if the path is flagged as simple.
      */
-    #define IS_PATH_SIMPLE(path)    !!(path->flags & FLAG_PATH_SIMPLE)
+    #define IS_PATH_SIMPLE(path)                !!(path->flags & FLAG_PATH_SIMPLE)
 
     /**
      * @def IS_PATH_PRIME
      *   This value is 1 if the path is flagged as prime.
      */
-    #define IS_PATH_PRIME(path)     !!(path->flags & FLAG_PATH_PRIME)
+    #define IS_PATH_PRIME(path)                 !!(path->flags & FLAG_PATH_PRIME)
 
     /**
      * @def IS_PATH_ALLOCATED
      *   This value is 1 if the path is flagged as allocated.
      */
-    #define IS_PATH_ALLOCATED(path) !!(path->flags & FLAG_PATH_ALLOCATED)
+    #define IS_PATH_ALLOCATED(path)             !!(path->flags & FLAG_PATH_ALLOCATED)
 
     /**
      * @def IS_PATH_TYPE_C
      *   This value is 1 if the path is flagged as type_c.
      */
-    #define IS_PATH_TYPE_C(path)    !!(path->flags & FLAG_PATH_TYPE_C)
+    #define IS_PATH_TYPE_C(path)                !!(path->flags & FLAG_PATH_TYPE_C)
 
     /**
      * @def IS_PATH_TYPE_S
      *   This value is 1 if the path is flagged as type_s.
      */
-    #define IS_PATH_TYPE_S(path)    !!(path->flags & FLAG_PATH_TYPE_S)
+    #define IS_PATH_TYPE_S(path)                !!(path->flags & FLAG_PATH_TYPE_S)
 
     /**
      * @def IS_PATH_TYPE_T
      *   This value is 1 if the path is flagged as type_t.
      */
-    #define IS_PATH_TYPE_T(path)    !!(path->flags & FLAG_PATH_TYPE_T)
+    #define IS_PATH_TYPE_T(path)                !!(path->flags & FLAG_PATH_TYPE_T)
 
     /**
      * @def IS_PATH_TYPE_P
      *   This value is 1 if the path is flagged as type_p.
      */
-    #define IS_PATH_TYPE_P(path)    !(IS_PATH_TYPE_S(path) || IS_PATH_TYPE_T(path))
+    #define IS_PATH_TYPE_P(path)                !(IS_PATH_TYPE_S(path) || IS_PATH_TYPE_T(path))
 
     /**
      * @def PATH_DEFAULT_FLAGS
      *   These flags are the default flags for a new path.
      */
-    #define PATH_DEFAULT_FLAGS  FLAG_PATH_ALLOCATED
+    #define PATH_DEFAULT_FLAGS                  FLAG_PATH_ALLOCATED
 
     /**
      * @def PATH_RECOMMENDED_PARAMETERS
      *   These are the <default-parameters> for constructEmpty_path(path, <default-parameters>).
      */
-    #define PATH_RECOMMENDED_PARAMETERS     PATH_DEFAULT_INITIAL_CAP, PATH_DEFAULT_FLAGS
+    #define PATH_RECOMMENDED_PARAMETERS         PATH_DEFAULT_INITIAL_CAP, PATH_DEFAULT_FLAGS
 
     /**
      * @def NOT_A_PATH
      *   A special Path denoting a NOT-Path. This Path cannot pass the isValid_path() test.
      */
-    #define NOT_A_PATH                      (Path){ 0, 0, NULL, NULL, 0 }
+    #define NOT_A_PATH                          (Path){ 0, 0, NULL, NULL, 0 }
 
     /**
      * @struct Path
-     * @brief An array of vertex indices.
+     * @brief An array of edge indices.
      *
      * @var Path::cap
-     *   The maximum number of vertices the Path can have.
+     *   The maximum number of edges the Path can have.
      * @var Path::len
-     *   The number of vertices the Path has.
-     * @var Path::vertex_ids_sorted
-     *   The sorted list of vertex indices, useful when asking if the Path traverses a vertex.
+     *   The number of edges the Path has.
+     * @var Path::e_ids_sorted
+     *   The sorted list of edge indices, useful when asking if the Path traverses a edge.
      * @var Path::array
-     *   The array of vertex indices.
+     *   The array of edge indices.
      * @var Path::flags
      *   Flag bits of the Path.
      */
     typedef struct PathBody {
         uint32_t cap;
         uint32_t len;
-        uint32_t* vertex_ids_sorted;
+        uint32_t* e_ids_sorted;
         uint32_t* array;
         uint64_t flags;
     } Path;
@@ -230,26 +231,19 @@
     /**
      * @brief Checks if a Path contains a vertex index.
      * @param path A pointer to the Path.
-     * @param vertex_id The vertex index.
+     * @param e_id The edge index.
      */
-    bool contains_path(Path const* const path, uint32_t const vertex_id);
-
-    /**
-     * @brief Dumps a Path to stdout.
-     * @param path A pointer to the Path.
-     * @param names A pointer to a Chunk holding vertex names.
-     */
-    void dump_path(Path const* const path, Chunk const* const names);
+    bool contains_path(Path const* const path, uint32_t const e_id);
 
     /**
      * @brief Extends a Path by appending a vertex index.
      * @param path A pointer to the Path.
-     * @param vertex_id The vertex index.
+     * @param e_id The edge index.
      * @param respectFlags Will prevent path extension if it makes the Path non-simple.
      */
     #define PATH_EXTEND_OK                  0
     #define PATH_EXTEND_MAKES_IT_NON_SIMPLE 1
-    int extend_path(Path* const path, uint32_t const vertex_id, bool const respectFlags);
+    int extend_path(Path* const path, uint32_t const e_id, bool const respectFlags);
 
     /**
      * @brief Empties a Path.
@@ -292,9 +286,15 @@
     /**
      * @brief Finds the hypothetical position index of a vertex if it was added to a Path.
      * @param path A pointer to the Path.
-     * @param vertex_id The vertex index.
+     * @param e_id The edge index.
      */
-    uint32_t search_path(Path const* const path, uint32_t const vertex_id);
+    uint32_t search_path(Path const* const path, uint32_t const e_id);
+
+    /**
+     * @def NOT_A_PATH_ARRAY
+     *   A special PathArray denoting a NOT-PathArray. This PathArray cannot pass the isValid_patha() test.
+     */
+    #define NOT_A_PATH_ARRAY (PathArray){ 0, 0, NULL }
 
     /**
      * @struct PathArray
@@ -315,6 +315,14 @@
     } PathArray;
 
     /**
+     * @brief Clones a PathArray.
+     *
+     * @param clone The clone PathArray.
+     * @param original The original PathArray.
+     */
+    void clone_patha(PathArray* const clone, PathArray const* const original);
+
+    /**
      * @brief Combines overlapping paths to reduce the number of paths in a PathArray.
      * @param pathArray A pointer to the PathArray.
      */
@@ -326,13 +334,6 @@
      * @param initial_cap The initial capacity of the PathArray.
      */
     void constructEmpty_patha(PathArray* const pathArray, uint32_t const initial_cap);
-
-    /**
-     * @brief Dumps a PathArray to stdout.
-     * @param pathArray A pointer to the PathArray.
-     * @param names A pointer to a Chunk holding vertex names.
-     */
-    void dump_patha(PathArray const* const pathArray, Chunk const* const names);
 
     /**
      * @brief Eliminates all sub paths in a PathArray.

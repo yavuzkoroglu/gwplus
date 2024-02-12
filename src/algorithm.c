@@ -3,135 +3,245 @@
  * @brief Implements the functions defined in algorithm.h
  * @author Yavuz Koroglu
  */
+#include <string.h>
 #include "algorithm.h"
+#include "globals.h"
 #include "padkit/debug.h"
 #include "padkit/reallocate.h"
 
 static void generateShortestPath(
-    Path* const shortestPath, GWModel const* const model,
+    Path* const shortestPath, GWModelArray const* const models,
     uint32_t const from, uint32_t const to
 ) {
     DEBUG_ERROR_IF(shortestPath == NULL)
-    DEBUG_ASSERT(isValid_gwm(model))
-    DEBUG_ASSERT(from < model->size_vertices)
-    DEBUG_ASSERT(to < model->size_vertices)
+    DEBUG_ASSERT(isValid_gwma(models))
+    DEBUG_ASSERT(from < models->size_vertices)
+    DEBUG_ASSERT(to < models->size_vertices)
+
+    uint32_t const count_unique_edges = countUniqueEdges_gwma(models);
+
+    PathArray* stack_A = pathStack;
+    DEBUG_ASSERT(isValid_patha(stack_A))
+    flush_patha(stack_A);
+
+    PathArray* stack_B = pathStack + 1;
+    DEBUG_ASSERT(isValid_patha(stack_B))
+    flush_patha(stack_B);
 
     if (IS_PATH_ALLOCATED(shortestPath)) {
         flush_path(shortestPath);
     } else {
-        constructEmpty_path(shortestPath, model->size_vertices, PATH_DEFAULT_FLAGS);
+        constructEmpty_path(shortestPath, count_unique_edges, PATH_DEFAULT_FLAGS);
     }
 
-    uint32_t const guess_initial_cap = model->size_vertices * model->size_vertices;
-    DEBUG_ASSERT(guess_initial_cap >= model->size_vertices)
+    if (areEqual_gwvertex(models->vertices + from, models->vertices + to))
+        return;
 
-    PathArray pathStack[1];
-    constructEmpty_patha(pathStack, guess_initial_cap);
-    clone_path(pathStack->array, shortestPath);
-    pathStack->size++;
+    ConstTransitionIterator itr[1];
+    construct_ctitr(itr, models, from);
+    for (uint32_t e_id; (e_id = nextEdge_ctitr(itr)) != 0xFFFFFFFF;) {
+        DEBUG_ASSERT(e_id < models->size_edges)
+        GWEdge const* const edge = models->edges + e_id;
+        DEBUG_ASSERT(isValid_gwedge(edge))
 
-    while (pathStack->size > 0) {
-        /* Pop one Path from pathStack */
-        clone_path(shortestPath, pathStack->array + --pathStack->size);
-        uint32_t const last_v_id = shortestPath->len == 0 ? from : shortestPath->array[shortestPath->len - 1];
+        Path* const path = stack_A->array + stack_A->size++;
+        clone_path(path, shortestPath);
 
-        for (
-            uint32_t transition_id = model->size_outEdges[last_v_id] - 1;
-            transition_id != 0xFFFFFFFF;
-            transition_id--
-        ) {
-            uint32_t const next_v_id = model->transitions[last_v_id][transition_id];
+        DEBUG_ASSERT(extend_path(path, e_id, 1) == PATH_EXTEND_OK)
+        NDEBUG_EXECUTE(extend_path(path, e_id, 1))
 
-            if (next_v_id == to)        { free_patha(pathStack); return; }
-            if (next_v_id == GWM_ID_T)  { continue; }
+        if (areEqual_gwvertex(models->vertices + edge->target, models->vertices + to)) {
+            clone_path(shortestPath, path);
+            return;
+        }
+    }
 
-            RECALLOC_IF_NECESSARY(
-                Path, pathStack->array,
-                uint32_t, pathStack->cap, pathStack->size,
-                {RECALLOC_ERROR;}
-            )
-            Path* const path_at_hand = pathStack->array + pathStack->size++;
-            clone_path(path_at_hand, shortestPath);
+    while (stack_A->size > 0) {
+        /* Swap stacks */
+        if (stack_A > stack_B) {
+            stack_A--;
+            stack_B++;
+        } else {
+            stack_A++;
+            stack_B--;
+        }
 
-            switch (extend_path(path_at_hand, next_v_id, 1)) {
-                case PATH_EXTEND_MAKES_IT_NON_SIMPLE:
-                    pathStack->size--;
-                    break;
-                case PATH_EXTEND_OK:
-                    pathStack->size -= IS_PATH_TYPE_C(path_at_hand);
+        while (stack_B->size > 0) {
+            /* Pop a path from the current stack */
+            Path* const path = stack_B->array + --stack_B->size;
+            DEBUG_ASSERT(isValid_path(path))
+            DEBUG_ASSERT(path->len > 0)
+
+            uint32_t const last_e_id = path->array[path->len - 1];
+            DEBUG_ASSERT(last_e_id < models->size_edges)
+
+            GWEdge const* const last_edge = models->edges + last_e_id;
+            DEBUG_ASSERT(isValid_gwedge(last_edge))
+
+            uint32_t const last_v_id = last_edge->target;
+            DEBUG_ASSERT(last_v_id < models->size_vertices)
+
+            construct_ctitr(itr, models, last_v_id);
+            for (uint32_t e_id; (e_id = nextEdge_ctitr(itr)) != 0xFFFFFFFF;) {
+                DEBUG_ASSERT(e_id < models->size_edges)
+                GWEdge const* const edge = models->edges + e_id;
+                DEBUG_ASSERT(isValid_gwedge(edge))
+
+                /* Push a path to the other stack */
+                Path* const path_to_extend = stack_A->array + stack_A->size++;
+                clone_path(path_to_extend, path);
+
+                /* Attempt to extend the new path */
+                switch (extend_path(path_to_extend, e_id, 1)) {
+                    case PATH_EXTEND_MAKES_IT_NON_SIMPLE:
+                        stack_A->size--;
+                        break;
+                    case PATH_EXTEND_OK:
+                        if (areEqual_gwvertex(models->vertices + edge->target, models->vertices + to)) {
+                            clone_path(shortestPath, path_to_extend);
+                            return;
+                        }
+                }
             }
         }
     }
 
-    free_patha(pathStack);
     invalidate_path(shortestPath);
 }
 void generate_naive(PathArray* const testPaths, TestRequirements* const tr) {
-    DEBUG_ERROR_IF(isValid_patha(testPaths))
+    DEBUG_ASSERT(isValid_patha(testPaths))
     DEBUG_ASSERT(isValid_tr(tr))
 
-    constructEmpty_patha(testPaths, tr->paths->size);
+    DEBUG_ERROR_IF(path_at_hand == NULL)
 
-    Path s_to_start[1]    = {NOT_A_PATH};
-    Path terminal_to_t[1] = {NOT_A_PATH};
-    for (uint32_t p_id = 0; p_id < tr->paths->size; p_id++) {
-        Path* const path = tr->paths->array + p_id;
-        DEBUG_ASSERT(isValid_path(path))
+    Path* const prefixPath = path_at_hand + 1;
+    DEBUG_ERROR_IF(prefixPath == NULL)
 
-        uint32_t const start_id     = path->array[0];
-        uint32_t const terminal_id  = path->array[path->len - 1];
+    clone_patha(testPaths, tr->paths);
 
-        generateShortestPath(s_to_start, tr->model, GWM_ID_S, start_id);
-        generateShortestPath(terminal_to_t, tr->model, terminal_id, GWM_ID_T);
-
-        if (isValid_path(s_to_start) && isValid_path(terminal_to_t)) {
-            RECALLOC_IF_NECESSARY(
-                Path, testPaths->array,
-                uint32_t, testPaths->cap, testPaths->size,
-                {RECALLOC_ERROR;}
-            )
-            Path* const testPath = testPaths->array + testPaths->size++;
-            clone_path(testPath, s_to_start);
-            concat_path(testPath, path);
-            concat_path(testPath, terminal_to_t);
-        }
+    uint32_t old_sz = testPaths->size;
+    combineOverlaps_patha(testPaths);
+    eliminateSubPaths_patha(testPaths);
+    while (old_sz != testPaths->size) {
+        old_sz = testPaths->size;
+        combineOverlaps_patha(testPaths);
+        eliminateSubPaths_patha(testPaths);
     }
 
-    eliminateSubPaths_patha(testPaths);
-    combineOverlaps_patha(testPaths);
+    while (1) {
+        uint32_t prefix_id  = 0xFFFFFFFF;
+        uint32_t suffix_id  = 0xFFFFFFFF;
+        uint32_t len        = 0xFFFFFFFF;
 
-    if (IS_PATH_ALLOCATED(s_to_start))
-        free_path(s_to_start);
+        for (uint32_t i = 0; i < testPaths->size - 1; i++) {
+            Path* const p_i = testPaths->array + i;
+            DEBUG_ASSERT(isValid_path(p_i))
+            DEBUG_ASSERT(p_i->len > 0)
 
-    if (IS_PATH_ALLOCATED(terminal_to_t))
-        free_path(terminal_to_t);
+            uint32_t const e_i = p_i->array[p_i->len - 1];
+            DEBUG_ASSERT(e_i < tr->models->size_edges)
+
+            GWEdge const* const edge_i = tr->models->edges + e_i;
+            DEBUG_ASSERT(isValid_gwedge(edge_i))
+
+            uint32_t const v_i = edge_i->target;
+            DEBUG_ASSERT(v_i < tr->models->size_vertices)
+
+            for (uint32_t j = i + 1; j < testPaths->size; j++) {
+                Path* const p_j = testPaths->array + j;
+                DEBUG_ASSERT(isValid_path(p_j))
+                DEBUG_ASSERT(p_j->len > 0)
+
+                uint32_t const e_j = p_j->array[0];
+                DEBUG_ASSERT(e_j < tr->models->size_edges)
+
+                GWEdge const* const edge_j = tr->models->edges + e_j;
+                DEBUG_ASSERT(isValid_gwedge(edge_j))
+
+                uint32_t const v_j = edge_j->source;
+                DEBUG_ASSERT(v_j < tr->models->size_vertices)
+
+                generateShortestPath(path_at_hand, tr->models, v_i, v_j);
+                if (isValid_path(path_at_hand) && path_at_hand->len < len) {
+                    prefix_id   = i;
+                    suffix_id   = j;
+                    len         = path_at_hand->len;
+                }
+
+                generateShortestPath(path_at_hand, tr->models, v_j, v_i);
+                if (isValid_path(path_at_hand) && path_at_hand->len < len) {
+                    prefix_id   = j;
+                    suffix_id   = i;
+                    len         = path_at_hand->len;
+                }
+            }
+        }
+
+        if (len == 0xFFFFFFFF) break;
+
+        Path* const prefix = testPaths->array + prefix_id;
+        Path* const suffix = testPaths->array + suffix_id;
+
+        clone_path(prefixPath, prefix);
+        prefixPath->len--;
+        concat_path(prefixPath, path_at_hand);
+        concat_path(prefixPath, suffix);
+
+        /* Remember suffix */
+        Path tmp[1];
+        memcpy(tmp, suffix, sizeof(Path));
+
+        /* Decrement testPaths->size */
+        testPaths->size--;
+
+        /* Shift paths */
+        size_t size_in_bytes = (size_t)(testPaths->size - suffix_id) * sizeof(Path);
+        memmove(suffix, suffix + 1, size_in_bytes);
+
+        /* Flush and put suffix at the end */
+        flush_path(tmp);
+        memcpy(testPaths->array + testPaths->size, tmp, sizeof(Path));
+    }
+
+    for (
+        Path* path = testPaths->array + testPaths->size - 1;
+        path >= testPaths->array;
+        path--
+    ) {
+        DEBUG_ASSERT(isValid_path(path))
+        DEBUG_ASSERT(path->len > 0)
+
+        if (path->array[0] == tr->models->s_id) continue;
+        generateShortestPath(prefixPath, tr->models, tr->models->s_id, path->array[0]);
+        DEBUG_ASSERT(isValid_path(prefixPath))
+        concat_path(prefixPath, path);
+        clone_path(path, prefixPath);
+    }
 }
 
 void generate_random(PathArray* const testPaths, TestRequirements* const tr) {
-    DEBUG_ERROR_IF(isValid_patha(testPaths))
+    DEBUG_ASSERT(isValid_patha(testPaths))
     DEBUG_ASSERT(isValid_tr(tr))
 }
 void generate_approx(PathArray* const testPaths, TestRequirements* const tr) {
-    DEBUG_ERROR_IF(isValid_patha(testPaths))
+    DEBUG_ASSERT(isValid_patha(testPaths))
     DEBUG_ASSERT(isValid_tr(tr))
 }
 void generate_minflow(PathArray* const testPaths, TestRequirements* const tr) {
-    DEBUG_ERROR_IF(isValid_patha(testPaths))
+    DEBUG_ASSERT(isValid_patha(testPaths))
+    DEBUG_ASSERT(isValid_tr(tr))
+}
+void generate_cpostman(PathArray* const testPaths, TestRequirements* const tr) {
+    DEBUG_ASSERT(isValid_patha(testPaths))
     DEBUG_ASSERT(isValid_tr(tr))
 }
 
-PathArray* generateTestsFrom(TestRequirements* const tr, int const algo_id) {
-    static const Algorithm algorithms[ALGO_LAST + 1] = ALGORITHMS;
-
+void generateTests(PathArray* const testPaths, TestRequirements* const tr, int const algo_id) {
+    DEBUG_ASSERT(isValid_patha(testPaths))
     DEBUG_ASSERT(isValid_tr(tr))
     DEBUG_ASSERT(IS_VALID_ALGO(algo_id))
 
-    PathArray* testPaths = calloc(1, sizeof(PathArray));
-    if (testPaths == NULL) {
-        TERMINATE_ERROR_MSG("Could not allocate %zu bytes for PathArray* testPaths!!", sizeof(PathArray));
-    }
+    Algorithm const algorithms[ALGO_LAST + 1] = ALGORITHMS;
 
     algorithms[algo_id](testPaths, tr);
-
-    return testPaths;
 }
