@@ -6,7 +6,7 @@
  */
 #include <inttypes.h>
 #include "padkit/debug.h"
-#include "vpath.h"
+#include "vpatharray.h"
 
 /*
  * 0: 0 -> 1
@@ -30,14 +30,17 @@ static uint32_t countEdges_toy(void const* const graphPtr);
 static uint32_t countVertices_toy(void const* const graphPtr);
 static void dump_toy(void const* const graphPtr, FILE* const output);
 static void dumpVertex_toy(void const* const graphPtr, FILE* const output, uint32_t const vertexId);
-static void setFirstNextId_nitr_toy(NeighborIterator* const itr);
-static void setFirstNextId_svitr_toy(StartVertexIterator* const itr);
 static bool isValid_toy(void const* const graphPtr);
 static bool isValid_nitr_toy(NeighborIterator const* const itr);
 static bool isValid_svitr_toy(StartVertexIterator const* const itr);
+static bool isValid_vitr_toy(VertexIterator const* const itr);
 static bool isValidVertex_toy(void const* const graphPtr, uint32_t const vertexId);
 static uint32_t nextVertexId_nitr_toy(NeighborIterator* const itr);
 static uint32_t nextVertexId_svitr_toy(StartVertexIterator* const itr);
+static uint32_t nextVertexId_vitr_toy(VertexIterator* const itr);
+static void setFirstNextId_nitr_toy(NeighborIterator* const itr);
+static void setFirstNextId_svitr_toy(StartVertexIterator* const itr);
+static void setFirstNextId_vitr_toy(VertexIterator* const itr);
 
 uint32_t countEdges_toy(void const* const graphPtr) {
     DEBUG_ASSERT(isValid_toy(graphPtr))
@@ -75,16 +78,6 @@ void dumpVertex_toy(void const* const graphPtr, FILE* const output, uint32_t con
     fprintf(output, " %"PRIu32, vertexId);
 }
 
-void setFirstNextId_nitr_toy(NeighborIterator* const itr) {
-    DEBUG_ASSERT(isValid_nitr_toy(itr))
-    itr->nextNeighborId = 0;
-}
-
-void setFirstNextId_svitr_toy(StartVertexIterator* const itr) {
-    DEBUG_ASSERT(isValid_svitr_toy(itr))
-    itr->nextVertexId = 0;
-}
-
 static bool isValid_toy(void const* const graphPtr) {
     return graphPtr == toy_graph;
 }
@@ -94,6 +87,10 @@ static bool isValid_nitr_toy(NeighborIterator const* const itr) {
 }
 
 static bool isValid_svitr_toy(StartVertexIterator const* const itr) {
+    return itr != NULL && isValid_toy(itr->graphPtr);
+}
+
+static bool isValid_vitr_toy(VertexIterator const* const itr) {
     return itr != NULL && isValid_toy(itr->graphPtr);
 }
 
@@ -130,6 +127,31 @@ static uint32_t nextVertexId_svitr_toy(StartVertexIterator* const itr) {
     }
 }
 
+static uint32_t nextVertexId_vitr_toy(VertexIterator* const itr) {
+    DEBUG_ASSERT(isValid_vitr_toy(itr))
+
+    if (isValidVertex_toy(itr->graphPtr, itr->nextVertexId)) {
+        return itr->nextVertexId++;
+    } else {
+        return 0xFFFFFFFF;
+    }
+}
+
+void setFirstNextId_nitr_toy(NeighborIterator* const itr) {
+    DEBUG_ASSERT(isValid_nitr_toy(itr))
+    itr->nextNeighborId = 0;
+}
+
+void setFirstNextId_svitr_toy(StartVertexIterator* const itr) {
+    DEBUG_ASSERT(isValid_svitr_toy(itr))
+    itr->nextVertexId = 0;
+}
+
+void setFirstNextId_vitr_toy(VertexIterator* const itr) {
+    DEBUG_ASSERT(isValid_vitr_toy(itr))
+    itr->nextVertexId = 0;
+}
+
 int main(void) {
     TestableGraph graph[1] = { (TestableGraph){
         toy_graph,
@@ -137,24 +159,25 @@ int main(void) {
         countVertices_toy,
         dump_toy,
         dumpVertex_toy,
-        setFirstNextId_nitr_toy,
-        setFirstNextId_svitr_toy,
         isValid_toy,
         isValid_nitr_toy,
         isValid_svitr_toy,
+        isValid_vitr_toy,
         isValidVertex_toy,
         nextVertexId_nitr_toy,
-        nextVertexId_svitr_toy
+        nextVertexId_svitr_toy,
+        nextVertexId_vitr_toy,
+        setFirstNextId_nitr_toy,
+        setFirstNextId_svitr_toy,
+        setFirstNextId_vitr_toy
     }};
-    VertexPath shortestPath[1] = {NOT_A_VPATH};
 
     dump_tg(graph, stdout);
 
-    if (computeShortest_vpath(shortestPath, graph, 0, 4)) {
-        dump_vpath(shortestPath, stdout);
-    }
+    VertexPathArray primePaths[1];
+    constructAllPrimePaths_vpa(primePaths, graph, VPATH_ARRAY_DEFAULT_INITIAL_CAP);
 
-    free_vpath(shortestPath);
+    dump_vpa(primePaths, stdout);
 
     return 0;
 }
