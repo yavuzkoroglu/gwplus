@@ -1,0 +1,36 @@
+{
+    "models":
+        [
+            {
+                "name":"Model001","id":"Model001","generator":"predefined_path(predefined_path)","actions":[],
+                "vertices":
+                    [
+                        {"id":"A","name":"A","actions":[],"requirements":[],"properties":{"x":169.921875,"y":132.468750}},
+                        {"id":"B","name":"B","actions":[],"requirements":[],"properties":{"x":404.921875,"y":179.468750}},
+                        {"id":"C","name":"C","sharedState":"CD","actions":[],"requirements":[],"properties":{"x":340.921875,"y":392.468750}}
+                    ],
+                "edges":
+                    [
+                        {"id":"1","name":"1","actions":[],"requirements":[],"properties":[],"sourceVertexId":"A","targetVertexId":"B"},
+                        {"id":"2","name":"2","actions":[],"requirements":[],"properties":[],"sourceVertexId":"B","targetVertexId":"C"},
+                        {"id":"3","name":"3","actions":[],"requirements":[],"properties":[],"sourceVertexId":"C","targetVertexId":"A"},
+                        {"id":"4","name":"4","actions":[],"requirements":[],"properties":[],"sourceVertexId":"A","targetVertexId":"C"},
+                        {"id":"5","name":"5","actions":[],"requirements":[],"properties":[],"sourceVertexId":"C","targetVertexId":"C"}
+                    ],
+                "startElementId":"A","predefinedPathEdgeIds":["1","2","3","4","5"]
+            },{
+                "name":"Model002","id":"Model002","generator":"predefined_path(predefined_path)","actions":[],
+                "vertices":
+                    [
+                        {"id":"D","name":"D","sharedState":"CD","actions":[],"requirements":[],"properties":{"x":168.921875,"y":162.468750}},
+                        {"id":"E","name":"E","actions":[],"requirements":[],"properties":{"x":400.921875,"y":205.468750}}
+                    ],
+                "edges":
+                    [
+                        {"id":"6","name":"6","actions":[],"requirements":[],"properties":[],"sourceVertexId":"D","targetVertexId":"E"},
+                        {"id":"7","name":"7","actions":[],"requirements":[],"properties":[],"sourceVertexId":"E","targetVertexId":"D"}
+                    ],
+                "predefinedPathEdgeIds":["6","7"]
+            }
+        ]
+}

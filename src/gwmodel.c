@@ -2285,17 +2285,30 @@ void setModelName_gwma(GWModelArray* const gwma, char const* const name, size_t 
     NDEBUG_EXECUTE(append_chunk(chunk_model_names, name, name_len))
 }
 
-void setStartingVertex_gwma(GWModelArray* const gwma, char const* const s_id_str, size_t const s_id_len) {
+void setStartingElement_gwma(GWModelArray* const gwma, char const* const s_id_str, size_t const s_id_len) {
     DEBUG_ASSERT(isValid_gwma(gwma))
     DEBUG_ERROR_IF(s_id_str == NULL)
 
-    Chunk* const chunk_vertex_ids = gwma->chunks + GWMA_CHUNK_VERTEX_IDS;
+    Chunk* const chunk_vertex_ids   = gwma->chunks + GWMA_CHUNK_VERTEX_IDS;
+    Chunk* const chunk_edge_ids     = gwma->chunks + GWMA_CHUNK_EDGE_IDS;
 
+    gwma->s_type = GWMA_START_ELEMENT_VERTEX;
     for (gwma->s_id = gwma->size_vertices - 1; gwma->s_id != 0xFFFFFFFF; gwma->s_id--) {
         char const* const v_id_str = get_chunk(chunk_vertex_ids, gwma->s_id);
         DEBUG_ERROR_IF(v_id_str == NULL)
         if (str_eq_n(v_id_str, s_id_str, s_id_len)) return;
     }
+
+    if (gwma->s_id == 0xFFFFFFFF) {
+        gwma->s_type = GWMA_START_ELEMENT_EDGE;
+        for (gwma->s_id = gwma->size_edges - 1; gwma->s_id != 0xFFFFFFFF; gwma->s_id--) {
+            char const* const e_id_str = get_chunk(chunk_edge_ids, gwma->s_id);
+            DEBUG_ERROR_IF(e_id_str == NULL)
+            if (str_eq_n(e_id_str, s_id_str, s_id_len)) return;
+        }
+    }
+
+    DEBUG_ASSERT(gwma->s_id != 0xFFFFFFFF)
 }
 
 void setVertexIdStr_gwma(GWModelArray* const gwma, char const* const id_str, size_t const id_str_len) {

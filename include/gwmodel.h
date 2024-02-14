@@ -170,15 +170,25 @@
      * @struct GWEdge
      * @brief A directed connection between a source vertex and a target vertex.
      *
+     * @var GWEdge::chunks
+     *   These Chunks hold string information about a GWEdge.
      * @var GWEdge::source
      *   The vertex index of the source.
      * @var GWEdge::target
      *   The vertex index of the target.
      */
+    #define GWEDGE_CHUNK_ACTIONS        0
+    #define GWEDGE_CHUNK_REQUIREMENTS   1
+    #define GWEDGE_CHUNK_LAST           GWEDGE_CHUNK_REQUIREMENTS
     typedef struct GWEdgeBody {
+        Chunk chunks[GWEDGE_CHUNK_LAST];
         uint32_t source;
         uint32_t target;
     } GWEdge;
+
+    void constructInvalid_gwedge(GWEdge* const edge);
+
+    void free_gwedge(GWEdge* const edge);
 
     /**
      * @brief Checks if a GWEdge is valid.
@@ -226,6 +236,9 @@
         NULL, NULL, NULL, NULL                                                              \
     })
 
+    #define GWMA_START_ELEMENT_VERTEX   0
+    #define GWMA_START_ELEMENT_EDGE     1
+
     /**
      * @struct GWModelArray
      * @brief An array of GWModel objects. GraphWalker model files usually contain multiple models.
@@ -263,11 +276,13 @@
      */
     #define GWMA_CHUNK_MODEL_IDS        0
     #define GWMA_CHUNK_MODEL_NAMES      1
-    #define GWMA_CHUNK_VERTEX_IDS       2
-    #define GWMA_CHUNK_VERTEX_NAMES     3
-    #define GWMA_CHUNK_EDGE_IDS         4
-    #define GWMA_CHUNK_EDGE_NAMES       5
-    #define GWMA_CHUNK_SHARED_STATES    6
+    #define GWMA_CHUNK_MODEL_ACTIONS    2
+    #define GWMA_CHUNK_VERTEX_IDS       3
+    #define GWMA_CHUNK_VERTEX_NAMES     4
+    #define GWMA_CHUNK_EDGE_IDS         5
+    #define GWMA_CHUNK_EDGE_NAMES       6
+    #define GWMA_CHUNK_EDGE_GUARD       7
+    #define GWMA_CHUNK_SHARED_STATES    8
     #define GWMA_CHUNK_LAST             GWMA_CHUNK_SHARED_STATES
     #define GWMA_TBL_VERTEX_IDS         0
     #define GWMA_TBL_SHARED_STATES      1
@@ -276,6 +291,7 @@
         Chunk       chunks[GWMA_CHUNK_LAST + 1];
         ChunkTable  tables[GWMA_TBL_LAST + 1];
         uint32_t    s_id;
+        uint32_t    s_type;
         uint32_t    guess_edge_count_per_vertex;
         uint32_t    guess_vertex_count_per_shared;
         uint32_t    size_edges;
@@ -483,12 +499,12 @@
     void setModelName_gwma(GWModelArray* const gwma, char const* const name, size_t const name_len);
 
     /**
-     * @brief Sets the starting GWVertex of a GWModelArray.
+     * @brief Sets the starting GWVertex or GWEdge of a GWModelArray.
      * @param gwma A pointer to the GWModelArray.
-     * @param s_id_str A pointer to the first character of the starting vertex's index string.
-     * @param s_id_len The total number of characters in the starting vertex's index string.
+     * @param s_id_str A pointer to the first character of the starting element's index string.
+     * @param s_id_len The total number of characters in the starting element's index string.
      */
-    void setStartingVertex_gwma(GWModelArray* const gwma, char const* const s_id_str, size_t const s_id_len);
+    void setStartingElement_gwma(GWModelArray* const gwma, char const* const s_id_str, size_t const s_id_len);
 
     /**
      * @brief Sets the index string of the last GWVertex in a GWModelArray.
