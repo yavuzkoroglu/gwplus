@@ -6,7 +6,7 @@
  */
 #include <inttypes.h>
 #include "padkit/debug.h"
-#include "vpatharray.h"
+#include "vpathgraph.h"
 
 /*
  * 0: 0 -> 1
@@ -178,6 +178,14 @@ int main(void) {
     constructAllPrimePaths_vpa(primePaths, graph, VPATH_ARRAY_DEFAULT_INITIAL_CAP);
 
     dump_vpa(primePaths, stdout);
+
+    VertexPathGraph vpgraph[1];
+    construct_vpg(vpgraph, primePaths);
+
+    dump_vpg(vpgraph, stdout);
+
+    free_vpg(vpgraph);
+    free_vpa(primePaths);
 
     return 0;
 }

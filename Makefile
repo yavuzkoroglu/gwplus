@@ -2,7 +2,7 @@ include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
 OBJECTS=obj/algorithm.o obj/gwmodel.o obj/gwplus.o obj/path.o obj/testrequirements.o
-TOYOBJS=obj/tgi.o obj/toygraph.o obj/vpath.o obj/vpatharray.o
+TOYOBJS=obj/tgi.o obj/toygraph.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
 
 all: bin/gwplus bin/toygraph
 
@@ -109,6 +109,15 @@ obj/vpatharray.o: obj                   \
     padkit/include/padkit/reallocate.h  \
     src/vpatharray.c                    \
     ; ${COMPILE} ${INCLUDES} src/vpatharray.c -c -o obj/vpatharray.o
+
+obj/vpathgraph.o: obj                   \
+    include/tgi.h                       \
+    include/vpath.h                     \
+    include/vpatharray.h                \
+    include/vpathgraph.h                \
+    padkit/include/padkit/debug.h       \
+    src/vpathgraph.c                    \
+    ; ${COMPILE} ${INCLUDES} src/vpathgraph.c -c -o obj/vpathgraph.o
 
 objects: ${OBJECTS}
 

@@ -167,7 +167,7 @@ void constructEmpty_vpath(VertexPath* const vpath, TestableGraph const* const gr
     DEBUG_ERROR_IF(vpath == NULL)
     DEBUG_ASSERT(isValid_tg(graph))
 
-    uint32_t const initial_cap = countVertices_tg(graph);
+    uint32_t const initial_cap = countVertices_tg(graph) + 1;
     DEBUG_ERROR_IF(initial_cap == 0)
 
     vpath->graph        = graph;
@@ -295,7 +295,8 @@ void free_vpath(VertexPath* const vpath) {
 }
 
 void increaseCapIfNecessary_vpath(VertexPath* const vpath) {
-    DEBUG_ASSERT(isValid_vpath(vpath))
+    DEBUG_ERROR_IF(vpath == NULL)
+    DEBUG_ASSERT(vpath->isAllocated)
 
     uint32_t len = countVertices_tg(vpath->graph);
     if (vpath->len > len) len = vpath->len;

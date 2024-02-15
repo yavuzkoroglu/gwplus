@@ -55,9 +55,8 @@ void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, TestableGraph
                         VertexPath* const p_i = primePaths->array + i;
                         DEBUG_ASSERT(isValid_vpath(p_i))
 
-                        if (!p_i->isCycle && isSubPath_vpath(p_i, primePath)) {
+                        if (!p_i->isCycle && isSubPath_vpath(p_i, primePath))
                             removePath_vpa(primePaths, i);
-                        }
                     }
                     pushClone_vpa(primePaths, primePath);
                 }
