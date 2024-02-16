@@ -9,21 +9,25 @@
 #include "vpathgraph.h"
 
 /*
- * 0: 0 -> 1
- * 1: 1 -> 2
- * 2: 2 -> 0
- * 3: 2 -> 2
- * 4: 2 -> 3
- * 5: 3 -> 2
- * 6: 3 -> 4
- * 7: 4 -> 3
+ * 0: 0 -> 0
+ * 1: 0 -> 1
+ * 2: 0 -> 4
+ * 3: 1 -> 2
+ * 4: 1 -> 5
+ * 5: 2 -> 3
+ * 6: 3 -> 0
+ * 7: 3 -> 1
+ * 8: 3 -> 4
+ * 9: 4 -> 3
+ * 10: 5 -> 3
  */
-static unsigned char toy_graph[5][5] = {
-    { 0, 1, 0, 0, 0 },
-    { 0, 0, 1, 0, 0 },
-    { 1, 0, 1, 1, 0 },
-    { 0, 0, 1, 0, 1 },
-    { 0, 0, 0, 1, 0 }
+static unsigned char toy_graph[6][6] = {
+    { 1, 1, 0, 0, 1, 0 },
+    { 0, 0, 1, 0, 0, 1 },
+    { 0, 0, 0, 1, 0, 0 },
+    { 1, 1, 0, 0, 1, 0 },
+    { 0, 0, 0, 1, 0, 0 },
+    { 0, 0, 0, 1, 0, 0 },
 };
 
 static uint32_t countEdges_toy(void const* const graphPtr);
@@ -46,8 +50,8 @@ uint32_t countEdges_toy(void const* const graphPtr) {
     DEBUG_ASSERT(isValid_toy(graphPtr))
 
     uint32_t count = 0;
-    for (uint32_t i = 0; i < 5; i++)
-        for (uint32_t j = 0; j < 5; j++)
+    for (uint32_t i = 0; i < 6; i++)
+        for (uint32_t j = 0; j < 6; j++)
             count += toy_graph[i][j];
 
     return count;
@@ -55,7 +59,7 @@ uint32_t countEdges_toy(void const* const graphPtr) {
 
 static uint32_t countVertices_toy(void const* const graphPtr) {
     DEBUG_ASSERT(isValid_toy(graphPtr))
-    return 5;
+    return 6;
 }
 
 void dump_toy(void const* const graphPtr, FILE* const output) {
@@ -173,19 +177,28 @@ int main(void) {
     }};
 
     dump_tg(graph, stdout);
+    puts("");
 
     VertexPathArray primePaths[1];
     constructAllPrimePaths_vpa(primePaths, graph, VPATH_ARRAY_DEFAULT_INITIAL_CAP);
 
     dump_vpa(primePaths, stdout);
+    puts("");
 
     VertexPathGraph vpgraph[1];
     construct_vpg(vpgraph, primePaths);
 
-    dump_vpg(vpgraph, stdout);
+    TestableGraph vpgraph_tg[1];
+    constructTgi_vpg(vpgraph_tg, vpgraph);
+
+    VertexPath cycle[1] = {NOT_A_VPATH};
+    computeCycle_vpath(cycle, vpgraph_tg);
+
+    dump_vpath(cycle, stdout);
 
     free_vpg(vpgraph);
     free_vpa(primePaths);
+    free_vpath(cycle);
 
     return 0;
 }

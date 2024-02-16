@@ -60,6 +60,13 @@
     void clone_vpath(VertexPath* const clone, VertexPath const* const original);
 
     /**
+     * @brief Computes a cycle in a TestableGraph.
+     * @param cycle A pointer to the cycle.
+     * @param graph A pointer to the TestableGraph.
+     */
+    bool computeCycle_vpath(VertexPath* const cycle, TestableGraph const* const graph);
+
+    /**
      * @brief Computes the shortest path between two vertices. If these vertices are the same, the shortest path is empty.
      * @param shortestPath A pointer to the shortestPath.
      * @param graph A pointer to the TestableGraph.
@@ -67,6 +74,14 @@
      * @param to The vertex index of the target vertex.
      */
     bool computeShortest_vpath(VertexPath* const shortestPath, TestableGraph const* const graph, uint32_t const from, uint32_t const to);
+
+    /**
+     * @brief Computes the shortest path from any start vertex to target. If target is a start vertex, the initializer is empty.
+     * @param initializer A pointer to the initializer path.
+     * @param graph A pointer to the TestableGraph.
+     * @param target The vertex index of the target vertex.
+     */
+    bool computeShortestInitializer_vpath(VertexPath* const initializer, TestableGraph const* const graph, uint32_t const target);
 
     /**
      * @brief Concatenates two paths. The first vertex of the tail must be a neighbor of the last vertex of the head.
@@ -154,4 +169,12 @@
      * @param vertexId The vertex index.
      */
     uint32_t search_vpath(VertexPath const* const vpath, uint32_t const vertexId);
+
+    /**
+     * @brief Performs splicing between two paths, saving the result in a thrid path.
+     * @param splice A pointer to the splice.
+     * @param head A pointer to the first VertexPath.
+     * @param tail A pointer to the second VertexPath.
+     */
+    bool splice_vpath(VertexPath* const splice, VertexPath const* const head, VertexPath const* const tail);
 #endif
