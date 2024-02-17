@@ -1,6 +1,6 @@
 /**
  * @file vpathgraph.h
- * @brief Defines TGI-compatible VertexPathGraph and related function.
+ * @brief Defines SGI-compatible VertexPathGraph and related function.
  * @author Yavuz Koroglu
  */
 #ifndef VPATHGRAPH_H
@@ -22,6 +22,12 @@
     } VertexPathGraph;
 
     /**
+     * @def NOT_A_VPATH_GRAPH
+     *   A special VertexPathGraph denoting NOT-VertexPathGraph. This graph fails the isValid_vpg() test.
+     */
+    #define NOT_A_VPATH_GRAPH ((VertexPathGraph){ NULL, NULL })
+
+    /**
      * @brief Constructs a VertexPathGraph from a VertexPathArray.
      * @param vpgraph A pointer to the VertexPathGraph.
      * @param vpaths A pointer to the constant VertexPathArray.
@@ -29,11 +35,11 @@
     void construct_vpg(VertexPathGraph* const vpgraph, VertexPathArray const* const vpaths);
 
     /**
-     * @brief Constructs a TestableGraph from a VertexPathGraph.
-     * @param graph A pointer to the TestableGraph.
+     * @brief Constructs a SimpleGraph from a VertexPathGraph.
+     * @param graph A pointer to the SimpleGraph.
      * @param vpgraph A pointer to the constant VertexPathGraph.
      */
-    void constructTgi_vpg(TestableGraph* const graph, VertexPathGraph const* const vpgraph);
+    void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph const* const vpgraph);
 
     /**
      * @brief Counts the number of edges in a VertexPathGraph.

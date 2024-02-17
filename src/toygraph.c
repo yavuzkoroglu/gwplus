@@ -1,6 +1,6 @@
 /**
  * @file toygraph.c
- * @brief Implements the Testable Graph Interface (TGI) in the dummiest way.
+ * @brief Implements the Simple Graph Interface (SGI) in the dummiest way.
  * @see tgi.h
  * @author Yavuz Koroglu
  */
@@ -86,18 +86,6 @@ static bool isValid_toy(void const* const graphPtr) {
     return graphPtr == toy_graph;
 }
 
-static bool isValid_nitr_toy(NeighborIterator const* const itr) {
-    return itr != NULL && isValid_toy(itr->graphPtr) && isValidVertex_toy(itr->graphPtr, itr->vertexId);
-}
-
-static bool isValid_svitr_toy(StartVertexIterator const* const itr) {
-    return itr != NULL && isValid_toy(itr->graphPtr);
-}
-
-static bool isValid_vitr_toy(VertexIterator const* const itr) {
-    return itr != NULL && isValid_toy(itr->graphPtr);
-}
-
 static bool isValidVertex_toy(void const* const graphPtr, uint32_t const vertexId) {
     DEBUG_ASSERT(isValid_toy(graphPtr))
     return vertexId < countVertices_toy(graphPtr);
@@ -157,16 +145,13 @@ void setFirstNextId_vitr_toy(VertexIterator* const itr) {
 }
 
 int main(void) {
-    TestableGraph graph[1] = { (TestableGraph){
+    SimpleGraph graph[1] = { (SimpleGraph){
         toy_graph,
         countEdges_toy,
         countVertices_toy,
         dump_toy,
         dumpVertex_toy,
         isValid_toy,
-        isValid_nitr_toy,
-        isValid_svitr_toy,
-        isValid_vitr_toy,
         isValidVertex_toy,
         nextVertexId_nitr_toy,
         nextVertexId_svitr_toy,
@@ -176,7 +161,7 @@ int main(void) {
         setFirstNextId_vitr_toy
     }};
 
-    dump_tg(graph, stdout);
+    dump_sg(graph, stdout);
     puts("");
 
     VertexPathArray primePaths[1];
@@ -188,13 +173,8 @@ int main(void) {
     VertexPathGraph vpgraph[1];
     construct_vpg(vpgraph, primePaths);
 
-    TestableGraph vpgraph_tg[1];
-    constructTgi_vpg(vpgraph_tg, vpgraph);
-
-    VertexPath cycle[1] = {NOT_A_VPATH};
-    computeCycle_vpath(cycle, vpgraph_tg);
-
-    dump_vpath(cycle, stdout);
+    SimpleGraph vpgraph_sg[1];
+    construct_sgi_vpg(vpgraph_sg, vpgraph);
 
     free_vpg(vpgraph);
     free_vpa(primePaths);

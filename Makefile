@@ -2,7 +2,7 @@ include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
 OBJECTS=obj/algorithm.o obj/gwmodel.o obj/gwplus.o obj/path.o obj/testrequirements.o
-TOYOBJS=obj/tgi.o obj/toygraph.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
+TOYOBJS=obj/sgi.o obj/toygraph.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
 
 all: bin/gwplus bin/toygraph
 
@@ -78,14 +78,14 @@ obj/testrequirements.o: obj             \
     src/testrequirements.c              \
     ; ${COMPILE} ${INCLUDES} src/testrequirements.c -c -o obj/testrequirements.o
 
-obj/tgi.o: obj                          \
-    include/tgi.h                       \
+obj/sgi.o: obj                          \
+    include/sgi.h                       \
     padkit/include/padkit/debug.h       \
-    src/tgi.c                           \
-    ; ${COMPILE} ${INCLUDES} src/tgi.c -c -o obj/tgi.o
+    src/sgi.c                           \
+    ; ${COMPILE} ${INCLUDES} src/sgi.c -c -o obj/sgi.o
 
 obj/toygraph.o: obj                     \
-    include/tgi.h                       \
+    include/sgi.h                       \
     include/vpath.h                     \
     include/vpatharray.h                \
     padkit/include/padkit/debug.h       \
@@ -93,7 +93,7 @@ obj/toygraph.o: obj                     \
     ; ${COMPILE} ${INCLUDES} src/toygraph.c -c -o obj/toygraph.o
 
 obj/vpath.o: obj                        \
-    include/tgi.h                       \
+    include/sgi.h                       \
     include/vpath.h                     \
     padkit/include/padkit/debug.h       \
     padkit/include/padkit/reallocate.h  \
@@ -102,7 +102,7 @@ obj/vpath.o: obj                        \
     ; ${COMPILE} ${INCLUDES} src/vpath.c -c -o obj/vpath.o
 
 obj/vpatharray.o: obj                   \
-    include/tgi.h                       \
+    include/sgi.h                       \
     include/vpath.h                     \
     include/vpatharray.h                \
     padkit/include/padkit/debug.h       \
@@ -111,7 +111,7 @@ obj/vpatharray.o: obj                   \
     ; ${COMPILE} ${INCLUDES} src/vpatharray.c -c -o obj/vpatharray.o
 
 obj/vpathgraph.o: obj                   \
-    include/tgi.h                       \
+    include/sgi.h                       \
     include/vpath.h                     \
     include/vpatharray.h                \
     include/vpathgraph.h                \

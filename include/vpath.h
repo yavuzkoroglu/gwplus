@@ -1,19 +1,19 @@
 /**
  * @file vpath.h
- * @brief Defines a TGI-compatible vertex path.
+ * @brief Defines a SGI-compatible vertex path.
  * @see tgi.h
  * @author Yavuz Koroglu
  */
 #ifndef VPATH_H
     #define VPATH_H
-    #include "tgi.h"
+    #include "sgi.h"
 
     /**
      * @struct VertexPath
-     * @brief A VertexPath is an array of vertices, where every two consecutive vertices are neighbors in a TestableGraph.
+     * @brief A VertexPath is an array of vertices, where every two consecutive vertices are neighbors in a SimpleGraph.
      *
      * @var VertexPath::graph
-     *   A pointer to the constant TestableGraph.
+     *   A pointer to the constant SimpleGraph.
      * @var VertexPath::isAllocated
      *   A VertexPath is allocated if and only if it uses some heap memory.
      * @var VertexPath::isSimple
@@ -34,16 +34,16 @@
      *   The path as an array of vertex indices.
      */
     typedef struct VertexPathBody {
-        TestableGraph const*    graph;
-        uint64_t                isAllocated :1;
-        uint64_t                isSimple    :1;
-        uint64_t                isCycle     :1;
-        uint64_t                isPrime     :1;
-        uint64_t                _moreFlags  :60;
-        uint32_t                len;
-        uint32_t                cap;
-        uint32_t*               sorted;
-        uint32_t*               array;
+        SimpleGraph const*  graph;
+        uint64_t            isAllocated :1;
+        uint64_t            isSimple    :1;
+        uint64_t            isCycle     :1;
+        uint64_t            isPrime     :1;
+        uint64_t            _moreFlags  :60;
+        uint32_t            len;
+        uint32_t            cap;
+        uint32_t*           sorted;
+        uint32_t*           array;
     } VertexPath;
 
     /**
@@ -60,28 +60,28 @@
     void clone_vpath(VertexPath* const clone, VertexPath const* const original);
 
     /**
-     * @brief Computes a cycle in a TestableGraph.
-     * @param cycle A pointer to the cycle.
-     * @param graph A pointer to the TestableGraph.
-     */
-    bool computeCycle_vpath(VertexPath* const cycle, TestableGraph const* const graph);
-
-    /**
      * @brief Computes the shortest path between two vertices. If these vertices are the same, the shortest path is empty.
      * @param shortestPath A pointer to the shortestPath.
-     * @param graph A pointer to the TestableGraph.
+     * @param graph A pointer to the SimpleGraph.
      * @param from The vertex index of the source vertex.
      * @param to The vertex index of the target vertex.
      */
-    bool computeShortest_vpath(VertexPath* const shortestPath, TestableGraph const* const graph, uint32_t const from, uint32_t const to);
+    bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* const graph, uint32_t const from, uint32_t const to);
+
+    /**
+     * @brief Computes a shortest cycle in a SimpleGraph (but does NOT complete the cycle).
+     * @param cycle A pointer to the cycle.
+     * @param graph A pointer to the SimpleGraph.
+     */
+    bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* const graph);
 
     /**
      * @brief Computes the shortest path from any start vertex to target. If target is a start vertex, the initializer is empty.
      * @param initializer A pointer to the initializer path.
-     * @param graph A pointer to the TestableGraph.
+     * @param graph A pointer to the SimpleGraph.
      * @param target The vertex index of the target vertex.
      */
-    bool computeShortestInitializer_vpath(VertexPath* const initializer, TestableGraph const* const graph, uint32_t const target);
+    bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph const* const graph, uint32_t const target);
 
     /**
      * @brief Concatenates two paths. The first vertex of the tail must be a neighbor of the last vertex of the head.
@@ -91,11 +91,11 @@
     void concat_vpath(VertexPath* const head, VertexPath const* const tail);
 
     /**
-     * @brief Constructs an empty VertexPath under a TestableGraph.
+     * @brief Constructs an empty VertexPath under a SimpleGraph.
      * @param vpath A pointer to the VertexPath.
-     * @param graph A pointer to the TestableGraph.
+     * @param graph A pointer to the SimpleGraph.
      */
-    void constructEmpty_vpath(VertexPath* const vpath, TestableGraph const* const graph);
+    void constructEmpty_vpath(VertexPath* const vpath, SimpleGraph const* const graph);
 
     /**
      * @brief Checks if a VertexPath contains a vertex.
@@ -171,10 +171,16 @@
     uint32_t search_vpath(VertexPath const* const vpath, uint32_t const vertexId);
 
     /**
-     * @brief Performs splicing between two paths, saving the result in a thrid path.
-     * @param splice A pointer to the splice.
-     * @param head A pointer to the first VertexPath.
-     * @param tail A pointer to the second VertexPath.
+     * @brief Splices a tail VertexPath onto a head VertexPath.
+     * @param head A pointer to the head VertexPath.
+     * @param tail A pointer to the tail VertexPath.
      */
-    bool splice_vpath(VertexPath* const splice, VertexPath const* const head, VertexPath const* const tail);
+    bool splice_vpath(VertexPath* const head, VertexPath const* const tail);
+
+    /**
+     * @brief A VertexPath subsumes another if it traverses every vertex of that VertexPath.
+     * @param subsumer A pointer to the subsumer VertexPath.
+     * @param subsumed A pointer to the subsumed VertexPath.
+     */
+    bool subsumes_vpath(VertexPath const* const subsumer, VertexPath const* const subsumed);
 #endif

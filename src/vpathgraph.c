@@ -28,8 +28,8 @@ void construct_vpg(VertexPathGraph* const vpgraph, VertexPathArray const* const 
             DEBUG_ASSERT(p_j->len > 0)
 
             VertexPath* const splice_ij = vpgraph->splices[i] + j;
-
-            if (!splice_vpath(splice_ij, p_i, p_j)) continue;
+            clone_vpath(splice_ij, p_i);
+            if (!splice_vpath(splice_ij, p_j)) continue;
 
             clone_vpath(connector, splice_ij);
             concat_vpath(connector, p_j);
@@ -78,26 +78,28 @@ void construct_vpg(VertexPathGraph* const vpgraph, VertexPathArray const* const 
         free_vpath(connector);
 }
 
-void constructTgi_vpg(TestableGraph* const graph, VertexPathGraph const* const vpgraph) {
+void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph const* const vpgraph) {
     DEBUG_ERROR_IF(graph == NULL)
     DEBUG_ASSERT(isValid_vpg(vpgraph))
 
-    graph->graphPtr             = vpgraph;
-    graph->countEdges           = countEdges_vpg;
-    graph->countVertices        = countVertices_vpg;
-    graph->dump                 = dump_vpg;
-    graph->dumpVertex           = dumpVertex_vpg;
-    graph->isValid              = isValid_vpg;
-    graph->isValid_nitr         = isValid_nitr_vpg;
-    graph->isValid_svitr        = isValid_svitr_vpg;
-    graph->isValid_vitr         = isValid_vitr_vpg;
-    graph->isValidVertex        = isValidVertex_vpg;
-    graph->nextVertexId_nitr    = nextVertexId_nitr_vpg;
-    graph->nextVertexId_svitr   = nextVertexId_svitr_vpg;
-    graph->nextVertexId_vitr    = nextVertexId_vitr_vpg;
-    graph->setFirstNextId_nitr  = setFirstNextId_nitr_vpg;
-    graph->setFirstNextId_svitr = setFirstNextId_svitr_vpg;
-    graph->setFirstNextId_vitr  = setFirstNextId_vitr_vpg;
+    graph = (SimpleGraph){
+        vpgraph,
+        countEdges_vpg,
+        countVertices_vpg,
+        dump_vpg,
+        dumpVertex_vpg,
+        isValid_vpg,
+        isValid_nitr_vpg,
+        isValid_svitr_vpg,
+        isValid_vitr_vpg,
+        isValidVertex_vpg,
+        nextVertexId_nitr_vpg,
+        nextVertexId_svitr_vpg,
+        nextVertexId_vitr_vpg,
+        setFirstNextId_nitr_vpg,
+        setFirstNextId_svitr_vpg,
+        setFirstNextId_vitr_vpg
+    };
 }
 
 uint32_t countEdges_vpg(void const* const graphPtr) {
@@ -165,10 +167,9 @@ void dumpVertex_vpg(void const* const graphPtr, FILE* const output, uint32_t con
     DEBUG_ASSERT(isValidVertex_vpg(vpgraph, vertexId))
 
     if (vertexId == vpgraph->vpaths->size) {
-        fputs("s\n", output);
+        fputs(" s", output);
     } else {
-        fprintf(output, "p%"PRIu32":", vertexId);
-        dump_vpath(vpgraph->vpaths->array + vertexId, output);
+        fprintf(output, " p%"PRIu32, vertexId);
     }
 }
 
@@ -186,24 +187,24 @@ void free_vpg(VertexPathGraph* const vpgraph) {
         free(vpgraph->splices[i]);
     }
     free(vpgraph->splices);
-    vpgraph->splices = NULL;
+    *vpgraph = NOT_A_VPATH_GRAPH;
+}
+
+bool isValid_nitr_vpg(NeighborIterator* const itr) {
+    return itr != NULL && isValid_vpg(itr->graphPtr) && isValidVertex_vpg(itr->graphPtr, itr->vertexId);
+}
+
+bool isValid_svitr_vpg(StartVertexIterator* const itr) {
+    return itr != NULL && isValid_vpg(itr->graphPtr);
+}
+
+bool isValid_vitr_vpg(VertexIterator* const itr) {
+    return itr != NULL && isValid_vpg(itr->graphPtr);
 }
 
 bool isValid_vpg(void const* const graphPtr) {
     VertexPathGraph const* const vpgraph = (VertexPathGraph const*)graphPtr;
     return vpgraph != NULL && vpgraph->splices != NULL && isValid_vpa(vpgraph->vpaths);
-}
-
-bool isValid_nitr_vpg(NeighborIterator const* const itr) {
-    return itr != NULL && isValid_vpg(itr->graphPtr) && isValidVertex_vpg(itr->graphPtr, itr->vertexId);
-}
-
-bool isValid_svitr_vpg(StartVertexIterator const* const itr) {
-    return itr != NULL && itr->graphPtr != NULL;
-}
-
-bool isValid_vitr_vpg(VertexIterator const* const itr) {
-    return itr != NULL && isValid_vpg(itr->graphPtr);
 }
 
 bool isValidVertex_vpg(void const* const graphPtr, uint32_t const vertexId) {
@@ -259,7 +260,7 @@ void setFirstNextId_svitr_vpg(StartVertexIterator* const itr) {
 }
 
 void setFirstNextId_vitr_vpg(VertexIterator* const itr) {
-    DEBUG_ASSERT(isValid_vitr_vpg(itr))
+    DEBUG_ERROR_IF(isValid_vitr_vpg(itr))
 
     VertexPathGraph const* const vpgraph = (VertexPathGraph const*)itr->graphPtr;
     itr->nextVertexId = vpgraph->vpaths->size;

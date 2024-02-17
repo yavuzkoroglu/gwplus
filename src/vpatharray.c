@@ -7,21 +7,21 @@
 #include "padkit/reallocate.h"
 #include "vpatharray.h"
 
-void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, TestableGraph const* const graph, uint32_t const initial_cap) {
+void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph const* const graph, uint32_t const initial_cap) {
     DEBUG_ERROR_IF(primePaths == NULL)
-    DEBUG_ASSERT(isValid_tg(graph))
+    DEBUG_ASSERT(isValid_sg(graph))
     DEBUG_ERROR_IF(initial_cap == 0)
     DEBUG_ERROR_IF(initial_cap == 0xFFFFFFFF)
 
     constructEmpty_vpa(primePaths, graph, initial_cap);
 
-    if (countVertices_tg(graph) == 0) return;
+    if (countVertices_sg(graph) == 0) return;
 
     VertexPathArray stack[1];
     constructEmpty_vpa(stack, graph, initial_cap);
 
     VertexIterator vitr[1];
-    construct_vitr_tg(vitr, graph);
+    construct_vitr_sg(vitr, graph);
     for (
         uint32_t vertexId;
         (vertexId = graph->nextVertexId_vitr(vitr)) != 0xFFFFFFFF;
@@ -38,7 +38,7 @@ void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, TestableGraph
         uint32_t const lastVertexId = vpath->array[vpath->len - 1];
 
         NeighborIterator nitr[1];
-        construct_nitr_tg(nitr, graph, lastVertexId);
+        construct_nitr_sg(nitr, graph, lastVertexId);
         size_t extensions_count = 0;
         for (
             uint32_t neighborId;
@@ -88,9 +88,9 @@ void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, TestableGraph
     free_vpath(vpath);
 }
 
-void constructEmpty_vpa(VertexPathArray* const vpaths, TestableGraph const* const graph, uint32_t const initial_cap) {
+void constructEmpty_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph, uint32_t const initial_cap) {
     DEBUG_ERROR_IF(vpaths == NULL)
-    DEBUG_ASSERT(isValid_tg(graph))
+    DEBUG_ASSERT(isValid_sg(graph))
     DEBUG_ERROR_IF(initial_cap == 0)
     DEBUG_ERROR_IF(initial_cap == 0xFFFFFFFF)
 
@@ -126,7 +126,7 @@ void free_vpa(VertexPathArray* const vpaths) {
             free_vpath(vpath);
 
     free(vpaths->array);
-    vpaths->array = NULL;
+    *vpaths = NOT_A_VPATH_ARRAY;
 }
 
 void increaseCapIfNecessary_vpa(VertexPathArray* const vpaths) {
@@ -136,7 +136,7 @@ void increaseCapIfNecessary_vpa(VertexPathArray* const vpaths) {
 
 bool isValid_vpa(VertexPathArray const* const vpaths) {
     return  vpaths != NULL                                  &&
-            isValid_tg(vpaths->graph)                       &&
+            isValid_sg(vpaths->graph)                       &&
             vpaths->cap != 0 && vpaths->cap != 0xFFFFFFFF   &&
             vpaths->size <= vpaths->cap                     &&
             vpaths->array != NULL;
