@@ -27,6 +27,12 @@
     } NeighborIterator;
 
     /**
+     * @def NOT_A_NITR
+     *   A special NeighborIterator which should not pass the isValid_nitr() test.
+     */
+    #define NOT_A_NITR ((NeighborIterator){ NULL, 0, 0 })
+
+    /**
      * @struct VertexIterator
      * @brief Iterates through the vertices of a SimpleGraph.
      *
@@ -39,6 +45,18 @@
         void const* graphPtr;
         uint32_t    nextVertexId;
     } VertexIterator, StartVertexIterator;
+
+    /**
+     * @def NOT_A_SVITR
+     *   A special StartVertexIterator which should not pass the isValid_svitr() test.
+     */
+    #define NOT_A_SVITR ((StartVertexIterator){ NULL, 0 })
+
+    /**
+     * @def NOT_A_VITR
+     *   A special VertexIterator which should not pass the isValid_vitr() test.
+     */
+    #define NOT_A_VITR ((VertexIterator){ NULL, 0 })
 
     /**
      * @struct SimpleGraph
@@ -62,6 +80,8 @@
      *   A function that checks if a StartVertexIterator is valid.
      * @var SimpleGraph::isValid_vitr
      *   A function that checks if a VertexIterator is valid.
+     * @var SimpleGraph::isValidEdge
+     *   Checks if there exists an edge from sourceVertexId to targetVertexId.
      * @var SimpleGraph::isValidVertex
      *   A function that checks if a graph's vertex is valid.
      * @var SimpleGraph::nextVertexId_nitr
@@ -87,6 +107,7 @@
         bool        (*isValid_nitr)         (NeighborIterator const* const itr);
         bool        (*isValid_svitr)        (StartVertexIterator const* const itr);
         bool        (*isValid_vitr)         (VertexIterator const* const itr);
+        bool        (*isValidEdge)          (void const* const graphPtr, uint32_t const sourceVertexId, uint32_t const targetVertexId);
         bool        (*isValidVertex)        (void const* const graphPtr, uint32_t const vertexId);
         uint32_t    (*nextVertexId_nitr)    (NeighborIterator* const itr);
         uint32_t    (*nextVertexId_svitr)   (StartVertexIterator* const itr);
@@ -94,15 +115,7 @@
         void        (*setFirstNextId_nitr)  (NeighborIterator* const itr);
         void        (*setFirstNextId_svitr) (StartVertexIterator* const itr);
         void        (*setFirstNextId_vitr)  (VertexIterator* const itr);
-   } SimpleGraph;
-
-    /**
-     * @brief Checks if two vertices are neighbors in a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param sourceVertexId The source vertex index.
-     * @param targetVertexId The target vertex index.
-     */
-    bool areNeighbors_sg(SimpleGraph const* const graph, uint32_t const sourceVertexId, uint32_t const targetVertexId);
+    } SimpleGraph;
 
     /**
      * @brief Constructs a NeighborIterator for a vertex in a SimpleGraph.
@@ -130,47 +143,20 @@
      * @brief The default function to count the total number of edges in a SimpleGraph.
      * @param graph A pointer to the constant SimpleGraph.
      */
-    uint32_t countEdges_default_sg(SimpleGraph const* const graph);
+    uint32_t countEdges_sg(SimpleGraph const* const graph);
 
     /**
      * @brief The default function to counts the total number of vertices in a SimpleGraph.
      * @param graph A pointer to the constant SimpleGraph.
      */
-    uint32_t countVertices_default_sg(SimpleGraph const* const graph);
-
-    /**
-     * @brief Counts the total number of edges in a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     */
-    uint32_t countEdges_sg(SimpleGraph const* const graph);
-
-    /**
-     * @brief Counts the total number of vertices in a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     */
     uint32_t countVertices_sg(SimpleGraph const* const graph);
-
-    /**
-     * @brief Dumps a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param output A pointer to the output FILE.
-     */
-    void dump_sg(SimpleGraph const* const graph, FILE* const output);
 
     /**
      * @brief The default function to dump a SimpleGraph.
      * @param graph A pointer to the constant SimpleGraph.
      * @param output A pointer to the output FILE.
      */
-    void dump_default_sg(SimpleGraph const* const graph, FILE* const output);
-
-    /**
-     * @brief Dumps one vertex of a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param output A pointer to the output FILE.
-     * @param vertexId The vertex index.
-     */
-    void dumpVertex_sg(SimpleGraph const* const graph, FILE* const output, uint32_t const vertexId);
+    void dump_sg(SimpleGraph const* const graph, FILE* const output);
 
     /**
      * @brief The default function to dump one vertex of a SimpleGraph.
@@ -178,14 +164,7 @@
      * @param output A pointer to the output FILE.
      * @param vertexId The vertex index.
      */
-    void dumpVertex_default_sg(SimpleGraph const* const graph, FILE* const output, uint32_t const vertexId);
-
-    /**
-     * @brief The default function to check if a NeighborIterator is valid.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param itr A pointer to the NeighborIterator.
-     */
-    bool isValid_nitr_default_sg(SimpleGraph const* const graph, NeighborIterator const* const itr);
+    void dumpVertex_sg(SimpleGraph const* const graph, FILE* const output, uint32_t const vertexId);
 
     /**
      * @brief Checks if a SimpleGraph is valid.
@@ -194,23 +173,10 @@
     bool isValid_sg(SimpleGraph const* const graph);
 
     /**
-     * @brief The default function to check if a StartVertexIterator is valid.
+     * @brief The default function to check if two vertices form a valid edge in a SimpleGraph.
      * @param graph A pointer to the constant SimpleGraph.
-     * @param itr A pointer to the StartVertexIterator.
+     * @param sourceVertexId The source vertex index.
+     * @param targetVertexId The target vertex index.
      */
-    bool isValid_svitr_default_sg(SimpleGraph const* const graph, StartVertexIterator const* const itr);
-
-    /**
-     * @brief The default function to check if a VertexIterator is valid.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param itr A pointer to the VertexIterator.
-     */
-    bool isValid_vitr_default_sg(SimpleGraph const* const graph, VertexIterator const* const itr);
-
-    /**
-     * @brief Checks if a SimpleGraph vertex is valid.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param vertexId The vertex index.
-     */
-    bool isValidVertex_sg(SimpleGraph const* const graph, uint32_t const vertexId);
+    bool isValidEdge_sg(SimpleGraph const* const graph, uint32_t const sourceVertexId, uint32_t const targetVertexId);
 #endif

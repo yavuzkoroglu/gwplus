@@ -40,8 +40,8 @@
         uint64_t            isCycle     :1;
         uint64_t            isPrime     :1;
         uint64_t            _moreFlags  :60;
-        uint32_t            len;
         uint32_t            cap;
+        uint32_t            len;
         uint32_t*           sorted;
         uint32_t*           array;
     } VertexPath;
@@ -51,6 +51,12 @@
      *   A special VertexPath denoting a NOT-VertexPath. This VertexPath cannot pass the isValid_vpath test.
      */
     #define NOT_A_VPATH ((VertexPath){ NULL, 0, 0, 0, 0, 0, 0, 0, NULL, NULL })
+
+    /**
+     * @brief Checks if a VertexPath can rotate.
+     * @param vpath A pointer to the constant VertexPath.
+     */
+    bool canRotate_vpath(VertexPath const* const vpath);
 
     /**
      * @brief Clones a VertexPath.
@@ -120,7 +126,7 @@
     bool extend_vpath(VertexPath* const vpath, uint32_t const vertexId, bool const preserveSimplicity);
 
     /**
-     * @brief Finds the largest overlap between two vertex paths and returns the starting position of the overlap.
+     * @brief Finds the largest overlap between two vertex paths and returns the overlap length.
      * @param head The first VertexPath.
      * @param tail The second VertexPath.
      */
@@ -162,6 +168,12 @@
      * @param vpath A pointer to the VertexPath.
      */
     bool isValid_vpath(VertexPath const* const vpath);
+
+    /**
+     * @brief If a VertexPath's last and first vertices form a valid edge, rotating the path is possible
+     * @param vpath A pointer to the VertexPath.
+     */
+    bool rotate_vpath(VertexPath* const vpath);
 
     /**
      * @brief Performs a rightmorst binary search on a VertexPath and returns the hypothetical sorted position of a vertex index.

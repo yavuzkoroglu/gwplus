@@ -1,0 +1,13 @@
+digraph H003 {
+    node [shape=circle,fixedsize=1,width=0.4,height=0.4,fillcolor="darkgray"];
+	edge [arrowsize=0.5];
+	nodesep=0.1;
+	ranksep=0.1;
+    s -> h2;
+    p3 -> p4;
+    p4 -> h2;
+    h2 -> p3;
+    h2 [style="filled",shape="record",label="{h2|{{h1|{{h0|{p5|p2}}|p0}}|p1}}",width=1.4,height=1.4];
+    p3 [style="filled"];
+    p4 [style="filled"];
+}

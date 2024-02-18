@@ -1,8 +1,8 @@
 include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
-OBJECTS=obj/algorithm.o obj/gwmodel.o obj/gwplus.o obj/path.o obj/testrequirements.o
-TOYOBJS=obj/sgi.o obj/toygraph.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
+OBJECTS=obj/algorithm.o obj/gwmodel.o obj/gwplus.o obj/testrequirements.o
+TOYOBJS=obj/hpathgraph.o obj/sgi.o obj/toygraph.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
 
 all: bin/gwplus bin/toygraph
 
@@ -59,13 +59,16 @@ obj/gwplus.o: obj                       \
     src/gwplus.c                        \
     ; ${COMPILE} ${INCLUDES} src/gwplus.c -c -o obj/gwplus.o
 
-obj/path.o: obj                         \
-    include/path.h                      \
-    padkit/include/padkit/chunk.h       \
+obj/hpathgraph.o: obj                   \
+    include/sgi.h                       \
+    include/vpath.h                     \
+    include/vpatharray.h                \
+    include/vpathgraph.h                \
+    include/hpathgraph.h                \
     padkit/include/padkit/debug.h       \
-    padkit/include/padkit/reallocate.h  \
-    src/path.c                          \
-    ; ${COMPILE} ${INCLUDES} src/path.c -c -o obj/path.o
+    padkit/include/padkit/graphmatrix.h \
+    src/hpathgraph.c                    \
+    ; ${COMPILE} ${INCLUDES} src/hpathgraph.c -c -o obj/hpathgraph.o
 
 obj/testrequirements.o: obj             \
     include/coverage.h                  \
@@ -88,6 +91,8 @@ obj/toygraph.o: obj                     \
     include/sgi.h                       \
     include/vpath.h                     \
     include/vpatharray.h                \
+    include/vpathgraph.h                \
+    include/hpathgraph.h                \
     padkit/include/padkit/debug.h       \
     src/toygraph.c                      \
     ; ${COMPILE} ${INCLUDES} src/toygraph.c -c -o obj/toygraph.o

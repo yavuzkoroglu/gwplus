@@ -8,6 +8,17 @@
 #include "padkit/streq.h"
 #include "vpath.h"
 
+bool canRotate_vpath(VertexPath const* const vpath) {
+    DEBUG_ASSERT(isValid_vpath(vpath))
+
+    if (vpath->len < 2) return 0;
+
+    uint32_t const firstVertexId    = vpath->array[0];
+    uint32_t const lastVertexId     = vpath->array[vpath->len - 1];
+
+    return vpath->graph->isValidEdge(vpath->graph->graphPtr, lastVertexId, firstVertexId);
+}
+
 void clone_vpath(VertexPath* const clone, VertexPath const* const original) {
     DEBUG_ERROR_IF(clone == NULL)
     DEBUG_ASSERT(isValid_vpath(original))
@@ -33,22 +44,20 @@ void clone_vpath(VertexPath* const clone, VertexPath const* const original) {
 bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* const graph, uint32_t const from, uint32_t const to) {
     DEBUG_ERROR_IF(shortestPath == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
-    DEBUG_ASSERT(isValidVertex_sg(graph, from))
-    DEBUG_ASSERT(isValidVertex_sg(graph, to))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, from))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, to))
 
-    if (from == to) {
-        if (shortestPath->isAllocated) {
-            shortestPath->graph = graph;
-            flush_vpath(shortestPath);
-        } else {
-            constructEmpty_vpath(shortestPath, graph);
-        }
-        return 1;
+    if (shortestPath->isAllocated) {
+        shortestPath->graph = graph;
+        flush_vpath(shortestPath);
+    } else {
+        constructEmpty_vpath(shortestPath, graph);
     }
+    if (from == to) return 1;
 
     VertexPath* vpath;
 
-    uint32_t    stack_A_cap     = countVertices_sg(graph);
+    uint32_t    stack_A_cap     = graph->countVertices(graph->graphPtr);
     uint32_t    stack_A_size    = 0;
     VertexPath* stack_A         = calloc((size_t)stack_A_cap, sizeof(VertexPath));
     DEBUG_ERROR_IF(stack_A == NULL)
@@ -62,8 +71,21 @@ bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* co
     construct_nitr_sg(itr, graph, from);
     for (
         uint32_t neighborId;
-        (neighborId = graph->nextVertexId_nitr(itr)) != 0xFFFFFFFF;
+        graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
     ) {
+        if (neighborId == to) {
+            for (uint32_t i = 0; i < stack_A_cap; i++) {
+                vpath = stack_A + i;
+                if (vpath->isAllocated) free_vpath(vpath);
+            }
+            free(stack_A);
+            for (uint32_t i = 0; i < stack_B_cap; i++) {
+                vpath = stack_B + i;
+                if (vpath->isAllocated) free_vpath(vpath);
+            }
+            free(stack_B);
+            return 1;
+        }
         vpath = stack_A + stack_A_size++;
         constructEmpty_vpath(vpath, graph);
         DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(vpath, neighborId, 1))
@@ -90,7 +112,7 @@ bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* co
             construct_nitr_sg(itr, graph, lastVertexId);
             for (
                 uint32_t neighborId;
-                (neighborId = graph->nextVertexId_nitr(itr)) != 0xFFFFFFFF;
+                graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
             ) {
                 if (neighborId == to) {
                     clone_vpath(shortestPath, vpath);
@@ -140,7 +162,7 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
 
     VertexPath* vpath;
 
-    uint32_t    stack_A_cap     = countVertices_sg(graph);
+    uint32_t    stack_A_cap     = graph->countVertices(graph->graphPtr);
     uint32_t    stack_A_size    = 0;
     VertexPath* stack_A         = calloc((size_t)stack_A_cap, sizeof(VertexPath));
     DEBUG_ERROR_IF(stack_A == NULL)
@@ -154,7 +176,7 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
     construct_vitr_sg(vitr, graph);
     for (
         uint32_t vertexId;
-        (vertexId = graph->nextVertexId_vitr(vitr)) != 0xFFFFFFFF;
+        graph->isValidVertex(graph->graphPtr, (vertexId = graph->nextVertexId_vitr(vitr)));
     ) {
         vpath = stack_A + stack_A_size++;
         constructEmpty_vpath(vpath, graph);
@@ -184,7 +206,7 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
             construct_nitr_sg(itr, graph, lastVertexId);
             for (
                 uint32_t neighborId;
-                (neighborId = graph->nextVertexId_nitr(itr)) != 0xFFFFFFFF;
+                graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
             ) {
                 if (neighborId == target) {
                     clone_vpath(cycle, vpath);
@@ -231,11 +253,11 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
 bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph const* const graph, uint32_t const target) {
     DEBUG_ERROR_IF(initializer == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
-    DEBUG_ASSERT(isValidVertex_sg(graph, target))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, target))
 
     VertexPath* vpath;
 
-    uint32_t    stack_A_cap     = countVertices_sg(graph);
+    uint32_t    stack_A_cap     = graph->countVertices(graph->graphPtr);
     uint32_t    stack_A_size    = 0;
     VertexPath* stack_A         = calloc((size_t)stack_A_cap, sizeof(VertexPath));
     DEBUG_ERROR_IF(stack_A == NULL)
@@ -249,7 +271,7 @@ bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph
     construct_svitr_sg(svitr, graph);
     for (
         uint32_t s_id;
-        (s_id = graph->nextVertexId_svitr(svitr)) != 0xFFFFFFFF;
+        graph->isValidVertex(graph->graphPtr, (s_id = graph->nextVertexId_svitr(svitr)));
     ) {
         if (s_id == target) {
             for (uint32_t i = 0; i < stack_A_cap; i++) {
@@ -299,7 +321,7 @@ bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph
             construct_nitr_sg(itr, graph, lastVertexId);
             for (
                 uint32_t neighborId;
-                (neighborId = graph->nextVertexId_nitr(itr)) != 0xFFFFFFFF;
+                graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
             ) {
                 if (neighborId == target) {
                     clone_vpath(initializer, vpath);
@@ -346,7 +368,7 @@ bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph
 void concat_vpath(VertexPath* const head, VertexPath const* const tail) {
     DEBUG_ASSERT(isValid_vpath(head))
     DEBUG_ASSERT(isValid_vpath(tail))
-    DEBUG_ASSERT(head->graph == tail->graph)
+    DEBUG_ASSERT(head->graph->graphPtr == tail->graph->graphPtr)
 
     if (tail->len == 0) return;
     if (head->len == 0) {
@@ -354,7 +376,7 @@ void concat_vpath(VertexPath* const head, VertexPath const* const tail) {
         return;
     }
 
-    DEBUG_ASSERT(areNeighbors_sg(head->graph, head->array[head->len - 1], tail->array[0]))
+    DEBUG_ASSERT(head->graph->isValidEdge(head->graph->graphPtr, head->array[head->len - 1], tail->array[0]))
 
     size_t const old_head_sorted_size_in_bytes = (size_t)head->len * sizeof(uint32_t);
     uint32_t* old_head_sorted = malloc(old_head_sorted_size_in_bytes);
@@ -394,7 +416,7 @@ void constructEmpty_vpath(VertexPath* const vpath, SimpleGraph const* const grap
     DEBUG_ERROR_IF(vpath == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
 
-    uint32_t const initial_cap = countVertices_sg(graph) + 1;
+    uint32_t const initial_cap = graph->countVertices(graph->graphPtr) + 1;
     DEBUG_ERROR_IF(initial_cap == 0)
 
     vpath->graph        = graph;
@@ -411,7 +433,7 @@ void constructEmpty_vpath(VertexPath* const vpath, SimpleGraph const* const grap
 
 bool contains_vpath(VertexPath const* const vpath, uint32_t const vertexId) {
     DEBUG_ASSERT(isValid_vpath(vpath))
-    DEBUG_ERROR_IF(vertexId == 0xFFFFFFFF)
+    DEBUG_ASSERT(vpath->graph->isValidVertex(vpath->graph->graphPtr, vertexId))
 
     uint32_t const position = search_vpath(vpath, vertexId);
 
@@ -423,14 +445,14 @@ void dump_vpath(VertexPath const* const vpath, FILE* const output) {
     DEBUG_ERROR_IF(output == NULL)
 
     for (uint32_t i = 0; i < vpath->len; i++)
-        dumpVertex_sg(vpath->graph, output, vpath->array[i]);
+        vpath->graph->dumpVertex(vpath->graph->graphPtr, output, vpath->array[i]);
 
     fputs("\n", output);
 }
 
 bool extend_vpath(VertexPath* const vpath, uint32_t const vertexId, bool const preserveSimplicity) {
     DEBUG_ASSERT(isValid_vpath(vpath))
-    DEBUG_ASSERT(isValidVertex_sg(vpath->graph, vertexId))
+    DEBUG_ASSERT(vpath->graph->isValidVertex(vpath->graph->graphPtr, vertexId))
 
     if (vpath->len == 0) {
         vpath->sorted[0]    = vertexId;
@@ -439,7 +461,7 @@ bool extend_vpath(VertexPath* const vpath, uint32_t const vertexId, bool const p
         return 1;
     }
 
-    DEBUG_ASSERT(areNeighbors_sg(vpath->graph, vpath->array[vpath->len - 1], vertexId))
+    DEBUG_ASSERT(vpath->graph->isValidEdge(vpath->graph->graphPtr, vpath->array[vpath->len - 1], vertexId))
 
     increaseCapIfNecessary_vpath(vpath);
 
@@ -467,7 +489,7 @@ bool extend_vpath(VertexPath* const vpath, uint32_t const vertexId, bool const p
 
     vpath->array[vpath->len++] = vertexId;
 
-    vpath->isPrime |= (vpath->isSimple && vpath->len == countVertices_sg(vpath->graph));
+    vpath->isPrime |= (vpath->isSimple && vpath->len > vpath->graph->countVertices(vpath->graph->graphPtr));
 
     return 1;
 }
@@ -475,27 +497,26 @@ bool extend_vpath(VertexPath* const vpath, uint32_t const vertexId, bool const p
 uint32_t findLargestOverlap_vpath(VertexPath const* const head, VertexPath const* const tail) {
     DEBUG_ASSERT(isValid_vpath(head))
     DEBUG_ASSERT(isValid_vpath(tail))
-    DEBUG_ASSERT(head->graph == tail->graph)
-    DEBUG_ASSERT(head->len > 0)
-    DEBUG_ASSERT(tail->len > 0)
+    DEBUG_ASSERT(head->graph->graphPtr == tail->graph->graphPtr)
 
     uint32_t overlap_len        = (head->len < tail->len) ? head->len : tail->len;
     uint32_t overlap_start_pos  = head->len - overlap_len;
     size_t overlap_size_bytes   = (size_t)overlap_len * sizeof(uint32_t);
 
-    while (!mem_eq_n(
-        (char const*)(head->array + overlap_start_pos),
-        (char const*)tail->array,
-        overlap_size_bytes
-    )) {
+    while (
+        overlap_len > 0 &&
+        !mem_eq_n(
+            (char const*)(head->array + overlap_start_pos),
+            (char const*)tail->array,
+            overlap_size_bytes
+        )
+    ) {
         overlap_len--;
         overlap_start_pos++;
         overlap_size_bytes -= sizeof(uint32_t);
-
-        if (overlap_len == 0) return 0xFFFFFFFF;
     }
 
-    return overlap_start_pos;
+    return overlap_len;
 }
 
 void flush_vpath(VertexPath* const vpath) {
@@ -525,7 +546,7 @@ void increaseCapIfNecessary_vpath(VertexPath* const vpath) {
     DEBUG_ERROR_IF(vpath == NULL)
     DEBUG_ASSERT(vpath->isAllocated)
 
-    uint32_t len = countVertices_sg(vpath->graph);
+    uint32_t len = vpath->graph->countVertices(vpath->graph->graphPtr);
     if (vpath->len > len) len = vpath->len;
 
     if (vpath->cap > len) return;
@@ -555,7 +576,7 @@ void invalidate_vpath(VertexPath* const vpath) {
 bool isSubPath_vpath(VertexPath const* const sub, VertexPath const* const super) {
     DEBUG_ASSERT(isValid_vpath(sub))
     DEBUG_ASSERT(isValid_vpath(super))
-    DEBUG_ASSERT(sub->graph == super->graph)
+    DEBUG_ASSERT(sub->graph->graphPtr == super->graph->graphPtr)
 
     if (sub->len > super->len) return 0;
 
@@ -580,9 +601,26 @@ bool isValid_vpath(VertexPath const* const vpath) {
             vpath->array != NULL;
 }
 
+bool rotate_vpath(VertexPath* const vpath) {
+    DEBUG_ASSERT(isValid_vpath(vpath))
+
+    if (vpath->len < 2) return 1;
+
+    uint32_t const firstVertexId    = vpath->array[0];
+    uint32_t const lastVertexId     = vpath->array[vpath->len - 1];
+
+    if (!vpath->graph->isValidEdge(vpath->graph->graphPtr, lastVertexId, firstVertexId))
+        return 0;
+
+    size_t const size_in_bytes = (size_t)(vpath->len - 1) * sizeof(uint32_t);
+    memmove(vpath->array, vpath->array + 1, size_in_bytes);
+    vpath->array[vpath->len - 1] = firstVertexId;
+    return 1;
+}
+
 uint32_t search_vpath(VertexPath const* const vpath, uint32_t const vertexId) {
     DEBUG_ASSERT(isValid_vpath(vpath))
-    DEBUG_ASSERT(isValidVertex_sg(vpath->graph, vertexId))
+    DEBUG_ASSERT(vpath->graph->isValidVertex(vpath->graph->graphPtr, vertexId))
 
     /* Perform rightmost binary search amongst the sorted indices */
     uint32_t l = 0;
@@ -598,22 +636,24 @@ uint32_t search_vpath(VertexPath const* const vpath, uint32_t const vertexId) {
 bool splice_vpath(VertexPath* const head, VertexPath const* const tail) {
     DEBUG_ASSERT(isValid_vpath(head))
     DEBUG_ASSERT(isValid_vpath(tail))
-    DEBUG_ASSERT(head->graph == tail->graph)
-    DEBUG_ASSERT(head->len > 0)
-    DEBUG_ASSERT(tail->len > 0)
+    DEBUG_ASSERT(head->graph->graphPtr == tail->graph->graphPtr)
+
+    if (tail->len == 0) {
+        return 1;
+    } else if (head->len == 0) {
+        clone_vpath(head, tail);
+        return 1;
+    }
 
     VertexPath connector[1] = {NOT_A_VPATH};
-
-    uint32_t const overlapStartPosition = findLargestOverlap_vpath(head, tail);
-    if (overlapStartPosition < head->len) {
-        constructEmpty_vpath(connector, head->graph);
-        for (uint32_t i = 0; i < overlapStartPosition; i++)
-            extend_vpath(connector, head->array[i], 0);
-        clone_vpath(head, connector);
-        free_vpath(connector);
+    uint32_t const overlapLen = findLargestOverlap_vpath(head, tail);
+    if (overlapLen > 0) {
+        for (uint32_t i = overlapLen; i < tail->len; i++)
+            extend_vpath(head, tail->array[i], 0);
         return 1;
     } else if (computeShortest_vpath(connector, head->graph, head->array[head->len - 1], tail->array[0])) {
         concat_vpath(head, connector);
+        concat_vpath(head, tail);
         free_vpath(connector);
         return 1;
     } else {

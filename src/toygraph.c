@@ -1,184 +1,191 @@
 /**
  * @file toygraph.c
- * @brief Implements the Simple Graph Interface (SGI) in the dummiest way.
- * @see tgi.h
+ * @brief Implements the toygraphs given in examples directory.
  * @author Yavuz Koroglu
  */
-#include <inttypes.h>
+#include "hpathgraph.h"
 #include "padkit/debug.h"
-#include "vpathgraph.h"
 
-/*
- * 0: 0 -> 0
- * 1: 0 -> 1
- * 2: 0 -> 4
- * 3: 1 -> 2
- * 4: 1 -> 5
- * 5: 2 -> 3
- * 6: 3 -> 0
- * 7: 3 -> 1
- * 8: 3 -> 4
- * 9: 4 -> 3
- * 10: 5 -> 3
- */
-static unsigned char toy_graph[6][6] = {
-    { 1, 1, 0, 0, 1, 0 },
-    { 0, 0, 1, 0, 0, 1 },
-    { 0, 0, 0, 1, 0, 0 },
-    { 1, 1, 0, 0, 1, 0 },
-    { 0, 0, 0, 1, 0, 0 },
-    { 0, 0, 0, 1, 0, 0 },
+static bool toygraph001[3][3] = {
+    { 1, 1, 0 },
+    { 0, 0, 1 },
+    { 1, 1, 0 }
 };
 
-static uint32_t countEdges_toy(void const* const graphPtr);
-static uint32_t countVertices_toy(void const* const graphPtr);
-static void dump_toy(void const* const graphPtr, FILE* const output);
-static void dumpVertex_toy(void const* const graphPtr, FILE* const output, uint32_t const vertexId);
+static uint32_t countEdges_toy001(void const* const graphPtr);
+static uint32_t countVertices_toy001(void const* const graphPtr);
+static void dump_toy001(void const* const graphPtr, FILE* const output);
+static void dumpVertex_toy001(void const* const graphPtr, FILE* const output, uint32_t const vertexId);
 static bool isValid_toy(void const* const graphPtr);
-static bool isValid_nitr_toy(NeighborIterator const* const itr);
+static bool isValid_nitr_toy001(NeighborIterator const* const itr);
 static bool isValid_svitr_toy(StartVertexIterator const* const itr);
 static bool isValid_vitr_toy(VertexIterator const* const itr);
-static bool isValidVertex_toy(void const* const graphPtr, uint32_t const vertexId);
-static uint32_t nextVertexId_nitr_toy(NeighborIterator* const itr);
+static bool isValidEdge_toy001(void const* const graphPtr, uint32_t const sourceVertexId, uint32_t const targetVertexId);
+static bool isValidVertex_toy001(void const* const graphPtr, uint32_t const vertexId);
+static uint32_t nextVertexId_nitr_toy001(NeighborIterator* const itr);
 static uint32_t nextVertexId_svitr_toy(StartVertexIterator* const itr);
-static uint32_t nextVertexId_vitr_toy(VertexIterator* const itr);
-static void setFirstNextId_nitr_toy(NeighborIterator* const itr);
-static void setFirstNextId_svitr_toy(StartVertexIterator* const itr);
-static void setFirstNextId_vitr_toy(VertexIterator* const itr);
+static uint32_t nextVertexId_vitr_toy(StartVertexIterator* const itr);
+static void setFirstNextId_nitr_toy001(NeighborIterator* const itr);
+static void setFirstNextId_svitr_toy001(StartVertexIterator* const itr);
+static void setFirstNextId_vitr_toy001(VertexIterator* const itr);
 
-uint32_t countEdges_toy(void const* const graphPtr) {
-    DEBUG_ASSERT(isValid_toy(graphPtr))
+static SimpleGraph graph001[1] = { (SimpleGraph){
+    toygraph001,
+    countEdges_toy001,
+    countVertices_toy001,
+    dump_toy001,
+    dumpVertex_toy001,
+    isValid_toy,
+    isValid_nitr_toy001,
+    isValid_svitr_toy,
+    isValid_vitr_toy,
+    isValidEdge_toy001,
+    isValidVertex_toy001,
+    nextVertexId_nitr_toy001,
+    nextVertexId_svitr_toy,
+    nextVertexId_vitr_toy,
+    setFirstNextId_nitr_toy001,
+    setFirstNextId_svitr_toy001,
+    setFirstNextId_vitr_toy001
+}};
 
-    uint32_t count = 0;
-    for (uint32_t i = 0; i < 6; i++)
-        for (uint32_t j = 0; j < 6; j++)
-            count += toy_graph[i][j];
-
-    return count;
+static uint32_t countEdges_toy001(void const* const graphPtr) {
+    DEBUG_ERROR_IF(graphPtr == NULL)
+    return 5;
 }
-
-static uint32_t countVertices_toy(void const* const graphPtr) {
-    DEBUG_ASSERT(isValid_toy(graphPtr))
-    return 6;
+static uint32_t countVertices_toy001(void const* const graphPtr) {
+    DEBUG_ERROR_IF(graphPtr == NULL)
+    return 3;
 }
-
-void dump_toy(void const* const graphPtr, FILE* const output) {
-    DEBUG_ASSERT(isValid_toy(graphPtr))
-    DEBUG_ERROR_IF(output == NULL)
-
-    uint32_t const vertex_count = countVertices_toy(graphPtr);
-
-    for (uint32_t i = 0; i < vertex_count; i++)
-        for (uint32_t j = 0; j < vertex_count; j++)
-            if (toy_graph[i][j])
-                fprintf(output, "%"PRIu32" -> %"PRIu32"\n", i, j);
+static void dump_toy001(void const* const graphPtr, FILE* const output) {
+    DEBUG_ERROR_IF(graphPtr == NULL)
+    dump_sg(graph001, output);
 }
-
-void dumpVertex_toy(void const* const graphPtr, FILE* const output, uint32_t const vertexId) {
-    DEBUG_ASSERT(isValid_toy(graphPtr))
-    DEBUG_ERROR_IF(output == NULL)
-    DEBUG_ASSERT(isValidVertex_toy(graphPtr, vertexId))
-
-    fprintf(output, " %"PRIu32, vertexId);
+static void dumpVertex_toy001(void const* const graphPtr, FILE* const output, uint32_t const vertexId) {
+    DEBUG_ERROR_IF(graphPtr == NULL)
+    DEBUG_ASSERT(vertexId < 3)
+    dumpVertex_sg(graph001, output, vertexId);
 }
-
 static bool isValid_toy(void const* const graphPtr) {
-    return graphPtr == toy_graph;
+    return graphPtr != NULL;
 }
-
-static bool isValidVertex_toy(void const* const graphPtr, uint32_t const vertexId) {
-    DEBUG_ASSERT(isValid_toy(graphPtr))
-    return vertexId < countVertices_toy(graphPtr);
+static bool isValid_nitr_toy001(NeighborIterator const* const itr) {
+    return itr != NULL && itr->graphPtr != NULL && itr->vertexId < 3;
 }
+static bool isValid_svitr_toy(StartVertexIterator const* const itr) {
+    return itr != NULL && itr->graphPtr != NULL;
+}
+static bool isValid_vitr_toy(VertexIterator const* const itr) {
+    return itr != NULL && itr->graphPtr != NULL;
+}
+static bool isValidEdge_toy001(void const* const graphPtr, uint32_t const sourceVertexId, uint32_t const targetVertexId) {
+    return graphPtr != NULL && sourceVertexId < 3 && targetVertexId < 3 && toygraph001[sourceVertexId][targetVertexId];
+}
+static bool isValidVertex_toy001(void const* const graphPtr, uint32_t const vertexId) {
+    return graphPtr != NULL && vertexId < 3;
+}
+static uint32_t nextVertexId_nitr_toy001(NeighborIterator* const itr) {
+    DEBUG_ASSERT(isValid_nitr_toy001(itr))
 
-static uint32_t nextVertexId_nitr_toy(NeighborIterator* const itr) {
-    DEBUG_ASSERT(isValid_nitr_toy(itr))
-
-    if (itr->nextNeighborId == 0xFFFFFFFF) return 0xFFFFFFFF;
-
-    uint32_t const vertex_count = countVertices_toy(itr->graphPtr);
-    while (itr->nextNeighborId < vertex_count) {
-        if (toy_graph[itr->vertexId][itr->nextNeighborId])
-            return itr->nextNeighborId++;
-
-        itr->nextNeighborId++;
+    while (!isValidEdge_toy001(itr->graphPtr, itr->vertexId, itr->nextNeighborId)) {
+        if (itr->nextNeighborId == 0xFFFFFFFF) return 0xFFFFFFFF;
+        itr->nextNeighborId--;
     }
 
-    return (itr->nextNeighborId = 0xFFFFFFFF);
+    return itr->nextNeighborId--;
 }
-
 static uint32_t nextVertexId_svitr_toy(StartVertexIterator* const itr) {
-    DEBUG_ASSERT(isValid_svitr_toy(itr))
+    DEBUG_ERROR_IF(itr == NULL)
 
-    switch (itr->nextVertexId) {
-        case 0:
-            itr->nextVertexId = 0xFFFFFFFF;
-            return 0;
-        default:
-            return 0xFFFFFFFF;
-    }
-}
-
-static uint32_t nextVertexId_vitr_toy(VertexIterator* const itr) {
-    DEBUG_ASSERT(isValid_vitr_toy(itr))
-
-    if (isValidVertex_toy(itr->graphPtr, itr->nextVertexId)) {
-        return itr->nextVertexId++;
-    } else {
+    if (itr->nextVertexId == 0xFFFFFFFF) {
         return 0xFFFFFFFF;
+    } else {
+        itr->nextVertexId = 0xFFFFFFFF;
+        return 0;
     }
 }
+static uint32_t nextVertexId_vitr_toy(StartVertexIterator* const itr) {
+    DEBUG_ERROR_IF(itr == NULL)
 
-void setFirstNextId_nitr_toy(NeighborIterator* const itr) {
-    DEBUG_ASSERT(isValid_nitr_toy(itr))
-    itr->nextNeighborId = 0;
+    uint32_t const old_id = itr->nextVertexId;
+    itr->nextVertexId -= !(itr->nextVertexId == 0xFFFFFFFF);
+    return old_id;
 }
-
-void setFirstNextId_svitr_toy(StartVertexIterator* const itr) {
-    DEBUG_ASSERT(isValid_svitr_toy(itr))
+static void setFirstNextId_nitr_toy001(NeighborIterator* const itr) {
+    DEBUG_ERROR_IF(itr == NULL)
+    itr->nextNeighborId = 2;
+}
+static void setFirstNextId_svitr_toy001(StartVertexIterator* const itr) {
+    DEBUG_ERROR_IF(itr == NULL)
     itr->nextVertexId = 0;
 }
-
-void setFirstNextId_vitr_toy(VertexIterator* const itr) {
-    DEBUG_ASSERT(isValid_vitr_toy(itr))
-    itr->nextVertexId = 0;
+static void setFirstNextId_vitr_toy001(VertexIterator* const itr) {
+    DEBUG_ERROR_IF(itr == NULL)
+    itr->nextVertexId = 2;
 }
 
 int main(void) {
-    SimpleGraph graph[1] = { (SimpleGraph){
-        toy_graph,
-        countEdges_toy,
-        countVertices_toy,
-        dump_toy,
-        dumpVertex_toy,
-        isValid_toy,
-        isValidVertex_toy,
-        nextVertexId_nitr_toy,
-        nextVertexId_svitr_toy,
-        nextVertexId_vitr_toy,
-        setFirstNextId_nitr_toy,
-        setFirstNextId_svitr_toy,
-        setFirstNextId_vitr_toy
-    }};
+    FILE* const output = stdout;
 
-    dump_sg(graph, stdout);
-    puts("");
+    fputs(
+        "\n"
+        "toygraph001 = \n",
+        output
+    );
+    graph001->dump(toygraph001, output);
 
     VertexPathArray primePaths[1];
-    constructAllPrimePaths_vpa(primePaths, graph, VPATH_ARRAY_DEFAULT_INITIAL_CAP);
+    constructAllPrimePaths_vpa(primePaths, graph001);
 
-    dump_vpa(primePaths, stdout);
-    puts("");
+    fputs(
+        "\n"
+        "primePaths = \n",
+        output
+    );
+    dump_vpa(primePaths, output);
 
     VertexPathGraph vpgraph[1];
-    construct_vpg(vpgraph, primePaths);
+    construct_vpg(vpgraph, graph001, primePaths);
 
-    SimpleGraph vpgraph_sg[1];
-    construct_sgi_vpg(vpgraph_sg, vpgraph);
+    SimpleGraph pathGraph[1];
+    construct_sgi_vpg(pathGraph, vpgraph);
 
+    fputs(
+        "\n"
+        "pathGraph = \n",
+        output
+    );
+    pathGraph->dump(vpgraph, output);
+
+    HyperPathGraph hpgraph[1];
+    constructAcyclic_hpg(hpgraph, pathGraph);
+
+    SimpleGraph hyperPathGraph[1];
+    construct_sgi_hpg(hyperPathGraph, hpgraph);
+
+    fputs(
+        "\n"
+        "hyperPathGraph = \n",
+        output
+    );
+    hyperPathGraph->dump(hpgraph, output);
+
+    VertexPath pathTrace[1];
+    constructPathTrace_hpg(pathTrace, hpgraph, 10);
+
+    fputs(
+        "\n"
+        "pathTrace = \n",
+        output
+    );
+    dump_vpath(pathTrace, output);
+
+    fputs("\n", output);
+
+    free_vpath(pathTrace);
+    free_hpg(hpgraph);
     free_vpg(vpgraph);
     free_vpa(primePaths);
-    free_vpath(cycle);
 
     return 0;
 }

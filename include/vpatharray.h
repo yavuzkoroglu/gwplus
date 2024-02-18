@@ -9,10 +9,8 @@
 
     /**
      * @struct VertexPathArray
-     * @brief An array of VertexPath objects sharing the same TestableGraph.
+     * @brief An array of VertexPath objects.
      *
-     * @var VertexPathArray::graph
-     *   A pointer to the constant TestableGraph.
      * @var VertexPathArray::cap
      *   The maximum number of VertexPath objects the VertexPathArray can hold.
      * @var VertexPathArray::size
@@ -21,17 +19,16 @@
      *   A pointer to the first VertexPath in the VertexPathArray.
      */
     typedef struct VertexPathArrayBody {
-        TestableGraph const*    graph;
-        uint32_t                cap;
-        uint32_t                size;
-        VertexPath*             array;
+        uint32_t    cap;
+        uint32_t    size;
+        VertexPath* array;
     } VertexPathArray;
 
     /**
      * @def NOT_A_VPATH_ARRAY
      *   A special VertexPathArray denoting a NOT-VertexPathArray. This VertexPathArray cannot pass the isValid_vpa() test.
      */
-    #define NOT_A_VPATH_ARRAY ((VertexPathArray){ NULL, 0, 0, NULL })
+    #define NOT_A_VPATH_ARRAY ((VertexPathArray){ 0, 0, NULL })
 
     /**
      * @def VPATH_ARRAY_DEFAULT_INITIAL_CAP
@@ -40,20 +37,39 @@
     #define VPATH_ARRAY_DEFAULT_INITIAL_CAP 256
 
     /**
-     * @brief Constructs a VertexPathArray containing all prime paths of a TestableGraph.
-     * @param primePaths A pointer to the VertexPathArray.
-     * @param graph A pointer to the constant TestableGraph.
-     * @param initial_cap The initial capacity of the VertexPathArray.
+     * @brief Constructs 1-paths from all the vertices of a SimpleGraph.
+     * @param vpaths A pointer to the VertexPathArray.
+     * @param graph A pointer to the constant SimpleGraph.
      */
-    void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, TestableGraph const* const graph, uint32_t const initial_cap);
+    void constructVerticesAsPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph);
+
+    /**
+     * @brief Constructs all paths of a SimpleGraph with path length k.
+     * @param vpaths A pointer to the VertexPathArray.
+     * @param graph A pointer to the constant SimpleGraph.
+     */
+    void constructAllKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph, uint32_t const k);
+
+    /**
+     * @brief Constructs a VertexPathArray containing all prime paths of a SimpleGraph.
+     * @param primePaths A pointer to the VertexPathArray.
+     * @param graph A pointer to the constant SimpleGraph.
+     */
+    void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph const* const graph);
+
+    /**
+     * @brief Constructs all paths of a SimpleGraph up to path length k, inclusive.
+     * @param vpaths A pointer to the VertexPathArray.
+     * @param graph A pointer to the constant SimpleGraph.
+     */
+    void constructAllUpToKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph, uint32_t const k);
 
     /**
      * @brief Constructs an empty VertexPathArray.
      * @param vpaths A pointer to the VertexPathArray.
-     * @param graph A pointer to the constant TestableGraph.
      * @param initial_cap The initial capacity of the VertexPathArray.
      */
-    void constructEmpty_vpa(VertexPathArray* const vpaths, TestableGraph const* const graph, uint32_t const initial_cap);
+    void constructEmpty_vpa(VertexPathArray* const vpaths, uint32_t const initial_cap);
 
     /**
      * @brief Dumps a VertexPathArray.
@@ -93,7 +109,7 @@
     VertexPath* pop_vpa(VertexPathArray* const vpaths);
 
     /**
-     * @brief Pushes a clone of a VertexPath to a VertexPathArray under the same TestableGraph.
+     * @brief Pushes a clone of a VertexPath to a VertexPathArray under the same SimpleGraph.
      * @param vpaths A pointer to the VertexPathArray.
      * @param vpath A pointer to the VertexPath.
      */
@@ -102,8 +118,9 @@
     /**
      * @brief Pushes an empty VertexPath to a VertexPathArray.
      * @param vpaths A pointer to the VertexPathArray.
+     * @param graph A pointer to the constant SimpleGraph.
      */
-    VertexPath* pushEmpty_vpa(VertexPathArray* const vpaths);
+    VertexPath* pushEmpty_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph);
 
     /**
      * @brief Removes a VertexPath from a VertexPathArray.

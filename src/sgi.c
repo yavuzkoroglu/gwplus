@@ -6,25 +6,10 @@
 #include "padkit/debug.h"
 #include "sgi.h"
 
-bool areNeighbors_sg(SimpleGraph const* const graph, uint32_t const sourceVertexId, uint32_t const targetVertexId) {
-    DEBUG_ASSERT(isValid_sg(graph))
-    DEBUG_ASSERT(isValidVertex_sg(graph, sourceVertexId))
-    DEBUG_ASSERT(isValidVertex_sg(graph, targetVertexId))
-
-    NeighborIterator itr[1];
-    construct_nitr_sg(itr, graph, sourceVertexId);
-
-    for (
-        uint32_t neighborId;
-        (neighborId = graph->nextVertexId_nitr(itr)) != 0xFFFFFFFF;
-    ) if (neighborId == targetVertexId) return 1;
-
-    return 0;
-}
-
 void construct_nitr_sg(NeighborIterator* const itr, SimpleGraph const* const graph, uint32_t const sourceVertexId) {
     DEBUG_ERROR_IF(itr == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, sourceVertexId))
 
     itr->graphPtr = graph->graphPtr;
     itr->vertexId = sourceVertexId;
@@ -36,7 +21,7 @@ void construct_svitr_sg(VertexIterator* const itr, SimpleGraph const* const grap
     DEBUG_ASSERT(isValid_sg(graph))
 
     itr->graphPtr = graph->graphPtr;
-    graph->setFirstNextId_vitr(itr);
+    graph->setFirstNextId_svitr(itr);
 }
 
 void construct_vitr_sg(StartVertexIterator* const itr, SimpleGraph const* const graph) {
@@ -44,10 +29,10 @@ void construct_vitr_sg(StartVertexIterator* const itr, SimpleGraph const* const 
     DEBUG_ASSERT(isValid_sg(graph))
 
     itr->graphPtr = graph->graphPtr;
-    graph->setFirstNextId_svitr(itr);
+    graph->setFirstNextId_vitr(itr);
 }
 
-uint32_t countEdges_default_sg(SimpleGraph const* const graph) {
+uint32_t countEdges_sg(SimpleGraph const* const graph) {
     static void const* old_ptr  = NULL;
     static uint32_t count_edges = 0;
 
@@ -61,18 +46,20 @@ uint32_t countEdges_default_sg(SimpleGraph const* const graph) {
     count_edges = 0;
     for (
         uint32_t vertexId;
-        (vertexId = graph->nextVertexId_vitr(vitr)) != 0xFFFFFFFF;
+        graph->isValidVertex(graph->graphPtr, (vertexId = graph->nextVertexId_vitr(vitr)));
     ) {
         NeighborIterator itr[1];
-        construct_nitr_sg(itr, graph);
+        construct_nitr_sg(itr, graph, vertexId);
         for (
             uint32_t neighborId;
-            (neighborId = graph->nextVertexId_nitr(itr)) != 0xFFFFFFFF;
+            graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
         ) count_edges++;
     }
+
+    return count_edges;
 }
 
-uint32_t countVertices_default_sg(SimpleGraph const* const graph) {
+uint32_t countVertices_sg(SimpleGraph const* const graph) {
     static void const* cached_ptr   = NULL;
     static uint32_t count_vertices  = 0;
 
@@ -80,51 +67,39 @@ uint32_t countVertices_default_sg(SimpleGraph const* const graph) {
     if (cached_ptr == graph->graphPtr)
         return count_vertices;
 
-    VertexIterator vitr[1];
-    construct_vitr_sg(vitr, graph);
+    VertexIterator itr[1];
+    construct_vitr_sg(itr, graph);
 
     count_vertices = 0;
     for (
         uint32_t vertexId;
-        (vertexId = graph->nextVertexId_vitr(vitr)) != 0xFFFFFFFF;
+        graph->isValidVertex(graph->graphPtr, (vertexId = graph->nextVertexId_vitr(itr)));
     ) count_vertices++;
 
     return count_vertices;
-}
-
-uint32_t countEdges_sg(SimpleGraph const* const graph) {
-    DEBUG_ASSERT(isValid_sg(graph))
-    return graph->countEdges(graph->graphPtr);
-}
-
-uint32_t countVertices_sg(SimpleGraph const* const graph) {
-    DEBUG_ASSERT(isValid_sg(graph))
-    return graph->countVertices(graph->graphPtr);
 }
 
 void dump_sg(SimpleGraph const* const graph, FILE* const output) {
     DEBUG_ASSERT(isValid_sg(graph))
     DEBUG_ERROR_IF(output == NULL)
 
-    graph->dump(graph->graphPtr, output);
-}
-
-void dump_default_sg(SimpleGraph const* const graph, FILE* const output) {
-    DEBUG_ASSERT(isValid_sg(graph))
-    DEBUG_ERROR_IF(output == NULL)
-
     VertexIterator vitr[1];
     construct_vitr_sg(vitr, graph);
     for (
         uint32_t vertexId;
-        (vertexId = graph->nextVertexId_vitr(vitr)) != 0xFFFFFFFF;
+        graph->isValidVertex(graph->graphPtr, (vertexId = graph->nextVertexId_vitr(vitr)));
     ) {
         NeighborIterator nitr[1];
-        construct_nitr_sg(nitr, graph);
+        construct_nitr_sg(nitr, graph, vertexId);
         for (
             uint32_t neighborId;
-            (neighborId = graph->nextVertexId_nitr(nitr) != 0xFFFFFFFF);
-        ) fprintf("%"PRIu32" -> %"PRIu32";\n", vertexId, neighborId);
+            graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(nitr)));
+        ) {
+            graph->dumpVertex(graph->graphPtr, output, vertexId);
+            fputs(" ->", output);
+            graph->dumpVertex(graph->graphPtr, output, neighborId);
+            fputs(";\n", output);
+        }
     }
 }
 
@@ -133,41 +108,24 @@ void dumpVertex_sg(SimpleGraph const* const graph, FILE* const output, uint32_t 
     DEBUG_ERROR_IF(output == NULL)
     DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, vertexId))
 
-    graph->dumpVertex(graph->graphPtr, output, vertexId);
-}
-
-void dumpVertex_default_sg(SimpleGraph const* const graph, FILE* const output, uint32_t const vertexId) {
-    DEBUG_ASSERT(isValid_sg(graph))
-    DEBUG_ERROR_IF(output == NULL)
-    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, vertexId))
-
-    fprintf(" %"PRIu32, vertexId);
+    fprintf(output, " %"PRIu32, vertexId);
 }
 
 bool isValid_sg(SimpleGraph const* const graph) {
     return graph != NULL && graph->isValid(graph->graphPtr);
 }
 
-bool isValid_nitr_default_sg(SimpleGraph const* const graph, NeighborIterator const* const itr) {
-    return  isValid_sg(graph)                                   &&
-            itr != NULL                                         &&
-            itr->graphPtr == graph->graphPtr                    &&
-            graph->isValidVertex(itr->graphPtr, itr->vertexId);
-}
-
-bool isValid_svitr_default_sg(SimpleGraph const* const graph, StartVertexIterator const* const itr) {
-    return  isValid_sg(graph)                   &&
-            itr != NULL                         &&
-            itr->graphPtr == graph->graphPtr;
-}
-
-bool isValid_vitr_default_sg(SimpleGraph const* const graph, VertexIterator const* const itr) {
-    return  isValid_sg(graph)                   &&
-            itr != NULL                         &&
-            itr->graphPtr == graph->graphPtr;
-}
-
-bool isValidVertex_sg(SimpleGraph const* const graph, uint32_t const vertexId) {
+bool isValidEdge_sg(SimpleGraph const* const graph, uint32_t const sourceVertexId, uint32_t const targetVertexId) {
     DEBUG_ASSERT(isValid_sg(graph))
-    return graph->isValidVertex(graph->graphPtr, vertexId);
+    DEBUG_ASSERT(graph->isValidVertex(graph, sourceVertexId))
+    DEBUG_ASSERT(graph->isValidVertex(graph, targetVertexId))
+
+    NeighborIterator itr[1];
+    construct_nitr_sg(itr, graph, sourceVertexId);
+    for (
+        uint32_t neighborId;
+        graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
+    ) if (neighborId == targetVertexId) return 1;
+
+    return 0;
 }
