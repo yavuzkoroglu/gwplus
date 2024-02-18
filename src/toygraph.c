@@ -170,19 +170,19 @@ int main(void) {
     );
     hyperPathGraph->dump(hpgraph, output);
 
-    VertexPath pathTrace[1];
-    constructPathTrace_hpg(pathTrace, hpgraph, 10);
+    VertexPathArray testPaths[1];
+    constructTestPaths_hpg(testPaths, hpgraph);
 
     fputs(
         "\n"
-        "pathTrace = \n",
+        "testPaths = \n",
         output
     );
-    dump_vpath(pathTrace, output);
+    dump_vpa(testPaths, output);
 
     fputs("\n", output);
 
-    free_vpath(pathTrace);
+    free_vpa(testPaths);
     free_hpg(hpgraph);
     free_vpg(vpgraph);
     free_vpa(primePaths);

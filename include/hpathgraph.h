@@ -80,6 +80,13 @@
     void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph const* const hpgraph, uint32_t const rootId);
 
     /**
+     * @brief Constructs testpaths from an HyperPathGraph.
+     * @param testPaths A pointer to the test paths as a VertexPathArray.
+     * @param hpgraph A pointer to the constant HyperPathGraph.
+     */
+    void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph const* const hpgraph);
+
+    /**
      * @brief Dumps an HyperPathGraph.
      * @param graphPtr A pointer to the constant HyperPathGraph.
      * @param output A pointer to the output FILE.

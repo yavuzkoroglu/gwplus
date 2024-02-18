@@ -3,5 +3,5 @@ digraph H008 {
 	edge [arrowsize=0.5];
 	nodesep=0.1;
 	ranksep=0.1;
-    s [style="filled",shape="record",label="{s|{p1|p3|p4|p2|p5|p0}}",width=2,height=0.8];
+    s [style="filled",shape="record",label="s|p1|p3|p4|p2|p5|p0",width=2,height=0.4];
 }

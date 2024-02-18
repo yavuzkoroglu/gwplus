@@ -46,6 +46,14 @@
     void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph const* const vpgraph);
 
     /**
+     * @brief Constructs a test path from a path trace.
+     * @param testPath A pointer to the test path.
+     * @param vpgraph A pointer to the constant VertexPathGraph.
+     * @param pathTrace A pointer to the constant path trace.
+     */
+    void constructTestPath_vpg(VertexPath* const testPath, VertexPathGraph const* const vpgraph, VertexPath const* const pathTrace);
+
+    /**
      * @brief Counts the number of edges in a VertexPathGraph.
      * @param graphPtr A pointer to the VertexPathGraph.
      */
@@ -152,6 +160,4 @@
      * @param itr A pointer to the VertexIterator.
      */
     void setFirstNextId_vitr_vpg(VertexIterator* const itr);
-
-    void splicePathTraces_vpg(VertexPath* const splice, VertexPathGraph const* const vpgraph, VertexPathArray const* const pathTraces);
 #endif
