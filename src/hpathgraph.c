@@ -168,14 +168,14 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph const* c
         bool spliceEstablished = 0;
         if (canRotate_vpath(pathTrace)) {
             if (canRotate_vpath(nextTrace)) {
-                for (uint32_t n = 1; !spliceEstablished && n <= pathTrace->len; n++) {
+                for (uint32_t n = 1; !spliceEstablished && n < pathTrace->len; n++) {
                     DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
                     from = pathTrace->array[pathTrace->len - 1];
                     if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
                         concat_vpath(pathTrace, nextTrace);
                         spliceEstablished = 1;
                     }
-                    for (uint32_t m = 1; !spliceEstablished && m <= nextTrace->len; m++) {
+                    for (uint32_t m = 1; !spliceEstablished && m < nextTrace->len; m++) {
                         DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(nextTrace))
                         to = nextTrace->array[0];
                         if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
@@ -185,7 +185,7 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph const* c
                     }
                 }
             } else {
-                for (uint32_t n = 1; !spliceEstablished && n <= pathTrace->len; n++) {
+                for (uint32_t n = 1; !spliceEstablished && n < pathTrace->len; n++) {
                     DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
                     from = pathTrace->array[pathTrace->len - 1];
                     if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
@@ -196,7 +196,7 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph const* c
             }
         } else {
             DEBUG_ASSERT(canRotate_vpath(nextTrace))
-            for (uint32_t m = 1; !spliceEstablished && m <= nextTrace->len; m++) {
+            for (uint32_t m = 1; !spliceEstablished && m < nextTrace->len; m++) {
                 DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(nextTrace))
                 to = nextTrace->array[0];
                 if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
@@ -234,7 +234,9 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph con
     VertexPath pathTrace[1] = {NOT_A_VPATH};
     constructPathTrace_hpg(pathTrace, hpgraph, rootId);
 
-    for (uint32_t nRotations = 1; nRotations <= pathTrace->len; nRotations++) {
+    uint32_t shortestLen    = 0xFFFFFFFF;
+    uint32_t shortestPathId = 0xFFFFFFFF;
+    for (uint32_t nRotations = 1; nRotations < pathTrace->len; nRotations++) {
         while (!hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, s_id, pathTrace->array[0])) {
             nRotations++;
             DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
@@ -243,16 +245,12 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph con
         VertexPath* const testPath = pushEmpty_vpa(testPaths, vpgraph->graph);
         constructTestPath_vpg(testPath, vpgraph, pathTrace);
 
-        DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
-    }
-
-    uint32_t shortestLen    = testPaths->array[0].len;
-    uint32_t shortestPathId = 0;
-    for (uint32_t pathId = 1; pathId < testPaths->size; pathId++) {
-        if (testPaths->array[pathId].len < shortestLen) {
-            shortestLen = testPaths->array[pathId].len;
-            shortestPathId = pathId;
+        if (testPath->len < shortestLen) {
+            shortestLen     = testPath->len;
+            shortestPathId  = (uint32_t)(testPath - testPaths->array);
         }
+
+        DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
     }
 
     if (shortestPathId != 0) {

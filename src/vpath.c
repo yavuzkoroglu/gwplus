@@ -613,8 +613,8 @@ bool rotate_vpath(VertexPath* const vpath) {
         return 0;
 
     size_t const size_in_bytes = (size_t)(vpath->len - 1) * sizeof(uint32_t);
-    memmove(vpath->array, vpath->array + 1, size_in_bytes);
-    vpath->array[vpath->len - 1] = firstVertexId;
+    memmove(vpath->array + 1, vpath->array, size_in_bytes);
+    vpath->array[0] = lastVertexId;
     return 1;
 }
 
