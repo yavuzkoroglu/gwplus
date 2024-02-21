@@ -32,15 +32,7 @@ static void showUnknownCoverage(char const* const cov_str) {
 static void showUsage(void) {
     fputs(
         "\n"
-        "Usage: gwplus (prime|<k>) <GraphWalker-JSON-file> <output-JSON-file> [-v]\n"
-        "\n"
-        "  prime: Prime Path Coverage\n"
-        "    <k>: A positive integer\n"
-        "           k=1 => Edge Coverage\n"
-        "           k=2 => Edge Pair Coverage\n"
-        "           k=N => All Edge Paths Up To Length N\n"
-        "\n"
-        "     -v: Verbose (prints verbose messages)\n"
+        "Usage: gwplus (edge|prime) <GraphWalker-JSON-file> <output-JSON-file> [-v]\n"
         "\n",
         stderr
     );
@@ -64,14 +56,13 @@ int main(int argc, char* argv[]) {
     if (STR_EQ_CONST(argv[ARGV_COV_STR], "prime")) {
         k = 0;
         VERBOSE_MSG("Coverage Criterion = Prime Path Coverage")
+    } else if (STR_EQ_CONST(argv[ARGV_COV_STR], "edge")) {
+        k = 1;
+        VERBOSE_MSG("Coverage Criterion = Edge Coverage")
     } else {
-        if (sscanf(argv[ARGV_COV_STR], "%"PRId32, &k) != 1 || k < 1) {
-            showUnknownCoverage(argv[ARGV_COV_STR]);
-            showUsage();
-            return EXIT_FAILURE;
-        }
-
-        VERBOSE_MSG("Coverage Criterion = All Edge Paths Up To Length %d", k)
+        showUnknownCoverage(argv[ARGV_COV_STR]);
+        showUsage();
+        return EXIT_FAILURE;
     }
 
     GWModelArray gwma[1];

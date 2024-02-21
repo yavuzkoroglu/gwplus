@@ -428,8 +428,8 @@ void constructEmpty_vpath(VertexPath* const vpath, SimpleGraph const* const grap
     vpath->isPrime      = 0;
     vpath->len          = 0;
     vpath->cap          = initial_cap;
-    vpath->sorted       = malloc(initial_cap * sizeof(uint32_t));
-    vpath->array        = malloc(initial_cap * sizeof(uint32_t));
+    vpath->sorted       = malloc((size_t)initial_cap * sizeof(uint32_t));
+    vpath->array        = malloc((size_t)initial_cap * sizeof(uint32_t));
     DEBUG_ERROR_IF(vpath->array == NULL)
 }
 
@@ -507,7 +507,7 @@ uint32_t findLargestOverlap_vpath(VertexPath const* const head, VertexPath const
 
     while (
         overlap_len > 0 &&
-        !mem_eq_n(
+        memcmp(
             (char const*)(head->array + overlap_start_pos),
             (char const*)tail->array,
             overlap_size_bytes
@@ -560,10 +560,10 @@ void increaseCapIfNecessary_vpath(VertexPath* const vpath) {
         DEBUG_ASSERT(new_cap > vpath->cap)
     }
 
-    if (REALLOCATE(vpath->array, vpath->cap, new_cap, sizeof(uint32_t)) == NULL)
+    if (REALLOCATE(vpath->array, vpath->cap, new_cap, uint32_t) == NULL)
         REALLOC_ERROR
 
-    if (REALLOCATE(vpath->sorted, vpath->cap, new_cap, sizeof(uint32_t)) == NULL)
+    if (REALLOCATE(vpath->sorted, vpath->cap, new_cap, uint32_t) == NULL)
         REALLOC_ERROR
 
     vpath->cap = new_cap;
@@ -586,7 +586,7 @@ bool isSubPath_vpath(VertexPath const* const sub, VertexPath const* const super)
     uint32_t* const super_end       = super->array + super->len - sub->len;
 
     for (uint32_t* ptr = super_end; ptr >= super->array; ptr--)
-        if (mem_eq_n((char const*)ptr, (char const*)sub->array, sub_size_in_bytes))
+        if (!memcmp((char const*)ptr, (char const*)sub->array, sub_size_in_bytes))
             return 1;
 
     return 0;

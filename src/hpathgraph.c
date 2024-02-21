@@ -48,9 +48,11 @@ void construct_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* const pathG
         uint32_t pathId;
         pathGraph->isValidVertex(pathGraph->graphPtr, (pathId = pathGraph->nextVertexId_vitr(vitr)));
     ) {
-        VertexPath* const hpath = hpgraph->hpaths->array + pathId;
-        DEBUG_ASSERT(isValid_vpath(hpath))
-        DEBUG_ASSERT(hpath->len == 1)
+        #ifndef NDEBUG
+            VertexPath* const hpath = hpgraph->hpaths->array + pathId;
+            DEBUG_ASSERT(isValid_vpath(hpath))
+            DEBUG_ASSERT(hpath->len == 1)
+        #endif
 
         NeighborIterator nitr[1];
         construct_nitr_sg(nitr, pathGraph, pathId);
@@ -180,10 +182,14 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const h
             for (uint32_t k = 0; k < partialTrace->len; k++)
                 DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(hpgraph->subsumptionMtx, 0, partialTrace->array[k]))
 
-            uint32_t nRotations = partialTrace->len;
+            #ifndef NDEBUG
+                uint32_t nRotations = partialTrace->len;
+            #endif
             while (prevPathId != pathId && !isValidEdge_hpg(hpgraph, prevPathId, partialTrace->array[0])) {
                 DEBUG_ASSERT(nRotations > 0)
-                nRotations--;
+                #ifndef NDEBUG
+                    nRotations--;
+                #endif
                 DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(partialTrace))
             }
 
@@ -224,8 +230,6 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* co
     DEBUG_ERROR_IF(testPaths == NULL)
     DEBUG_ASSERT(isValid_hpg(hpgraph))
 
-    constructEmpty_vpa(testPaths, VPATH_ARRAY_DEFAULT_INITIAL_CAP);
-
     SimpleGraph hyperPathGraph[1];
     construct_sgi_hpg(hyperPathGraph, hpgraph);
 
@@ -246,7 +250,9 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* co
     uint32_t shortestLen        = 0xFFFFFFFF;
     VertexPath* shortestPath    = NULL;
 
-    for (uint32_t nRotations = pathTrace->len - 1; nRotations > 0; nRotations--) {
+    constructEmpty_vpa(testPaths, pathTrace->len);
+
+    for (uint32_t nRotations = pathTrace->len; nRotations > 0; nRotations--) {
         if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, s_id, pathTrace->array[0])) {
             VertexPath* const testPath = pushEmpty_vpa(testPaths, vpgraph->graph);
             constructTestPath_vpg(testPath, vpgraph, pathTrace);
@@ -270,7 +276,8 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* co
     }
     testPaths->size = 1;
 
-    free_vpath(pathTrace);
+    if (pathTrace->isAllocated)
+        free_vpath(pathTrace);
 }
 
 void dump_hpg(void const* const graphPtr, FILE* const output) {

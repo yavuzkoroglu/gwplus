@@ -1749,7 +1749,7 @@ void construct_gwvertex(GWVertex* const vertex, uint32_t const original_v_id, ui
 }
 
 void free_gwvertex(GWVertex* const vertex) {
-    DEBUG_ABORT_UNLESS(isValid_gwvertex(vertex))
+    DEBUG_ASSERT(isValid_gwvertex(vertex))
 
     free(vertex->edges);
     *vertex = NOT_A_GWVERTEX;
@@ -1811,7 +1811,7 @@ void constructEmpty_gwshared(GWShared* const shared_vertex, uint32_t const initi
 }
 
 void free_gwshared(GWShared* const shared_vertex) {
-    DEBUG_ABORT_UNLESS(isValid_gwshared(shared_vertex))
+    DEBUG_ASSERT(isValid_gwshared(shared_vertex))
 
     free(shared_vertex->vertices);
     *shared_vertex = NOT_A_GWSHARED;
@@ -2387,7 +2387,7 @@ uint32_t firstEdgeTowards_gwma(GWModelArray const* const gwma, uint32_t const v_
 }
 
 void free_gwma(GWModelArray* const gwma) {
-    DEBUG_ABORT_IF(!isValid_gwma(gwma))
+    DEBUG_ASSERT(isValid_gwma(gwma))
 
     for (
         GWVertex* vertex = gwma->vertices + gwma->size_vertices - 1;
