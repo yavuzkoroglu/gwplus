@@ -54,9 +54,9 @@
 
     /**
      * @brief Checks if a VertexPath can rotate.
-     * @param vpath A pointer to the constant VertexPath.
+     * @param vpath A pointer to the VertexPath.
      */
-    bool canRotate_vpath(VertexPath const* const vpath);
+    bool canRotate_vpath(VertexPath* const vpath);
 
     /**
      * @brief Clones a VertexPath.

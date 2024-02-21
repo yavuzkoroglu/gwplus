@@ -101,10 +101,12 @@ void constructAcyclic_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* cons
     ) {
         uint32_t const parentId = hpgraph->hpaths->size - 1;
 
+        /*
         puts("");
         dumpVertex_hpg(hpgraph, stdout, parentId);
         printf(":");
         dump_vpath(hpath, stdout);
+        */
 
         for (uint32_t i = 0; i < hpath->len; i++) {
             uint32_t childId = hpath->array[i];
@@ -124,27 +126,36 @@ void constructAcyclic_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* cons
             }
         }
 
+        /*
         dump_hpg(hpgraph, stdout);
+        */
     }
     pop_vpa(hpgraph->hpaths);
 }
 
-void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph const* const hpgraph, uint32_t const rootId) {
+void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const hpgraph, uint32_t const rootId) {
     DEBUG_ERROR_IF(pathTrace == NULL)
     DEBUG_ASSERT(isValid_hpg(hpgraph))
     DEBUG_ASSERT(rootId < hpgraph->hpaths->size)
 
+    disconnectAll_gmtx(hpgraph->subsumptionMtx);
+
+    SimpleGraph hyperPathGraph[1];
+    construct_sgi_hpg(hyperPathGraph, hpgraph);
+
     if (pathTrace->isAllocated) {
         flush_vpath(pathTrace);
-        pathTrace->graph = hpgraph->pathGraph;
+        pathTrace->graph = hyperPathGraph;
     } else {
-        constructEmpty_vpath(pathTrace, hpgraph->pathGraph);
+        constructEmpty_vpath(pathTrace, hyperPathGraph);
     }
 
     extend_vpath(pathTrace, rootId, 0);
 
     VertexPath secondTrace[1];
-    constructEmpty_vpath(secondTrace, hpgraph->pathGraph);
+    constructEmpty_vpath(secondTrace, hyperPathGraph);
+
+    VertexPath partialTrace[1] = {NOT_A_VPATH};
 
     VertexPath* current = pathTrace;
     VertexPath* next    = secondTrace;
@@ -153,20 +164,52 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph const* c
         flush_vpath(next);
 
         for (uint32_t i = 0; i < current->len; i++) {
-            uint32_t const prevPathId   = (i > 0) ? current->array[i - 1] ? current->array[current->len - 1];
+            uint32_t const prevPathId   = current->array[(i + current->len - 1) % current->len];
             uint32_t const pathId       = current->array[i];
-            uint32_t const nextPathId   = (i < current->len - 1) ? current->array[i + 1] : current->array[0];
+            uint32_t const nextPathId   = current->array[(i + 1) % current->len];
 
-            
+            if (hpgraph->pathGraph->isValidVertex(hpgraph->pathGraph->graphPtr, pathId)) {
+                extend_vpath(next, pathId, 0);
+                continue;
+            }
+
+            clone_vpath(partialTrace, hpgraph->hpaths->array + pathId);
+            DEBUG_ASSERT(partialTrace->len > 0)
+
+            uint32_t nRotations = partialTrace->len << 1;
+            while (
+                (prevPathId != pathId && !isValidEdge_hpg(hpgraph, prevPathId, partialTrace->array[0])) ||
+                (nextPathId != pathId && !isValidEdge_hpg(hpgraph, partialTrace->array[partialTrace->len - 1], nextPathId))
+            ) {
+                nRotations--;
+                DEBUG_ASSERT(nRotations > 0)
+
+                if (nRotations == partialTrace->len) {
+                    extend_vpath(partialTrace, partialTrace->array[0], 0);
+                } else {
+                    DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(partialTrace))
+                }
+            }
+
+            concat_vpath(next, partialTrace);
+            while (++i < current->len)
+                extend_vpath(next, current->array[i], 0);
+            break;
         }
 
-        VertexPath* const tmp   = currentTrace;
-        currentTrace            = nextTrace;
-        nextTrace               = tmp;
+        VertexPath* const tmp   = current;
+        current                 = next;
+        next                    = tmp;
     }
+
+    free_vpath(secondTrace);
+    if (partialTrace->isAllocated)
+        free_vpath(partialTrace);
+
+    pathTrace->graph = hpgraph->pathGraph;
 }
 
-void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph const* const hpgraph) {
+void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* const hpgraph) {
     DEBUG_ERROR_IF(testPaths == NULL)
     DEBUG_ASSERT(isValid_hpg(hpgraph))
 
@@ -179,40 +222,40 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph con
 
     StartVertexIterator svitr[1];
     construct_svitr_sg(svitr, hyperPathGraph);
-    uint32_t const s_id = hyperPathGraph->nextVertexId_svitr(svitr);
+    uint32_t const s_id = nextVertexId_svitr_hpg(svitr);
     DEBUG_ASSERT(isValidVertex_hpg(hpgraph, s_id))
 
     NeighborIterator itr[1];
     construct_nitr_sg(itr, hyperPathGraph, s_id);
-    uint32_t const rootId = hyperPathGraph->nextVertexId_nitr(itr);
+    uint32_t const rootId = nextVertexId_nitr_hpg(itr);
 
     VertexPath pathTrace[1] = {NOT_A_VPATH};
     constructPathTrace_hpg(pathTrace, hpgraph, rootId);
 
-    uint32_t shortestLen    = 0xFFFFFFFF;
-    uint32_t shortestPathId = 0xFFFFFFFF;
-    for (uint32_t nRotations = 1; nRotations < pathTrace->len; nRotations++) {
-        while (!hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, s_id, pathTrace->array[0])) {
-            nRotations++;
-            DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
-        }
+    uint32_t shortestLen        = 0xFFFFFFFF;
+    VertexPath* shortestPath    = NULL;
 
-        VertexPath* const testPath = pushEmpty_vpa(testPaths, vpgraph->graph);
-        constructTestPath_vpg(testPath, vpgraph, pathTrace);
+    for (uint32_t nRotations = pathTrace->len - 1; nRotations > 0; nRotations--) {
+        if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, s_id, pathTrace->array[0])) {
+            VertexPath* const testPath = pushEmpty_vpa(testPaths, vpgraph->graph);
+            constructTestPath_vpg(testPath, vpgraph, pathTrace);
 
-        if (testPath->len < shortestLen) {
-            shortestLen     = testPath->len;
-            shortestPathId  = (uint32_t)(testPath - testPaths->array);
+            if (testPath->len < shortestLen) {
+                shortestLen     = testPath->len;
+                shortestPath    = testPath;
+            }
         }
 
         DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
     }
 
-    if (shortestPathId != 0) {
+    DEBUG_ERROR_IF(shortestPath == NULL)
+
+    if (shortestPath > testPaths->array) {
         VertexPath tmp[1];
         memcpy(tmp, testPaths->array, sizeof(VertexPath));
-        memcpy(testPaths->array, testPaths->array + shortestPathId, sizeof(VertexPath));
-        memcpy(testPaths->array + shortestPathId, tmp, sizeof(VertexPath));
+        memcpy(testPaths->array, shortestPath, sizeof(VertexPath));
+        memcpy(shortestPath, tmp, sizeof(VertexPath));
     }
     testPaths->size = 1;
 

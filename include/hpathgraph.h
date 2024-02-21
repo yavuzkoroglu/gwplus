@@ -74,17 +74,17 @@
     /**
      * @brief Constructs a path trace from an HyperPath of an HyperPathGraph.
      * @param pathTrace A pointer to the path trace as a VertexPath.
-     * @param hpgraph A pointer to the constant HyperPathGraph.
+     * @param hpgraph A pointer to the HyperPathGraph (cannot be a constant, subsumptionMtx needs to be disconnected).
      * @param rootId The root hyper path index.
      */
-    void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph const* const hpgraph, uint32_t const rootId);
+    void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const hpgraph, uint32_t const rootId);
 
     /**
      * @brief Constructs testpaths from an HyperPathGraph.
      * @param testPaths A pointer to the test paths as a VertexPathArray.
-     * @param hpgraph A pointer to the constant HyperPathGraph.
+     * @param hpgraph A pointer to the HyperPathGraph.
      */
-    void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph const* const hpgraph);
+    void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* const hpgraph);
 
     /**
      * @brief Dumps an HyperPathGraph.

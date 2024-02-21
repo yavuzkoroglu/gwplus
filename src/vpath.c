@@ -8,7 +8,7 @@
 #include "padkit/streq.h"
 #include "vpath.h"
 
-bool canRotate_vpath(VertexPath const* const vpath) {
+bool canRotate_vpath(VertexPath* const vpath) {
     DEBUG_ASSERT(isValid_vpath(vpath))
 
     if (vpath->len < 2) return 0;
@@ -233,7 +233,7 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
 
-                stack_A_size -= !extend_vpath(vpath_to_extend, neighborId, 1));
+                stack_A_size -= !extend_vpath(vpath_to_extend, neighborId, 1);
             }
         }
     }
@@ -614,7 +614,7 @@ bool rotate_vpath(VertexPath* const vpath) {
 
     if (vpath->isCycle) {
         size_in_bytes = (size_t)(vpath->len - 1) * sizeof(uint32_t);
-        memmove(vpath->array + 1, vpath->array, size_in_bytes)
+        memmove(vpath->array + 1, vpath->array, size_in_bytes);
         vpath->array[0] = vpath->array[vpath->len - 1];
 
         r = search_vpath(vpath, vpath->array[1]);
@@ -633,10 +633,10 @@ bool rotate_vpath(VertexPath* const vpath) {
         vpath->len++;
 
         return 1;
-    } else if (vpath->graph->isValidEdge(vpath->graph->graphPtr, lastVertexId, firstVertexId)) {
+    } else if (vpath->graph->isValidEdge(vpath->graph->graphPtr, vpath->array[vpath->len - 1], vpath->array[0])) {
         uint32_t const tmp = vpath->array[vpath->len - 1];
         size_in_bytes = (size_t)(vpath->len - 1) * sizeof(uint32_t);
-        memmove(vpath->array + 1, vpath->array, size_in_bytes)
+        memmove(vpath->array + 1, vpath->array, size_in_bytes);
         vpath->array[0] = tmp;
         return 1;
     } else {
