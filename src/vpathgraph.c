@@ -170,7 +170,7 @@ void constructTestPath_vpg(VertexPath* const testPath, VertexPathGraph const* co
         }
     }
 
-    free_gmtx(coverMtx);
+    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
     if (subSplice->isAllocated)
         free_vpath(subSplice);
 }
@@ -242,7 +242,7 @@ void dumpVertex_vpg(void const* const graphPtr, FILE* const output, uint32_t con
 
 void free_vpg(VertexPathGraph* const vpgraph) {
     DEBUG_ASSERT(isValid_vpg(vpgraph))
-    free_gmtx(vpgraph->spliceMtx);
+    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(vpgraph->spliceMtx))
     *vpgraph = NOT_A_VPATH_GRAPH;
 }
 

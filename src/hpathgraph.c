@@ -116,7 +116,7 @@ void constructAcyclic_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* cons
             construct_vitr_sg(itr, hyperPathGraph);
             for (
                 uint32_t pathId;
-                hyperPathGraph->isValidVertex(hpgraph, (pathId = hyperPathGraph->nextVertexId_vitr(itr)));
+                isValidVertex_hpg(hpgraph, (pathId = nextVertexId_vitr_hpg(itr)));
             ) {
                 if (pathId == parentId || contains_vpath(hpath, pathId)) continue;
                 if (isConnected_gmtx(hpgraph->edgeMtx, childId, pathId))
@@ -138,8 +138,6 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const h
     DEBUG_ASSERT(isValid_hpg(hpgraph))
     DEBUG_ASSERT(rootId < hpgraph->hpaths->size)
 
-    disconnectAll_gmtx(hpgraph->subsumptionMtx);
-
     SimpleGraph hyperPathGraph[1];
     construct_sgi_hpg(hyperPathGraph, hpgraph);
 
@@ -160,6 +158,9 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const h
     VertexPath* current = pathTrace;
     VertexPath* next    = secondTrace;
 
+    GraphMatrix coverMtx[1];
+    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, hpgraph->hpaths->size))
+
     while (current->len != next->len) {
         flush_vpath(next);
 
@@ -176,25 +177,34 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const h
             clone_vpath(partialTrace, hpgraph->hpaths->array + pathId);
             DEBUG_ASSERT(partialTrace->len > 0)
 
-            uint32_t nRotations = partialTrace->len << 1;
-            while (
-                (prevPathId != pathId && !isValidEdge_hpg(hpgraph, prevPathId, partialTrace->array[0])) ||
-                (nextPathId != pathId && !isValidEdge_hpg(hpgraph, partialTrace->array[partialTrace->len - 1], nextPathId))
-            ) {
-                nRotations--;
-                DEBUG_ASSERT(nRotations > 0)
+            for (uint32_t k = 0; k < partialTrace->len; k++)
+                DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(hpgraph->subsumptionMtx, 0, partialTrace->array[k]))
 
-                if (nRotations == partialTrace->len) {
-                    extend_vpath(partialTrace, partialTrace->array[0], 0);
-                } else {
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(partialTrace))
-                }
+            uint32_t nRotations = partialTrace->len;
+            while (prevPathId != pathId && !isValidEdge_hpg(hpgraph, prevPathId, partialTrace->array[0])) {
+                DEBUG_ASSERT(nRotations > 0)
+                nRotations--;
+                DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(partialTrace))
             }
 
-            concat_vpath(next, partialTrace);
-            while (++i < current->len)
-                extend_vpath(next, current->array[i], 0);
-            break;
+            if (nextPathId == pathId || isValidEdge_hpg(hpgraph, partialTrace->array[partialTrace->len - 1], nextPathId)) {
+                concat_vpath(next, partialTrace);
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathId))
+                continue;
+            }
+
+            uint32_t r = 0;
+            while (!isValidEdge_hpg(hpgraph, partialTrace->array[r], nextPathId)) {
+                r++;
+                DEBUG_ASSERT(r < partialTrace->len)
+            }
+
+            if (!isConnected_gmtx(coverMtx, 0, pathId)) {
+                concat_vpath(next, partialTrace);
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathId))
+            }
+            for (uint32_t k = 0; k <= r; k++)
+                extend_vpath(next, partialTrace->array[k], 0);
         }
 
         VertexPath* const tmp   = current;
@@ -205,6 +215,7 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const h
     free_vpath(secondTrace);
     if (partialTrace->isAllocated)
         free_vpath(partialTrace);
+    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
 
     pathTrace->graph = hpgraph->pathGraph;
 }
@@ -331,8 +342,8 @@ void free_hpg(HyperPathGraph* const hpgraph) {
     DEBUG_ASSERT(isValid_hpg(hpgraph))
 
     free_vpa(hpgraph->hpaths);
-    free_gmtx(hpgraph->edgeMtx);
-    free_gmtx(hpgraph->subsumptionMtx);
+    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(hpgraph->edgeMtx))
+    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(hpgraph->subsumptionMtx))
     *hpgraph = NOT_A_HPATH_GRAPH;
 }
 
@@ -361,8 +372,8 @@ bool isValidEdge_hpg(void const* const graphPtr, uint32_t const sourceVertexId, 
     DEBUG_ASSERT(isValid_hpg(graphPtr))
     HyperPathGraph const* const hpgraph = (HyperPathGraph const*)graphPtr;
 
-    return  sourceVertexId < hpgraph->hpaths->size                              &&
-            targetVertexId < hpgraph->hpaths->size                              &&
+    return  isValidVertex_hpg(graphPtr, sourceVertexId)                         &&
+            isValidVertex_hpg(graphPtr, targetVertexId)                         &&
             isConnected_gmtx(hpgraph->edgeMtx, sourceVertexId, targetVertexId);
 }
 
