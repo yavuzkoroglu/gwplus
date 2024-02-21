@@ -41,7 +41,7 @@ bin/gwplus
 The command above shows how to use `gwplus`.
 ## Usage
 
-`gwplus` usage syntax is:
+`gwplus` usage syntax:
 
 ```
 Usage: gwplus (edge|prime) <GraphWalker-JSON-file> <output-JSON-file> [-v]
