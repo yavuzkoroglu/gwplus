@@ -12,6 +12,7 @@
 #ifndef GWMODEL_H
     #define GWMODEL_H
     #include "padkit/chunktable.h"
+    #include "sgi.h"
 
     /**
      * @def GW_GUESS_ID_STR_LEN
@@ -50,12 +51,6 @@
     #define GWVERTEX_DEFAULT_Y  0.0
 
     /**
-     * @def NOT_A_GWVERTEX
-     *   A special GWVertex denoting a NOT-GWVertex. This GWVertex cannot pass the isValid_gwvertex() test.
-     */
-    #define NOT_A_GWVERTEX ((GWVertex){ 0xFFFFFFFF, 0xFFFFFFFF, 0.0, 0.0, 0, 0, NULL })
-
-    /**
      * @struct GWVertex
      * @brief A GWVertex represents a vertex in a GraphWalker model.
      *
@@ -85,6 +80,12 @@
     } GWVertex;
 
     /**
+     * @def NOT_A_GWVERTEX
+     *   A special GWVertex denoting a NOT-GWVertex. This GWVertex cannot pass the isValid_gwvertex() test.
+     */
+    #define NOT_A_GWVERTEX ((GWVertex){ 0xFFFFFFFF, 0xFFFFFFFF, 0.0, 0.0, 0, 0, NULL })
+
+    /**
      * @brief Checks if two GWVertex objects represent the same vertex.
      * @param v1 A pointer to the first GWVertex.
      * @param v2 A pointer to the second GWVertex.
@@ -112,12 +113,6 @@
     bool isValid_gwvertex(GWVertex const* const vertex);
 
     /**
-     * @def NOT_A_GWSHARED
-     *   A special GWShared denoting a NOT-GWShared. This GWShared cannot pass the isValid_gwshared() test.
-     */
-    #define NOT_A_GWSHARED ((GWShared){ 0, 0, NULL })
-
-    /**
      * @struct GWShared
      * @brief A GWShared represents a shared vertex in a GraphWalker model.
      *
@@ -133,6 +128,12 @@
         uint32_t    cap_vertices;
         uint32_t*   vertices;
     } GWShared;
+
+    /**
+     * @def NOT_A_GWSHARED
+     *   A special GWShared denoting a NOT-GWShared. This GWShared cannot pass the isValid_gwshared() test.
+     */
+    #define NOT_A_GWSHARED ((GWShared){ 0, 0, NULL })
 
     /**
      * @brief Shares a GWVertex through a GWShared.
@@ -161,46 +162,30 @@
     bool isValid_gwshared(GWShared const* const shared_vertex);
 
     /**
+     * @struct GWEdge
+     * @brief A directed connection between a source vertex and a target vertex.
+     *
+     * @var GWEdge::source
+     *   The vertex index of the source.
+     * @var GWEdge::target
+     *   The vertex index of the target.
+     */
+    typedef struct GWEdgeBody {
+        uint32_t source;
+        uint32_t target;
+    } GWEdge;
+
+    /**
      * @def NOT_A_GWEDGE
      *   A special GWEdge denoting a NOT-GWEdge. This GWEdge cannot pass the isValid_gwedge() test.
      */
     #define NOT_A_GWEDGE (GWEdge){ 0xFFFFFFFF, 0xFFFFFFFF }
 
     /**
-     * @struct GWEdge
-     * @brief A directed connection between a source vertex and a target vertex.
-     *
-     * @var GWEdge::chunks
-     *   These Chunks hold string information about a GWEdge.
-     * @var GWEdge::source
-     *   The vertex index of the source.
-     * @var GWEdge::target
-     *   The vertex index of the target.
-     */
-    #define GWEDGE_CHUNK_ACTIONS        0
-    #define GWEDGE_CHUNK_REQUIREMENTS   1
-    #define GWEDGE_CHUNK_LAST           GWEDGE_CHUNK_REQUIREMENTS
-    typedef struct GWEdgeBody {
-        Chunk chunks[GWEDGE_CHUNK_LAST];
-        uint32_t source;
-        uint32_t target;
-    } GWEdge;
-
-    void constructInvalid_gwedge(GWEdge* const edge);
-
-    void free_gwedge(GWEdge* const edge);
-
-    /**
      * @brief Checks if a GWEdge is valid.
      * @param edge A pointer to the GWEdge.
      */
     bool isValid_gwedge(GWEdge const* const edge);
-
-    /**
-     * @def NOT_A_GWMODEL
-     *   A special GWModel denoting a NOT-GWModel. This GWModel cannot pass the isValid_gwmodel() test.
-     */
-    #define NOT_A_GWMODEL   ((GWModel){ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, NULL })
 
     /**
      * @struct GWModel
@@ -223,21 +208,106 @@
     } GWModel;
 
     /**
+     * @def NOT_A_GWMODEL
+     *   A special GWModel denoting a NOT-GWModel. This GWModel cannot pass the isValid_gwmodel() test.
+     */
+    #define NOT_A_GWMODEL ((GWModel){ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, NULL })
+
+    /**
      * @brief Checks if a GWModel is valid.
      * @param gwm A pointer to the GWModel.
      */
     bool isValid_gwm(GWModel const* const gwm);
 
-    #define NOT_A_GWMODEL_ARRAY ((GWModelArray){                                            \
-        { NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK },   \
-        { NOT_A_CHUNK_TABLE },                                                              \
-        0xFFFFFFFF,                                                                         \
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                                                       \
-        NULL, NULL, NULL, NULL                                                              \
-    })
+    /**
+     * @def GWMA_START_ELEMENT_TYPE_INVALID
+     *   Represents an invalid start element.
+     */
+    #define GWMA_START_ELEMENT_TYPE_INVALID 0
 
-    #define GWMA_START_ELEMENT_VERTEX   0
-    #define GWMA_START_ELEMENT_EDGE     1
+    /**
+     * @def GWMA_START_ELEMENT_TYPE_VERTEX
+     *   Represents a start element that is a vertex.
+     */
+    #define GWMA_START_ELEMENT_TYPE_VERTEX 1
+
+    /**
+     * @def GWMA_START_ELEMENT_TYPE_EDGE
+     *   Represents a start element that is an edge.
+     */
+    #define GWMA_START_ELEMENT_TYPE_EDGE 2
+
+    /**
+     * @def GWMA_CHUNK_MODEL_IDS
+     *   The Chunk index for model indices.
+     */
+    #define GWMA_CHUNK_MODEL_IDS 0
+
+    /**
+     * @def GWMA_CHUNK_MODEL_NAMES
+     *   The Chunk index for model names.
+     */
+    #define GWMA_CHUNK_MODEL_NAMES 1
+
+    /**
+     * @def GWMA_CHUNK_VERTEX_IDS
+     *   The Chunk index for vertex indices.
+     */
+    #define GWMA_CHUNK_VERTEX_IDS 2
+
+    /**
+     * @def GWMA_CHUNK_VERTEX_NAMES
+     *   The Chunk index for vertex names.
+     */
+    #define GWMA_CHUNK_VERTEX_NAMES 3
+
+    /**
+     * @def GWMA_CHUNK_EDGE_IDS
+     *   The Chunk index for edge indices.
+     */
+    #define GWMA_CHUNK_EDGE_IDS 4
+
+    /**
+     * @def GWMA_CHUNK_EDGE_NAMES
+     *   The Chunk index for edge names.
+     */
+    #define GWMA_CHUNK_EDGE_NAMES 5
+
+    /**
+     * @def GWMA_CHUNK_SHARED_STATES
+     *   The Chunk index for shared vertices.
+     */
+    #define GWMA_CHUNK_SHARED_STATES 6
+
+    /**
+     * @def GWMA_CHUNK_LAST
+     *   The last Chunk index of a GWModelArray.
+     */
+    #define GWMA_CHUNK_LAST GWMA_CHUNK_SHARED_STATES
+
+    /**
+     * @def GWMA_TBL_VERTEX_IDS
+     *   The ChunkTable index for vertex indices.
+     */
+    #define GWMA_TBL_VERTEX_IDS 0
+
+    /**
+     * @def GWMA_TBL_EDGE_IDS
+     *   The ChunkTable index for edge indices.
+     */
+    #define GWMA_TBL_EDGE_IDS 1
+
+    /**
+     * @def GWMA_TBL_SHARED_STATES
+     *   The ChunkTable index for shared vertices.
+     */
+    #define GWMA_TBL_SHARED_STATES 2
+
+    /**
+     * @def GWMA_TBL_LAST
+     *   The last ChunkTable index of a GWModelArray.
+     */
+    #define GWMA_TBL_LAST GWMA_TBL_SHARED_STATES
 
     /**
      * @struct GWModelArray
@@ -274,19 +344,6 @@
      * @var GWModelArray::vertices
      *   A pointer to the first GWVertex in the GWModelArray.
      */
-    #define GWMA_CHUNK_MODEL_IDS        0
-    #define GWMA_CHUNK_MODEL_NAMES      1
-    #define GWMA_CHUNK_MODEL_ACTIONS    2
-    #define GWMA_CHUNK_VERTEX_IDS       3
-    #define GWMA_CHUNK_VERTEX_NAMES     4
-    #define GWMA_CHUNK_EDGE_IDS         5
-    #define GWMA_CHUNK_EDGE_NAMES       6
-    #define GWMA_CHUNK_EDGE_GUARD       7
-    #define GWMA_CHUNK_SHARED_STATES    8
-    #define GWMA_CHUNK_LAST             GWMA_CHUNK_SHARED_STATES
-    #define GWMA_TBL_VERTEX_IDS         0
-    #define GWMA_TBL_SHARED_STATES      1
-    #define GWMA_TBL_LAST               GWMA_TBL_SHARED_STATES
     typedef struct GWModelArrayBody {
         Chunk       chunks[GWMA_CHUNK_LAST + 1];
         ChunkTable  tables[GWMA_TBL_LAST + 1];
@@ -294,19 +351,34 @@
         uint32_t    s_type;
         uint32_t    guess_edge_count_per_vertex;
         uint32_t    guess_vertex_count_per_shared;
-        uint32_t    size_edges;
-        uint32_t    size_models;
-        uint32_t    size_shared_vertices;
-        uint32_t    size_vertices;
         uint32_t    cap_edges;
         uint32_t    cap_models;
+        uint32_t    cap_predefinedEdgePath;
         uint32_t    cap_shared_vertices;
         uint32_t    cap_vertices;
+        uint32_t    size_edges;
+        uint32_t    size_models;
+        uint32_t    len_predefinedEdgePath;
+        uint32_t    size_shared_vertices;
+        uint32_t    size_vertices;
         GWEdge*     edges;
         GWModel*    models;
+        uint32_t*   predefinedEdgePath;
         GWShared*   shared_vertices;
         GWVertex*   vertices;
     } GWModelArray;
+
+    /**
+     * @def NOT_A_GWMODEL_ARRAY
+     *   A special GWModelArray that cannot pass the isValid_gwma() test.
+     */
+    #define NOT_A_GWMODEL_ARRAY ((GWModelArray){                                            \
+        { NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK },   \
+        { NOT_A_CHUNK_TABLE },                                                              \
+        0xFFFFFFFF, GWMA_START_ELEMENT_TYPE_INVALID,                                        \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                                                 \
+        NULL, NULL, NULL, NULL, NULL                                                        \
+    })
 
     /**
      * @brief Adds a new GWEdge to a GWModelArray.
@@ -370,6 +442,13 @@
         GW_GUESS_NAME_LEN
 
     /**
+     * @brief Constructs a SimpleGraph from a GWModelArray. Note that the SimpleGraph unifies all models in the GWModelArray.
+     * @param graph A pointer to the SimpleGraph.
+     * @param gwma A pointer to the constant GWModelArray.
+     */
+    void construct_sgi_gwma(SimpleGraph* const graph, GWModelArray const* const gwma);
+
+    /**
      * @brief Constructs an empty GWModelArray.
      * @param gwma A pointer to the GWModelArray.
      * @param initial_cap_edges The initial edge capacity.
@@ -387,16 +466,30 @@
     );
 
     /**
-     * @brief Counts the total number of unique edges in a GWModelArray.
-     * @param gwma A pointer to the GWModelArray.
+     * @brief (SGI-compatible) Converts every edge of a GWModelArray to a vertex and counts every consecutive pair.
+     * @param graphPtr A pointer to the GWModelArray.
      */
-    uint32_t countUniqueEdges_gwma(GWModelArray const* const gwma);
+    uint32_t countEdges_gwma(void const* const graphPtr);
 
     /**
-     * @brief Counts the total number of unique vertices in a GWModelArray.
-     * @param gwma A pointer to the GWModelArray.
+     * @brief (SGI-compatible) Converts every edge of a GWModelArray to a vertex and counts them.
+     * @param graphPtr A pointer to the GWModelArray.
      */
-    uint32_t countUniqueVertices_gwma(GWModelArray const* const gwma);
+    uint32_t countVertices_gwma(void const* const graphPtr);
+
+    /**
+     * @brief (SGI-compatible) Writes a GWModelArray into an output FILE.
+     * @param graphPtr A pointer to the GWModelArray.
+     * @param output A pointer to the output FILE.
+     */
+    void dump_gwma(void const* const graphPtr, FILE* const output);
+
+    /**
+     * @brief (SGI-compatible) Writes a GWEdge into an output FILE.
+     * @param graphPtr A pointer to the GWModelArray.
+     * @param output A pointer to the output FILE.
+     */
+    void dumpVertex_gwma(void const* const graphPtr, FILE* const output, uint32_t const vertexId);
 
     /**
      * @brief Fill a GWModelArray using a JSON file stream.
@@ -427,10 +520,43 @@
     void free_gwma(GWModelArray* const gwma);
 
     /**
-     * @brief Checks if a GWModelArray is valid.
-     * @param gwma A pointer to the GWModelArray.
+     * @brief (SGI-compatible) Checks if a GWModelArray is valid.
+     * @param graphPtr A pointer to the GWModelArray.
      */
-    bool isValid_gwma(GWModelArray const* const gwma);
+    bool isValid_gwma(void const* const graphPtr);
+
+    /**
+     * @brief (SGI-compatible) Checks if a NeighborIterator for a GWModelArray is valid.
+     * @param itr A pointer to the NeighborIterator.
+     */
+    bool isValid_nitr_gwma(NeighborIterator const* const itr);
+
+    /**
+     * @brief (SGI-compatible) Checks if a StartVertexIterator for a GWModelArray is valid.
+     * @param itr A pointer to the StartVertexIterator.
+     */
+    bool isValid_svitr_gwma(StartVertexIterator const* const itr);
+
+    /**
+     * @brief (SGI-compatible) Checks if a VertexIterator for a GWModelArray is valid.
+     * @param itr A pointer to the VertexIterator.
+     */
+    bool isValid_vitr_gwma(VertexIterator const* const itr);
+
+    /**
+     * @brief (SGI-compatible) Checks if two edges of a GWModelArray forms a valid edge pair.
+     * @param graphPtr A pointer to the GWModelArray.
+     * @param sourceVertexId The edge index of the first GWEdge.
+     * @param targetVertexId The edge index of the second GWEdge.
+     */
+    bool isValidEdge_gwma(void const* const graphPtr, uint32_t const sourceVertexId, uint32_t const targetVertexId);
+
+    /**
+     * @brief (SGI-compatible) Checks if an edge index is valid under a GWModelArray.
+     * @param graphPtr A pointer to the GWModelArray.
+     * @param vertexId The edge index.
+     */
+    bool isValidVertex_gwma(void const* const graphPtr, uint32_t const vertexId);
 
     /**
      * @brief Gets a pointer to the last GWEdge in a GWModelArray.
@@ -449,6 +575,24 @@
      * @param gwma A pointer to the GWModelArray.
      */
     GWVertex* lastVertex_gwma(GWModelArray* const gwma);
+
+    /**
+     * @brief (SGI-compatible) Iteratess a NeighborIterator for a GWModelArray.
+     * @param itr A pointer to the NeighborIterator.
+     */
+    uint32_t nextVertexId_nitr_gwma(NeighborIterator* const itr);
+
+    /**
+     * @brief (SGI-compatible) Iterates a StartVertexIterator for a GWModelArray.
+     * @param itr A pointer to the StartVertexIterator.
+     */
+    uint32_t nextVertexId_svitr_gwma(StartVertexIterator* const itr);
+
+    /**
+     * @brief (SGI-compatible) Iterates a VertexIterator for a GWModelArray.
+     * @param itr A pointer to the VertexIterator.
+     */
+    uint32_t nextVertexId_vitr_gwma(VertexIterator* const itr);
 
     /**
      * @brief Sets the index string of the last GWEdge in a GWModelArray.
@@ -481,6 +625,24 @@
      * @param v_id_str_len The total number of characters in the vertex index string.
      */
     void setEdgeTarget_gwma(GWModelArray* const gwma, char const* const v_id_str, size_t const v_id_str_len);
+
+    /**
+     * @brief (SGI-compatible) Initializes a NeighborIterator for a GWModelArray.
+     * @param itr A pointer to the NeighborIterator.
+     */
+    void setFirstNextId_nitr_gwma(NeighborIterator* const itr);
+
+    /**
+     * @brief (SGI-compatible) Initializes a StartVertexIterator for a GWModelArray.
+     * @param itr A pointer to the StartVertexIterator.
+     */
+    void setFirstNextId_svitr_gwma(StartVertexIterator* const itr);
+
+    /**
+     * @brief (SGI-compatible) Initializes a VertexIterator for a GWModelArray.
+     * @param itr A pointer to the VertexIterator.
+     */
+    void setFirstNextId_vitr_gwma(VertexIterator* const itr);
 
     /**
      * @brief Sets the index string of the last GWModel in a GWModelArray.
@@ -543,170 +705,4 @@
      * @param shared_name_len The total number of characters in the shared_name.
      */
     void shareVertex_gwma(GWModelArray* const gwma, char const* const shared_name, size_t const shared_name_len);
-
-    /**
-     * @brief Writes a GWModelArray into a JSON file.
-     * @param gwma A pointer to the GWModelArray.
-     * @param jsonFile A pointer to the JSON file.
-     * @param ePath A pointer to the first GWEdge index in an array of GWEdge indices denoting a predefined path.
-     * @param len The total number of edges in the predefined path.
-     */
-    void writeJSON_gwma(GWModelArray const* const gwma, FILE* const jsonFile, uint32_t const* const ePath, uint32_t const len);
-
-    /**
-     * @def NOT_A_CVITR
-     *   A special ConstVertexIterator denoting a NOT-ConstVertexIterator that fails the isValid_cvitr() test.
-     */
-    #define NOT_A_CVITR ((ConstVertexIterator){ NULL, 0xFFFFFFFF, 0xFFFFFFFF } )
-
-    /**
-     * @def CVITR_STATE_NON_SHARED
-     *   In this state, the ConstVertexIterator iterates only non-shared vertices.
-     */
-    #define CVITR_STATE_NON_SHARED  0
-
-    /**
-     * @def CVITR_STATE_SHARED
-     *   In this state, the ConstVertexIterator iterates only shared vertices.
-     */
-    #define CVITR_STATE_SHARED      1
-
-    /**
-     * @def CVITR_STATE_STARTING
-     *   In this state, the ConstVertexIterator iterates only the starting vertex.
-     */
-    #define CVITR_STATE_STARTING    2
-
-    /**
-     * @def CVITR_STATE_FINISHED
-     *   In this state, the ConstVertexIterator stops iterating.
-     */
-    #define CVITR_STATE_FINISHED    3
-
-    /**
-     * @def CVITR_STATE_LAST
-     *   The last state of a ConstVertexIterator
-     */
-    #define CVITR_STATE_LAST        CVITR_STATE_FINISHED
-
-    /**
-     * @struct ConstVertexIterator
-     * @brief Iterates through the unique vertices of a GWModelArray.
-     *
-     * @var ConstVertexIterator::gwma
-     *   A pointer to the GWModelArray vertices belong to.
-     * @var ConstVertexIterator::nextVertexId
-     *   The index of the next GWVertex.
-     * @var ConstVertexIterator::state
-     *   The state of the ConstVertexIterator.
-     */
-    typedef struct ConstVertexIteratorBody {
-        GWModelArray const* gwma;
-        uint32_t nextVertexId;
-        uint32_t state;
-    } ConstVertexIterator;
-
-    /**
-     * @brief Constructs a ConstVertexIterator under a GWModelArray.
-     * @param itr A pointer to the ConstVertexIterator.
-     * @param gwma A pointer to the GWModelArray.
-     */
-    void construct_cvitr(ConstVertexIterator* const itr, GWModelArray const* const gwma);
-
-    /**
-     * @brief Checks if a ConstVertexIterator is valid.
-     * @param itr A pointer to the ConstVertexIterator.
-     */
-    bool isValid_cvitr(ConstVertexIterator const* const itr);
-
-    /**
-     * @brief Gets the next GWVertex index from a ConstVertexIterator.
-     * @param itr A pointer to the ConstVertexIterator.
-     */
-    uint32_t nextVertex_cvitr(ConstVertexIterator* const itr);
-
-    /**
-     * @def NOT_A_CEITR
-     *   A special ConstEdgeIterator denoting a NOT-ConstEdgeIterator that fails the isValid_ceitr() test.
-     */
-    #define NOT_A_CEITR ((ConstEdgeIterator){ NULL, 0xFFFFFFFF } )
-
-    /**
-     * @struct ConstEdgeIterator
-     * @brief Iterates through the edges of a GWModelArray.
-     *
-     * @var ConstTransitionIterator::gwma
-     *   A pointer to the GWModelArray vertices belong to.
-     * @var ConstTransitionIterator::nextEdgeId
-     *   The index of the next GWEdge.
-     */
-    typedef struct ConstEdgeIteratorBody {
-        GWModelArray const* gwma;
-        uint32_t nextEdgeId;
-    } ConstEdgeIterator;
-
-    /**
-     * @brief Constructs a ConstEdgeIterator under a GWModelArray.
-     * @param itr A pointer to the ConstEdgeIterator.
-     * @param gwma A pointer to the GWModelArray.
-     */
-    void construct_ceitr(ConstEdgeIterator* const itr, GWModelArray const* const gwma);
-
-    /**
-     * @brief Checks if a ConstEdgeIterator is valid.
-     * @param itr A pointer to the ConstEdgeIterator.
-     */
-    bool isValid_ceitr(ConstEdgeIterator const* const itr);
-
-    /**
-     * @brief Gets the next GWEdge index from a ConstEdgeIterator.
-     * @param itr A pointer to the ConstEdgeIterator.
-     */
-    uint32_t nextEdge_ceitr(ConstEdgeIterator* const itr);
-
-    /**
-     * @def NOT_A_CTITR
-     *   A special ConstTransitionIterator denoting a NOT-ConstTransitionIterator that fails the isValid_ctitr() test.
-     */
-    #define NOT_A_CTITR ((ConstTransitionIterator){ NULL, NULL, NULL, 0xFFFFFFFF, 0xFFFFFFFF } )
-
-    /**
-     * @struct ConstTransitionIterator
-     * @brief Iterates through the outgoing edges of a GWVertex, including those belong to its shared vertices.
-     *
-     * @var ConstTransitionIterator::gwma
-     *   A pointer to the GWModelArray vertices belong to.
-     * @var ConstTransitionIterator::vertex
-     *   A pointer to the GWVertex currently iterated.
-     * @var ConstTransitionIterator::nextSource
-     *   The index of the next shared GWVertex.
-     * @var ConstTransitionIterator::nextEdgeId
-     *   The index of the next GWEdge.
-     */
-    typedef struct ConstTransitionIteratorBody {
-        GWModelArray const* gwma;
-        GWVertex const*     vertex;
-        uint32_t            nextSource;
-        uint32_t            nextEdgeId;
-    } ConstTransitionIterator;
-
-    /**
-     * @brief Constructs a ConstTransitionIterator under a GWModelArray and a source GWVertex.
-     * @param itr A pointer to the ConstTransitionIterator.
-     * @param gwma A pointer to the GWModelArray.
-     * @param v_id The GWVertex index.
-     */
-    void construct_ctitr(ConstTransitionIterator* const itr, GWModelArray const* const gwma, uint32_t const v_id);
-
-    /**
-     * @brief Checks if a ConstTransitionIterator is valid.
-     * @param itr A pointer to the ConstTransitionIterator.
-     */
-    bool isValid_ctitr(ConstTransitionIterator const* const itr);
-
-    /**
-     * @brief Gets the next GWEdge index from a ConstTransitionIterator.
-     * @param itr A pointer to the ConstTransitionIterator.
-     */
-    uint32_t nextEdge_ctitr(ConstTransitionIterator* const itr);
 #endif

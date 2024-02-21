@@ -24,6 +24,7 @@ void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const grap
 
             VertexPath* const p_j = vpaths->array + j;
             DEBUG_ASSERT(p_j->len > 0)
+            DEBUG_ASSERT(p_j->graph == graph)
 
             clone_vpath(splice, p_i);
             if (!splice_vpath(splice, p_j)) continue;
@@ -34,6 +35,7 @@ void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const grap
 
                 VertexPath* const p_k = vpaths->array + k;
                 DEBUG_ASSERT(p_k->len > 0)
+                DEBUG_ASSERT(p_k->graph == graph)
 
                 if (isSubPath_vpath(p_k, splice)) {
                     disconnect_gmtx(vpgraph->spliceMtx, i, j);
@@ -44,8 +46,11 @@ void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const grap
     }
 
     for (uint32_t i = 0; i < sz; i++) {
-        VertexPath* const p_i       = vpaths->array + i;
-        uint32_t const target       = p_i->array[0];
+        VertexPath* const p_i = vpaths->array + i;
+        DEBUG_ASSERT(p_i->len > 0)
+        DEBUG_ASSERT(p_i->graph == graph)
+
+        uint32_t const target = p_i->array[0];
 
         if (!computeShortestInitializer_vpath(splice, graph, target))
             continue;
@@ -123,15 +128,51 @@ void constructTestPath_vpg(VertexPath* const testPath, VertexPathGraph const* co
 
     computeShortestInitializer_vpath(testPath, vpgraph->graph, firstVertexId);
 
+    GraphMatrix coverMtx[1];
+    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, vpgraph->vpaths->size))
+
+    bool pathSkipped        = 0;
+    uint32_t prevPathId     = 0xFFFFFFFF;
+    VertexPath subSplice[1] = {NOT_A_VPATH};
     for (uint32_t i = 0; i < pathTrace->len; i++) {
         uint32_t const pathId = pathTrace->array[i];
         DEBUG_ASSERT(isValidVertex_vpg(vpgraph, pathId))
+
+        if (isConnected_gmtx(coverMtx, 0, pathId)) {
+            pathSkipped = isValidVertex_vpg(vpgraph, prevPathId);
+            continue;
+        }
 
         VertexPath const* const tail = vpgraph->vpaths->array + pathId;
         DEBUG_ASSERT(isValid_vpath(tail))
 
         DEBUG_ASSERT_NDEBUG_EXECUTE(splice_vpath(testPath, tail))
+        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathId))
+
+        if (pathSkipped) {
+            DEBUG_ASSERT(isValidVertex_vpg(vpgraph, prevPathId))
+
+            clone_vpath(subSplice, vpgraph->vpaths->array + prevPathId);
+            DEBUG_ASSERT_NDEBUG_EXECUTE(splice_vpath(subSplice, tail))
+
+            for (uint32_t subPathId = 0; subPathId < vpgraph->vpaths->size; subPathId++) {
+                if (subPathId == pathId || subPathId == prevPathId || isConnected_gmtx(coverMtx, 0, subPathId))
+                    continue;
+
+                VertexPath const* const subPath = vpgraph->vpaths->array + subPathId;
+                DEBUG_ASSERT(isValid_vpath(subPath))
+
+                if (isSubPath_vpath(subPath, subSplice))
+                    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, subPathId))
+            }
+
+            pathSkipped = 0;
+        }
     }
+
+    free_gmtx(coverMtx);
+    if (subSplice->isAllocated)
+        free_vpath(subSplice);
 }
 
 uint32_t countEdges_vpg(void const* const graphPtr) {

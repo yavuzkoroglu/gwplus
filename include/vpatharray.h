@@ -79,6 +79,12 @@
     void dump_vpa(VertexPathArray const* const vpaths, FILE* const output);
 
     /**
+     * @brief Eliminates all sub paths in a VertexPathArray.
+     * @param vpaths A pointer to the VertexPathArray.
+     */
+    void eliminateSubPaths_vpa(VertexPathArray* const vpaths);
+
+    /**
      * @brief Flushes a VertexPathArray.
      * @param vpaths A pointer to the VertexPathArray.
      */

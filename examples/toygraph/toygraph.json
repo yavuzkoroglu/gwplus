@@ -1,0 +1,21 @@
+{
+    "models":
+        [
+            {
+                "name":"toygraph001","id":"toygraph001","generator":"random(edge_coverage(100))","actions":[],
+                "vertices":
+                    [
+                        {"id":"A","name":"","actions":[],"requirements":[],"properties":{"x":602.6218261621906,"y":525.8415971473504}},
+                        {"id":"B","name":"","actions":[],"requirements":[],"properties":{"x":668.1570043717259,"y":560.2046119388671}},
+                        {"id":"C","name":"","actions":[],"requirements":[],"properties":{"x":757.921875,"y":599.46875}}
+                    ],
+                "edges":
+                    [
+                        {"id":"0","name":"0","actions":[],"requirements":[],"properties":[],"sourceVertexId":"A","targetVertexId":"B"},
+                        {"id":"1","name":"1","actions":[],"requirements":[],"properties":[],"sourceVertexId":"B","targetVertexId":"C"},
+                        {"id":"2","name":"2","actions":[],"requirements":[],"properties":[],"sourceVertexId":"C","targetVertexId":"B"}
+                    ],
+                "startElementId":"A"
+            }
+        ]
+}

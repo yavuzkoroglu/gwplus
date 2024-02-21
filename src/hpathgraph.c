@@ -141,74 +141,29 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph const* c
         constructEmpty_vpath(pathTrace, hpgraph->pathGraph);
     }
 
-    if (hpgraph->pathGraph->isValidVertex(hpgraph->pathGraph->graphPtr, rootId)) {
-        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(pathTrace, rootId, 1))
-        return;
-    }
+    extend_vpath(pathTrace, rootId, 0);
 
-    VertexPath const* const hpath = hpgraph->hpaths->array + rootId;
-    DEBUG_ASSERT(hpath->len > 1)
+    VertexPath secondTrace[1];
+    constructEmpty_vpath(secondTrace, hpgraph->pathGraph);
 
-    constructPathTrace_hpg(pathTrace, hpgraph, hpath->array[0]);
-    DEBUG_ASSERT(pathTrace->len > 0)
+    VertexPath* current = pathTrace;
+    VertexPath* next    = secondTrace;
 
-    VertexPath nextTrace[1] = {NOT_A_VPATH};
-    for (uint32_t i = 1; i < hpath->len; i++) {
-        constructPathTrace_hpg(nextTrace, hpgraph, hpath->array[i]);
-        DEBUG_ASSERT(nextTrace->len > 0)
+    while (current->len != next->len) {
+        flush_vpath(next);
 
-        uint32_t from = pathTrace->array[pathTrace->len - 1];
-        uint32_t to   = nextTrace->array[0];
+        for (uint32_t i = 0; i < current->len; i++) {
+            uint32_t const prevPathId   = (i > 0) ? current->array[i - 1] ? current->array[current->len - 1];
+            uint32_t const pathId       = current->array[i];
+            uint32_t const nextPathId   = (i < current->len - 1) ? current->array[i + 1] : current->array[0];
 
-        if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
-            concat_vpath(pathTrace, nextTrace);
-            continue;
+            
         }
 
-        bool spliceEstablished = 0;
-        if (canRotate_vpath(pathTrace)) {
-            if (canRotate_vpath(nextTrace)) {
-                for (uint32_t n = 1; !spliceEstablished && n < pathTrace->len; n++) {
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
-                    from = pathTrace->array[pathTrace->len - 1];
-                    if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
-                        concat_vpath(pathTrace, nextTrace);
-                        spliceEstablished = 1;
-                    }
-                    for (uint32_t m = 1; !spliceEstablished && m < nextTrace->len; m++) {
-                        DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(nextTrace))
-                        to = nextTrace->array[0];
-                        if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
-                            concat_vpath(pathTrace, nextTrace);
-                            spliceEstablished = 1;
-                        }
-                    }
-                }
-            } else {
-                for (uint32_t n = 1; !spliceEstablished && n < pathTrace->len; n++) {
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
-                    from = pathTrace->array[pathTrace->len - 1];
-                    if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
-                        concat_vpath(pathTrace, nextTrace);
-                        spliceEstablished = 1;
-                    }
-                }
-            }
-        } else {
-            DEBUG_ASSERT(canRotate_vpath(nextTrace))
-            for (uint32_t m = 1; !spliceEstablished && m < nextTrace->len; m++) {
-                DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(nextTrace))
-                to = nextTrace->array[0];
-                if (hpgraph->pathGraph->isValidEdge(hpgraph->pathGraph->graphPtr, from, to)) {
-                    concat_vpath(pathTrace, nextTrace);
-                    spliceEstablished = 1;
-                }
-            }
-        }
-        DEBUG_ASSERT(spliceEstablished)
+        VertexPath* const tmp   = currentTrace;
+        currentTrace            = nextTrace;
+        nextTrace               = tmp;
     }
-    if (nextTrace->isAllocated)
-        free_vpath(nextTrace);
 }
 
 void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph const* const hpgraph) {
@@ -363,8 +318,8 @@ bool isValidEdge_hpg(void const* const graphPtr, uint32_t const sourceVertexId, 
     DEBUG_ASSERT(isValid_hpg(graphPtr))
     HyperPathGraph const* const hpgraph = (HyperPathGraph const*)graphPtr;
 
-    return  isValidVertex_hpg(graphPtr, sourceVertexId)                         &&
-            isValidVertex_hpg(graphPtr, targetVertexId)                         &&
+    return  sourceVertexId < hpgraph->hpaths->size                              &&
+            targetVertexId < hpgraph->hpaths->size                              &&
             isConnected_gmtx(hpgraph->edgeMtx, sourceVertexId, targetVertexId);
 }
 

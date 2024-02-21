@@ -16,7 +16,9 @@ bool canRotate_vpath(VertexPath const* const vpath) {
     uint32_t const firstVertexId    = vpath->array[0];
     uint32_t const lastVertexId     = vpath->array[vpath->len - 1];
 
-    return vpath->graph->isValidEdge(vpath->graph->graphPtr, lastVertexId, firstVertexId);
+    vpath->isCycle = (firstVertexId == lastVertexId);
+
+    return vpath->isCycle || vpath->graph->isValidEdge(vpath->graph->graphPtr, lastVertexId, firstVertexId);
 }
 
 void clone_vpath(VertexPath* const clone, VertexPath const* const original) {
@@ -129,10 +131,10 @@ bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* co
                     return 1;
                 }
 
-                REALLOC_IF_NECESSARY(
+                RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
                     uint32_t, stack_A_cap, stack_A_size,
-                    REALLOC_ERROR
+                    RECALLOC_ERROR
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
@@ -223,15 +225,15 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
                     return 1;
                 }
 
-                REALLOC_IF_NECESSARY(
+                RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
                     uint32_t, stack_A_cap, stack_A_size,
-                    REALLOC_ERROR
+                    RECALLOC_ERROR
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
 
-                stack_A_size -= !extend_vpath(vpath_to_extend, neighborId, 1);
+                stack_A_size -= !extend_vpath(vpath_to_extend, neighborId, 1));
             }
         }
     }
@@ -338,10 +340,10 @@ bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph
                     return 1;
                 }
 
-                REALLOC_IF_NECESSARY(
+                RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
                     uint32_t, stack_A_cap, stack_A_size,
-                    REALLOC_ERROR
+                    RECALLOC_ERROR
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
@@ -606,16 +608,40 @@ bool rotate_vpath(VertexPath* const vpath) {
 
     if (vpath->len < 2) return 1;
 
-    uint32_t const firstVertexId    = vpath->array[0];
-    uint32_t const lastVertexId     = vpath->array[vpath->len - 1];
+    size_t size_in_bytes, r;
 
-    if (!vpath->graph->isValidEdge(vpath->graph->graphPtr, lastVertexId, firstVertexId))
+    vpath->isCycle = (vpath->array[0] == vpath->array[vpath->len - 1]);
+
+    if (vpath->isCycle) {
+        size_in_bytes = (size_t)(vpath->len - 1) * sizeof(uint32_t);
+        memmove(vpath->array + 1, vpath->array, size_in_bytes)
+        vpath->array[0] = vpath->array[vpath->len - 1];
+
+        r = search_vpath(vpath, vpath->array[1]);
+        DEBUG_ASSERT(r > 0)
+        size_in_bytes = (size_t)(vpath->len - r) * sizeof(uint32_t);
+        memmove(vpath->sorted + r - 1, vpath->sorted + r, size_in_bytes);
+
+        vpath->len--;
+
+        r = search_vpath(vpath, vpath->array[0]);
+        DEBUG_ASSERT(r > 0)
+        size_in_bytes = (size_t)(vpath->len - r) * sizeof(uint32_t);
+        memmove(vpath->sorted + r + 1, vpath->sorted + r, size_in_bytes);
+        vpath->sorted[r] = vpath->array[0];
+
+        vpath->len++;
+
+        return 1;
+    } else if (vpath->graph->isValidEdge(vpath->graph->graphPtr, lastVertexId, firstVertexId)) {
+        uint32_t const tmp = vpath->array[vpath->len - 1];
+        size_in_bytes = (size_t)(vpath->len - 1) * sizeof(uint32_t);
+        memmove(vpath->array + 1, vpath->array, size_in_bytes)
+        vpath->array[0] = tmp;
+        return 1;
+    } else {
         return 0;
-
-    size_t const size_in_bytes = (size_t)(vpath->len - 1) * sizeof(uint32_t);
-    memmove(vpath->array + 1, vpath->array, size_in_bytes);
-    vpath->array[0] = lastVertexId;
-    return 1;
+    }
 }
 
 uint32_t search_vpath(VertexPath const* const vpath, uint32_t const vertexId) {

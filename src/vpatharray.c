@@ -192,6 +192,40 @@ void dump_vpa(VertexPathArray const* const vpaths, FILE* const output) {
     }
 }
 
+void eliminateSubPaths_vpa(VertexPathArray* const vpaths) {
+    DEBUG_ASSERT(isValid_vpa(vpaths))
+
+    if (vpaths->size < 2) return;
+
+    VertexPath* v_last = vpaths->array + vpaths->size - 1;
+    DEBUG_ASSERT(isValid_vpath(v_last))
+
+    VertexPath tmp[1];
+    for (VertexPath* v_i = vpaths->array; v_i < v_last; v_i++) {
+        DEBUG_ASSERT(isValid_vpath(v_i))
+
+        for (VertexPath* v_j = v_last; v_j > v_i; v_j--) {
+            DEBUG_ASSERT(isValid_vpath(v_j))
+
+            if (isSubPath_vpath(v_j, v_i)) {
+                size_t const size_in_bytes = (size_t)(v_last - v_j) * sizeof(VertexPath);
+                memcpy(tmp, v_j, sizeof(VertexPath));
+                memcpy(v_j, v_j + 1, size_in_bytes);
+                memcpy(v_last--, tmp, sizeof(VertexPath));
+                vpaths->size--;
+            } else if (isSubPath_vpath(v_i, v_j)) {
+                size_t const size_in_bytes = (size_t)(v_last - v_i) * sizeof(VertexPath);
+                memcpy(tmp, v_i, sizeof(VertexPath));
+                memcpy(v_i, v_i + 1, size_in_bytes);
+                memcpy(v_last--, tmp, sizeof(VertexPath));
+                vpaths->size--;
+                v_i--;
+                break;
+            }
+        }
+    }
+}
+
 void flush_vpa(VertexPathArray* const vpaths) {
     DEBUG_ASSERT(isValid_vpa(vpaths))
     vpaths->size = 0;
