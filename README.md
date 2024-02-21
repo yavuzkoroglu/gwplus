@@ -1,4 +1,4 @@
-# gwplus: GraphWalker Plus
+# Gwplus: GraphWalker Plus
 
 Computes the shortest test path satisfying a coverage criterion for a GraphWalker model.
 
@@ -9,7 +9,7 @@ Computes the shortest test path satisfying a coverage criterion for a GraphWalke
 * [Examples](#examples)
     - [Toy Graph](#toy-graph)
     - [TLC](#tlc)
-    
+
 ## How to Build
 
 Open a terminal and clone this repository using the following command:
