@@ -1,6 +1,6 @@
 # Gwplus: GraphWalker Plus
 
-Computes the shortest test path satisfying a coverage criterion for a GraphWalker model.
+Computes the shortest test path that satisfies a coverage criterion for a GraphWalker model.
 
 ## Table of Contents
 
