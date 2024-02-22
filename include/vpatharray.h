@@ -34,7 +34,7 @@
      * @def VPATH_ARRAY_DEFAULT_INITIAL_CAP
      *   This default initial capacity should work in most situations.
      */
-    #define VPATH_ARRAY_DEFAULT_INITIAL_CAP 256
+    #define VPATH_ARRAY_DEFAULT_INITIAL_CAP 1024
 
     /**
      * @brief Constructs 1-paths from all the vertices of a SimpleGraph.

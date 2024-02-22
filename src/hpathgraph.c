@@ -248,7 +248,7 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* co
     constructPathTrace_hpg(pathTrace, hpgraph, rootId);
 
     uint32_t shortestLen        = 0xFFFFFFFF;
-    VertexPath* shortestPath    = NULL;
+    uint32_t shortestPathId     = 0xFFFFFFFF;
 
     constructEmpty_vpa(testPaths, pathTrace->len);
 
@@ -259,21 +259,20 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* co
 
             if (testPath->len < shortestLen) {
                 shortestLen     = testPath->len;
-                shortestPath    = testPath;
+                shortestPathId  = (uint32_t)(testPath - testPaths->array);
             }
         }
 
         DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(pathTrace))
     }
 
-    DEBUG_ERROR_IF(shortestPath == NULL)
+    DEBUG_ERROR_IF(shortestPathId >= testPaths->size)
 
-    if (shortestPath > testPaths->array) {
-        VertexPath tmp[1];
-        memcpy(tmp, testPaths->array, sizeof(VertexPath));
-        memcpy(testPaths->array, shortestPath, sizeof(VertexPath));
-        memcpy(shortestPath, tmp, sizeof(VertexPath));
-    }
+    VertexPath tmp[1];
+    VertexPath* const shortestPath = testPaths->array + shortestPathId;
+    memcpy(tmp, testPaths->array, sizeof(VertexPath));
+    memcpy(testPaths->array, shortestPath, sizeof(VertexPath));
+    memcpy(shortestPath, tmp, sizeof(VertexPath));
     testPaths->size = 1;
 
     if (pathTrace->isAllocated)

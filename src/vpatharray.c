@@ -175,7 +175,7 @@ void constructEmpty_vpa(VertexPathArray* const vpaths, uint32_t const initial_ca
 
     vpaths->cap     = initial_cap;
     vpaths->size    = 0;
-    vpaths->array   = calloc(initial_cap, sizeof(VertexPath));
+    vpaths->array   = calloc((size_t)initial_cap, sizeof(VertexPath));
     DEBUG_ERROR_IF(vpaths->array == NULL)
 }
 
