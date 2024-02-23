@@ -447,7 +447,7 @@ void dump_vpath(VertexPath const* const vpath, FILE* const output) {
     DEBUG_ERROR_IF(output == NULL)
 
     for (uint32_t i = 0; i < vpath->len; i++)
-        vpath->graph->dumpVertex(vpath->graph->graphPtr, output, vpath->array[i]);
+        dumpVertex_sg(vpath->graph, output, vpath->array[i]);
 
     fputs("\n", output);
 }

@@ -318,7 +318,11 @@
      * @var GWModelArray::tables
      *   These ChunkTable objects facilitate locating shared states in O(1).
      * @var GWModelArray::s_id
-     *   The vertex index of the starting vertex.
+     *   The index of the starting element.
+     * @var GWModelArray::s_type
+     *   The starting element type (vertex or edge)
+     * @var GWModelArray::isVertexCoverage
+     *   Vertex Coverage must be handled differently.
      * @var GWModelArray::size_edges
      *   The total number of GWEdge objects residing in the GWModelArray.
      * @var GWModelArray::size_models
@@ -348,7 +352,8 @@
         Chunk       chunks[GWMA_CHUNK_LAST + 1];
         ChunkTable  tables[GWMA_TBL_LAST + 1];
         uint32_t    s_id;
-        uint32_t    s_type;
+        uint32_t    s_type:16;
+        uint32_t    isVertexCoverage:16;
         uint32_t    guess_edge_count_per_vertex;
         uint32_t    guess_vertex_count_per_shared;
         uint32_t    cap_edges;
@@ -375,7 +380,7 @@
     #define NOT_A_GWMODEL_ARRAY ((GWModelArray){                                            \
         { NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK, NOT_A_CHUNK },   \
         { NOT_A_CHUNK_TABLE },                                                              \
-        0xFFFFFFFF, GWMA_START_ELEMENT_TYPE_INVALID,                                        \
+        0xFFFFFFFF, GWMA_START_ELEMENT_TYPE_INVALID, 0,                                     \
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                                                 \
         NULL, NULL, NULL, NULL, NULL                                                        \
     })
@@ -451,6 +456,7 @@
     /**
      * @brief Constructs an empty GWModelArray.
      * @param gwma A pointer to the GWModelArray.
+     * @param isVertexCoverage Vertex Coverage must be handled differently.
      * @param initial_cap_edges The initial edge capacity.
      * @param initial_cap_models The initial model capacity.
      * @param initial_cap_shared_vertices The initial shared vertex capacity.
@@ -459,7 +465,7 @@
      * @param guess_name_len An estimation of name length.
      */
     void constructEmpty_gwma(
-        GWModelArray* const gwma,
+        GWModelArray* const gwma, bool const isVertexCoverage,
         uint32_t const initial_cap_edges, uint32_t const initial_cap_models,
         uint32_t const initial_cap_shared_vertices, uint32_t const initial_cap_vertices,
         size_t const guess_id_str_len, size_t const guess_name_len
@@ -659,6 +665,14 @@
      * @param name_len The total number of characters in the name.
      */
     void setModelName_gwma(GWModelArray* const gwma, char const* const name, size_t const name_len);
+
+    /**
+     * @brief Sets the predefinedPathEdgeIds in a GWModelArray.
+     * @param gwma A pointer to the GWModelArray.
+     * @param path A pointer to the constant path.
+     * @param len The path length.
+     */
+    void setPredefinedPath_gwma(GWModelArray* const gwma, uint32_t const* const path, uint32_t const len);
 
     /**
      * @brief Sets the starting GWVertex or GWEdge of a GWModelArray.

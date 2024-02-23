@@ -1964,7 +1964,7 @@ void construct_sgi_gwma(SimpleGraph* const graph, GWModelArray const* const gwma
 }
 
 void constructEmpty_gwma(
-    GWModelArray* const gwma,
+    GWModelArray* const gwma, bool const isVertexCoverage,
     uint32_t const initial_cap_edges, uint32_t const initial_cap_models,
     uint32_t const initial_cap_shared_vertices, uint32_t const initial_cap_vertices,
     size_t const guess_id_str_len, size_t const guess_name_len
@@ -2022,7 +2022,8 @@ void constructEmpty_gwma(
         ctbl_shared_states, initial_cap_shared_vertices, CHUNK_TABLE_RECOMMENDED_LOAD_PERCENT
     ))
 
-    gwma->s_id = 0xFFFFFFFF;
+    gwma->s_id                          = 0xFFFFFFFF;
+    gwma->isVertexCoverage              = isVertexCoverage;
     gwma->guess_edge_count_per_vertex   = initial_cap_edges / initial_cap_vertices + 1;
     gwma->guess_vertex_count_per_shared = initial_cap_vertices / initial_cap_shared_vertices + 1;
 
@@ -2062,8 +2063,8 @@ uint32_t countEdges_gwma(void const* const graphPtr) {
     if (cachedGraphPtr == graphPtr)
         return count;
 
-    cachedGraphPtr = graphPtr;
-    count = 0;
+    cachedGraphPtr  = graphPtr;
+    count           = 0;
 
     SimpleGraph graph[1];
     construct_sgi_gwma(graph, graphPtr);
@@ -2084,9 +2085,29 @@ uint32_t countEdges_gwma(void const* const graphPtr) {
 }
 
 uint32_t countVertices_gwma(void const* const graphPtr) {
+    static uint32_t count               = 0xFFFFFFFF;
+    static void const* cachedGraphPtr   = NULL;
+
     DEBUG_ASSERT(isValid_gwma(graphPtr))
+
+    if (cachedGraphPtr == graphPtr)
+        return count;
+
+    cachedGraphPtr  = graphPtr;
+    count           = 0;
+
     GWModelArray const* const gwma = (GWModelArray const*)graphPtr;
-    return gwma->size_edges;
+
+    if (!gwma->isVertexCoverage)
+        return (count = gwma->size_edges);
+
+    for (uint32_t v_id = 0; v_id < gwma->size_vertices; v_id++) {
+        GWVertex const* const vertex = gwma->vertices + v_id;
+        DEBUG_ASSERT(isValid_gwvertex(vertex))
+
+        count += (v_id == vertex->original_v_id);
+    }
+    return count;
 }
 
 void dump_gwma(void const* const graphPtr, FILE* const output) {
@@ -2097,9 +2118,7 @@ void dump_gwma(void const* const graphPtr, FILE* const output) {
     Chunk const* const chunk_model_ids      = gwma->chunks + GWMA_CHUNK_MODEL_IDS;
     Chunk const* const chunk_model_names    = gwma->chunks + GWMA_CHUNK_MODEL_NAMES;
     Chunk const* const chunk_vertex_ids     = gwma->chunks + GWMA_CHUNK_VERTEX_IDS;
-    Chunk const* const chunk_vertex_names   = gwma->chunks + GWMA_CHUNK_VERTEX_NAMES;
     Chunk const* const chunk_edge_ids       = gwma->chunks + GWMA_CHUNK_EDGE_IDS;
-    Chunk const* const chunk_shared_states  = gwma->chunks + GWMA_CHUNK_SHARED_STATES;
 
     fputs("{\"models\":[", output);
 
@@ -2135,61 +2154,20 @@ void dump_gwma(void const* const graphPtr, FILE* const output) {
         );
     }
 
+    GWModelArray tmp[1];
+    memcpy(tmp, gwma, sizeof(GWModelArray));
+    tmp->isVertexCoverage = 1;
     for (uint32_t v_id = 0; v_id < gwma->size_vertices; v_id++) {
-        GWVertex const* const vertex = gwma->vertices + v_id;
-        DEBUG_ASSERT(isValid_gwvertex(vertex))
-
-        char const* const v_id_str = get_chunk(chunk_vertex_ids, v_id);
-        DEBUG_ERROR_IF(v_id_str == NULL)
-
-        char const* const v_name = get_chunk(chunk_vertex_names, v_id);
-        DEBUG_ERROR_IF(v_name == NULL)
-
-        if (IS_GWVERTEX_SHARED(vertex)) {
-            if (vertex->original_v_id != v_id) continue;
-
-            char const* const shared_vertex_name = get_chunk(chunk_shared_states, vertex->shared_id);
-            DEBUG_ERROR_IF(shared_vertex_name == NULL)
-
-            fprintf(
-                output,
-                "{"
-                "\"id\":\"%s\","
-                "\"name\":\"%s\","
-                "\"actions\":[],"
-                "\"requirements\":[],"
-                "\"properties\":{\"x\":%lf,\"y\":%lf}"
-                "}",
-                v_id_str,
-                shared_vertex_name,
-                vertex->x,
-                vertex->y
-            );
-        } else {
-            fprintf(
-                output,
-                "{"
-                "\"id\":\"%s\","
-                "\"name\":\"%s\","
-                "\"actions\":[],"
-                "\"requirements\":[],"
-                "\"properties\":{\"x\":%lf,\"y\":%lf}"
-                "}",
-                v_id_str,
-                v_name,
-                vertex->x,
-                vertex->y
-            );
-        }
-
+        dumpVertex_gwma(tmp, output, v_id);
         if (v_id < gwma->size_vertices - 1)
             fputs(",", output);
     }
 
     fputs("],\"edges\":[", output);
 
+    tmp->isVertexCoverage = 0;
     for (uint32_t e_id = 0; e_id < gwma->size_edges; e_id++) {
-        dumpVertex_gwma(graphPtr, output, e_id);
+        dumpVertex_gwma(tmp, output, e_id);
         if (e_id < gwma->size_edges - 1)
             fputs(",", output);
     }
@@ -2239,46 +2217,96 @@ void dumpVertex_gwma(void const* const graphPtr, FILE* const output, uint32_t co
 
     GWModelArray const* const gwma          = (GWModelArray const*) graphPtr;
     Chunk const* const chunk_vertex_ids     = gwma->chunks + GWMA_CHUNK_VERTEX_IDS;
+    Chunk const* const chunk_vertex_names   = gwma->chunks + GWMA_CHUNK_VERTEX_NAMES;
     Chunk const* const chunk_edge_ids       = gwma->chunks + GWMA_CHUNK_EDGE_IDS;
     Chunk const* const chunk_edge_names     = gwma->chunks + GWMA_CHUNK_EDGE_NAMES;
+    Chunk const* const chunk_shared_states  = gwma->chunks + GWMA_CHUNK_SHARED_STATES;
 
-    GWEdge const* const edge = gwma->edges + vertexId;
-    DEBUG_ASSERT(isValid_gwedge(edge))
+    if (gwma->isVertexCoverage) {
+        GWVertex const* const vertex = gwma->vertices + vertexId;
+        DEBUG_ASSERT(isValid_gwvertex(vertex))
 
-    char const* const edge_id_str = get_chunk(chunk_edge_ids, vertexId);
-    DEBUG_ERROR_IF(edge_id_str == NULL)
+        char const* const v_id_str = get_chunk(chunk_vertex_ids, vertexId);
+        DEBUG_ERROR_IF(v_id_str == NULL)
 
-    char const* const edge_name = get_chunk(chunk_edge_names, vertexId);
-    DEBUG_ERROR_IF(edge_name == NULL)
+        char const* const v_name = get_chunk(chunk_vertex_names, vertexId);
+        DEBUG_ERROR_IF(v_name == NULL)
 
-    GWVertex const* const source = gwma->vertices + edge->source;
-    DEBUG_ASSERT(isValid_gwvertex(source))
+        if (IS_GWVERTEX_SHARED(vertex)) {
+            if (vertex->original_v_id != vertexId) return;
 
-    GWVertex const* const target = gwma->vertices + edge->target;
-    DEBUG_ASSERT(isValid_gwvertex(target))
+            char const* const shared_vertex_name = get_chunk(chunk_shared_states, vertex->shared_id);
+            DEBUG_ERROR_IF(shared_vertex_name == NULL)
 
-    char const* const source_id_str = get_chunk(chunk_vertex_ids, source->original_v_id);
-    DEBUG_ERROR_IF(source_id_str == NULL)
+            fprintf(
+                output,
+                "{"
+                "\"id\":\"%s\","
+                "\"name\":\"%s\","
+                "\"actions\":[],"
+                "\"requirements\":[],"
+                "\"properties\":{\"x\":%lf,\"y\":%lf}"
+                "}",
+                v_id_str,
+                shared_vertex_name,
+                vertex->x,
+                vertex->y
+            );
+        } else {
+            fprintf(
+                output,
+                "{"
+                "\"id\":\"%s\","
+                "\"name\":\"%s\","
+                "\"actions\":[],"
+                "\"requirements\":[],"
+                "\"properties\":{\"x\":%lf,\"y\":%lf}"
+                "}",
+                v_id_str,
+                v_name,
+                vertex->x,
+                vertex->y
+            );
+        }
+    } else {
+        GWEdge const* const edge = gwma->edges + vertexId;
+        DEBUG_ASSERT(isValid_gwedge(edge))
 
-    char const* const target_id_str = get_chunk(chunk_vertex_ids, target->original_v_id);
-    DEBUG_ERROR_IF(target_id_str == NULL)
+        char const* const edge_id_str = get_chunk(chunk_edge_ids, vertexId);
+        DEBUG_ERROR_IF(edge_id_str == NULL)
 
-    fprintf(
-        output,
-        "{"
-        "\"id\":\"%s\","
-        "\"name\":\"%s\","
-        "\"actions\":[],"
-        "\"requirements\":[],"
-        "\"properties\":[],"
-        "\"sourceVertexId\":\"%s\","
-        "\"targetVertexId\":\"%s\""
-        "}",
-        edge_id_str,
-        edge_name,
-        source_id_str,
-        target_id_str
-    );
+        char const* const edge_name = get_chunk(chunk_edge_names, vertexId);
+        DEBUG_ERROR_IF(edge_name == NULL)
+
+        GWVertex const* const source = gwma->vertices + edge->source;
+        DEBUG_ASSERT(isValid_gwvertex(source))
+
+        GWVertex const* const target = gwma->vertices + edge->target;
+        DEBUG_ASSERT(isValid_gwvertex(target))
+
+        char const* const source_id_str = get_chunk(chunk_vertex_ids, source->original_v_id);
+        DEBUG_ERROR_IF(source_id_str == NULL)
+
+        char const* const target_id_str = get_chunk(chunk_vertex_ids, target->original_v_id);
+        DEBUG_ERROR_IF(target_id_str == NULL)
+
+        fprintf(
+            output,
+            "{"
+            "\"id\":\"%s\","
+            "\"name\":\"%s\","
+            "\"actions\":[],"
+            "\"requirements\":[],"
+            "\"properties\":[],"
+            "\"sourceVertexId\":\"%s\","
+            "\"targetVertexId\":\"%s\""
+            "}",
+            edge_id_str,
+            edge_name,
+            source_id_str,
+            target_id_str
+        );
+    }
 }
 
 void fillUsingJSON_gwma(GWModelArray* const gwma, FILE* const jsonFile) {
@@ -2404,8 +2432,7 @@ void free_gwma(GWModelArray* const gwma) {
 
     free(gwma->edges);
     free(gwma->models);
-    if (gwma->cap_predefinedEdgePath > 0)
-        free(gwma->predefinedEdgePath);
+    free(gwma->predefinedEdgePath);
     free(gwma->shared_vertices);
     free(gwma->vertices);
 
@@ -2474,24 +2501,43 @@ bool isValidEdge_gwma(void const* const graphPtr, uint32_t const sourceVertexId,
 
     GWModelArray const* const gwma = (GWModelArray const*)graphPtr;
 
-    GWEdge const* const sourceEdge = gwma->edges + sourceVertexId;
-    DEBUG_ASSERT(isValid_gwedge(sourceEdge))
+    if (gwma->isVertexCoverage) {
+        for (GWEdge const* edge = gwma->edges + gwma->size_edges - 1; edge >= gwma->edges; edge--) {
+            DEBUG_ASSERT(isValid_gwedge(edge))
+            if (edge->source == sourceVertexId && edge->target == targetVertexId)
+                return 1;
+        }
+        return 0;
+    } else {
+        GWEdge const* const sourceEdge = gwma->edges + sourceVertexId;
+        DEBUG_ASSERT(isValid_gwedge(sourceEdge))
 
-    GWEdge const* const targetEdge = gwma->edges + targetVertexId;
-    DEBUG_ASSERT(isValid_gwedge(targetEdge))
+        GWEdge const* const targetEdge = gwma->edges + targetVertexId;
+        DEBUG_ASSERT(isValid_gwedge(targetEdge))
 
-    GWVertex const* const v_a = gwma->vertices + sourceEdge->target;
-    GWVertex const* const v_b = gwma->vertices + targetEdge->source;
-    DEBUG_ASSERT(isValid_gwvertex(v_a))
-    DEBUG_ASSERT(isValid_gwvertex(v_b))
+        GWVertex const* const v_a = gwma->vertices + sourceEdge->target;
+        GWVertex const* const v_b = gwma->vertices + targetEdge->source;
+        DEBUG_ASSERT(isValid_gwvertex(v_a))
+        DEBUG_ASSERT(isValid_gwvertex(v_b))
 
-    return areEqual_gwvertex(v_a, v_b);
+        return areEqual_gwvertex(v_a, v_b);
+    }
 }
 
 bool isValidVertex_gwma(void const* const graphPtr, uint32_t const vertexId) {
     DEBUG_ASSERT(isValid_gwma(graphPtr))
     GWModelArray const* const gwma = (GWModelArray const*)graphPtr;
-    return vertexId < gwma->size_edges;
+
+    if (!gwma->isVertexCoverage)
+        return vertexId < gwma->size_edges;
+
+    if (vertexId >= gwma->size_vertices)
+        return 0;
+
+    GWVertex const* const vertex = gwma->vertices + vertexId;
+    DEBUG_ASSERT(isValid_gwvertex(vertex))
+
+    return vertex->original_v_id == vertexId;
 }
 
 GWEdge* lastEdge_gwma(GWModelArray* const gwma) {
@@ -2528,32 +2574,52 @@ uint32_t nextVertexId_svitr_gwma(StartVertexIterator* const itr) {
     if (itr->nextVertexId == 0xFFFFFFFF)
         return 0xFFFFFFFF;
 
-    if (gwma->s_type == GWMA_START_ELEMENT_TYPE_EDGE) {
+    if (gwma->isVertexCoverage) {
+        if (gwma->s_type == GWMA_START_ELEMENT_TYPE_VERTEX) {
+            GWVertex const* const s = gwma->vertices + gwma->s_id;
+            DEBUG_ASSERT(isValid_gwvertex(s))
+
+            itr->nextVertexId = 0xFFFFFFFF;
+            return s->original_v_id;
+        } else {
+            GWEdge const* const s_edge = gwma->edges + gwma->s_id;
+            DEBUG_ASSERT(isValid_gwedge(s_edge))
+
+            GWVertex const* const s = gwma->vertices + s_edge->target;
+            DEBUG_ASSERT(isValid_gwvertex(s))
+
+            itr->nextVertexId = 0xFFFFFFFF;
+            return s->original_v_id;
+        }
+    } else if (gwma->s_type == GWMA_START_ELEMENT_TYPE_EDGE) {
         itr->nextVertexId = 0xFFFFFFFF;
         return gwma->s_id;
+    } else {
+        GWVertex const* const v_s = gwma->vertices + gwma->s_id;
+        DEBUG_ASSERT(isValid_gwvertex(v_s))
+
+        while (itr->nextVertexId != 0xFFFFFFFF) {
+            GWEdge const* const edge = gwma->edges + itr->nextVertexId;
+            DEBUG_ASSERT(isValid_gwedge(edge))
+
+            GWVertex const* const v_b = gwma->vertices + edge->source;
+            DEBUG_ASSERT(isValid_gwvertex(v_b))
+
+            if (areEqual_gwvertex(v_s, v_b))
+                return itr->nextVertexId--;
+
+            itr->nextVertexId--;
+        }
+
+        return 0xFFFFFFFF;
     }
-
-    GWVertex const* const v_s = gwma->vertices + gwma->s_id;
-    DEBUG_ASSERT(isValid_gwvertex(v_s))
-
-    while (itr->nextVertexId != 0xFFFFFFFF) {
-        GWEdge const* const edge = gwma->edges + itr->nextVertexId;
-        DEBUG_ASSERT(isValid_gwedge(edge))
-
-        GWVertex const* const v_b = gwma->vertices + edge->source;
-        DEBUG_ASSERT(isValid_gwvertex(v_b))
-
-        if (areEqual_gwvertex(v_s, v_b))
-            return itr->nextVertexId--;
-
-        itr->nextVertexId--;
-    }
-
-    return 0xFFFFFFFF;
 }
 
 uint32_t nextVertexId_vitr_gwma(VertexIterator* const itr) {
     DEBUG_ASSERT(isValid_vitr_gwma(itr))
+
+    while (itr->nextVertexId != 0xFFFFFFFF && !isValidVertex_gwma(itr->graphPtr, itr->nextVertexId))
+        itr->nextVertexId--;
 
     if (itr->nextVertexId == 0xFFFFFFFF)
         return 0xFFFFFFFF;
@@ -2623,23 +2689,28 @@ void setFirstNextId_nitr_gwma(NeighborIterator* const itr) {
     DEBUG_ASSERT(isValid_nitr_gwma(itr))
     GWModelArray const* const gwma = (GWModelArray const*)itr->graphPtr;
 
-    itr->nextNeighborId = gwma->size_edges - 1;
+    itr->nextNeighborId = (gwma->isVertexCoverage) ? gwma->size_vertices - 1 : gwma->size_edges - 1;
 }
 
 void setFirstNextId_svitr_gwma(StartVertexIterator* const itr) {
     DEBUG_ASSERT(isValid_svitr_gwma(itr))
     GWModelArray const* const gwma = (GWModelArray const*)itr->graphPtr;
 
-    itr->nextVertexId = (gwma->s_type == GWMA_START_ELEMENT_TYPE_EDGE)
-        ? gwma->s_id
-        : gwma->size_edges - 1;
+    itr->nextVertexId =
+        (gwma->isVertexCoverage)
+        ? (gwma->s_type == GWMA_START_ELEMENT_TYPE_VERTEX)
+            ? gwma->s_id
+            : gwma->size_vertices - 1
+        : (gwma->s_type == GWMA_START_ELEMENT_TYPE_EDGE)
+            ? gwma->s_id
+            : gwma->size_edges - 1;
 }
 
 void setFirstNextId_vitr_gwma(VertexIterator* const itr) {
     DEBUG_ASSERT(isValid_vitr_gwma(itr))
     GWModelArray const* const gwma = (GWModelArray const*)itr->graphPtr;
 
-    itr->nextVertexId = gwma->size_edges - 1;
+    itr->nextVertexId = (gwma->isVertexCoverage) ? gwma->size_vertices - 1 : gwma->size_edges - 1;
 }
 
 void setModelIdStr_gwma(GWModelArray* const gwma, char const* const id_str, size_t const id_str_len) {
@@ -2658,6 +2729,59 @@ void setModelName_gwma(GWModelArray* const gwma, char const* const name, size_t 
     Chunk* const chunk_model_names = gwma->chunks + GWMA_CHUNK_MODEL_NAMES;
     DEBUG_ERROR_IF(append_chunk(chunk_model_names, name, name_len) == NULL)
     NDEBUG_EXECUTE(append_chunk(chunk_model_names, name, name_len))
+}
+
+void setPredefinedPath_gwma(GWModelArray* const gwma, uint32_t const* const path, uint32_t const len) {
+    DEBUG_ASSERT(isValid_gwma(gwma))
+    DEBUG_ERROR_IF(path == NULL)
+
+    if (len == 0) return;
+
+    gwma->cap_predefinedEdgePath    = len;
+    gwma->predefinedEdgePath        = malloc((size_t)len * sizeof(uint32_t));
+    DEBUG_ERROR_IF(gwma->predefinedEdgePath == NULL)
+
+    if (!gwma->isVertexCoverage) {
+        memcpy(gwma->predefinedEdgePath, path, (size_t)(gwma->len_predefinedEdgePath = len) * sizeof(uint32_t));
+        return;
+    }
+
+    gwma->len_predefinedEdgePath = 0;
+    if (gwma->s_type == GWMA_START_ELEMENT_TYPE_EDGE) {
+        gwma->predefinedEdgePath[gwma->len_predefinedEdgePath++] = gwma->s_id;
+    }
+
+    for (uint32_t i = 0; i < len - 1; i++) {
+        uint32_t const v0_id = path[i];
+        uint32_t const v1_id = path[i + 1];
+        DEBUG_ASSERT(isValidVertex_gwma(gwma, v0_id))
+        DEBUG_ASSERT(isValidVertex_gwma(gwma, v1_id))
+
+        uint32_t e_id = 0;
+        while (e_id < gwma->size_edges) {
+            GWEdge const* const edge = gwma->edges + e_id;
+            DEBUG_ASSERT(isValid_gwedge(edge))
+
+            uint32_t const e_source = edge->source;
+            uint32_t const e_target = edge->target;
+            DEBUG_ASSERT(e_source < gwma->size_vertices)
+            DEBUG_ASSERT(e_target < gwma->size_vertices)
+
+            GWVertex const* const source = gwma->vertices + e_source;
+            GWVertex const* const target = gwma->vertices + e_target;
+            DEBUG_ASSERT(isValid_gwvertex(source))
+            DEBUG_ASSERT(isValid_gwvertex(target))
+
+            if (source->original_v_id == v0_id && target->original_v_id == v1_id)
+                break;
+
+            e_id++;
+        }
+        DEBUG_ASSERT(e_id < gwma->size_edges)
+
+        DEBUG_ASSERT(gwma->len_predefinedEdgePath < gwma->cap_predefinedEdgePath)
+        gwma->predefinedEdgePath[gwma->len_predefinedEdgePath++] = e_id;
+    }
 }
 
 void setStartingElement_gwma(GWModelArray* const gwma, char const* const s_id_str, size_t const s_id_len) {

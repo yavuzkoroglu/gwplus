@@ -32,7 +32,7 @@ static void showUnknownCoverage(char const* const cov_str) {
 static void showUsage(void) {
     fputs(
         "\n"
-        "Usage: gwplus (edge|prime) <GraphWalker-JSON-file> <output-JSON-file> [-v]\n"
+        "Usage: gwplus (edge|prime|vertex) <GraphWalker-JSON-file> <output-JSON-file> [-v]\n"
         "\n",
         stderr
     );
@@ -53,12 +53,17 @@ int main(int argc, char* argv[]) {
     VERBOSE_MSG("Verbose enabled.")
 
     int32_t k;
+    bool isVertexCoverage = 0;
     if (STR_EQ_CONST(argv[ARGV_COV_STR], "prime")) {
         k = 0;
         VERBOSE_MSG("Coverage Criterion = Prime Path Coverage")
     } else if (STR_EQ_CONST(argv[ARGV_COV_STR], "edge")) {
         k = 1;
         VERBOSE_MSG("Coverage Criterion = Edge Coverage")
+    } else if (STR_EQ_CONST(argv[ARGV_COV_STR], "vertex")) {
+        k = 1;
+        isVertexCoverage = 1;
+        VERBOSE_MSG("Coverage Criterion = Vertex Coverage")
     } else {
         showUnknownCoverage(argv[ARGV_COV_STR]);
         showUsage();
@@ -66,7 +71,7 @@ int main(int argc, char* argv[]) {
     }
 
     GWModelArray gwma[1];
-    constructEmpty_gwma(gwma, GWMA_DEFAULT_PARAMETERS);
+    constructEmpty_gwma(gwma, isVertexCoverage, GWMA_DEFAULT_PARAMETERS);
 
     /* Open <GraphWalker-JSON-file> to read */
     VERBOSE_MSG("Loading %s...", argv[ARGV_IFILENM])
@@ -92,8 +97,10 @@ int main(int argc, char* argv[]) {
     }
 
     VERBOSE_MSG("         # Vertices = %"PRIu32, gwma->size_vertices)
-    VERBOSE_MSG("            # Edges = %"PRIu32, graph->countVertices(gwma))
-    VERBOSE_MSG("       # Edge Pairs = %"PRIu32, graph->countEdges(gwma))
+    VERBOSE_MSG("            # Edges = %"PRIu32, isVertexCoverage ? graph->countEdges(gwma) : graph->countVertices(gwma))
+
+    if (!isVertexCoverage)
+        VERBOSE_MSG("       # Edge Pairs = %"PRIu32, graph->countEdges(gwma))
 
     VertexPathArray requirements[1];
     if (k == 0) {
@@ -139,10 +146,7 @@ int main(int argc, char* argv[]) {
 
     VERBOSE_MSG(" LengthOf(TestPath) = %"PRIu32, testPath->len)
 
-    /* Set the predefined edge path. */
-    gwma->cap_predefinedEdgePath = 0;
-    gwma->len_predefinedEdgePath = testPath->len;
-    gwma->predefinedEdgePath     = testPath->array;
+    setPredefinedPath_gwma(gwma, testPath->array, testPath->len);
 
     /* Open <output-JSON-file> to dump */
     VERBOSE_MSG("Dumping the final model to %s...", argv[ARGV_OFILENM])

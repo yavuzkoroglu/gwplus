@@ -9,6 +9,7 @@ Computes the shortest test path that satisfies a coverage criterion for a GraphW
 * [Examples](#examples)
     - [Toy Graph](#toy-graph)
     - [TLC](#tlc)
+* [Known Issues](#known-issues)
 
 ## How to Build
 
@@ -22,7 +23,7 @@ Change the directory to the repository:
 
 ```
 cd gwplus
-``` 
+```
 
 Now, build the executable files:
 
@@ -44,7 +45,7 @@ The command above shows how to use `gwplus`.
 `gwplus` usage syntax:
 
 ```
-Usage: gwplus (edge|prime) <GraphWalker-JSON-file> <output-JSON-file> [-v]
+Usage: gwplus (edge|prime|vertex) <GraphWalker-JSON-file> <output-JSON-file> [-v]
 ```
 
 ## Examples
@@ -101,3 +102,18 @@ bin/gwplus prime examples/tlc/wellformed.json testpath.json
 ```
 
 **WARNING**: The above command for prime path coverage may take a while!
+
+## Known Issues
+
+```
+Failed Assertion => (constructEmpty_chunk( chunk_model_ids, (size_t)initial_cap_models * guess_id_str_len, initial_cap_models ))
+Error in src/gwmodel.c::constructEmpty_gwma():XXXX
+```
+
+In case you receive the above runtime error, please execute the following command and then rebuild.
+
+```
+make clean
+```
+
+To rebuild, `make` or `make -e MODE=release`.
