@@ -2062,6 +2062,7 @@ uint32_t countEdges_gwma(void const* const graphPtr) {
     if (cachedGraphPtr == graphPtr)
         return count;
 
+    cachedGraphPtr = graphPtr;
     count = 0;
 
     SimpleGraph graph[1];

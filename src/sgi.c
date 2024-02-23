@@ -40,6 +40,8 @@ uint32_t countEdges_sg(SimpleGraph const* const graph) {
     if (old_ptr == graph->graphPtr)
         return count_edges;
 
+    old_ptr = graph->graphPtr;
+
     VertexIterator vitr[1];
     construct_vitr_sg(vitr, graph);
 
@@ -64,8 +66,11 @@ uint32_t countVertices_sg(SimpleGraph const* const graph) {
     static uint32_t count_vertices  = 0;
 
     DEBUG_ASSERT(isValid_sg(graph))
-    if (cached_ptr == graph->graphPtr)
+    if (cached_ptr == graph->graphPtr) {
         return count_vertices;
+    }
+
+    cached_ptr = graph->graphPtr;
 
     VertexIterator itr[1];
     construct_vitr_sg(itr, graph);
