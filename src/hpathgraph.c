@@ -8,41 +8,6 @@
 #include "hpathgraph.h"
 #include "padkit/debug.h"
 
-uint32_t countEdges_hpg(void const* const graphPtr) {
-    DEBUG_ASSERT(isValid_hpg(graphPtr))
-    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)graphPtr;
-
-    if (hpgraph->hpaths->size == 0)
-        return 0;
-
-    uint32_t count = 0;
-    for (uint32_t i = 0; i < hpgraph->hpaths->size - 1; i++) {
-        if (isConnected_gmtx(hpgraph->subsumptionMtx, 0, i))
-            continue;
-
-        for (uint32_t j = i + 1; j < hpgraph->hpaths->size; j++) {
-            if (isConnected_gmtx(hpgraph->subsumptionMtx, 0, j))
-                continue;
-
-            count += isConnected_gmtx(hpgraph->edgeMtx, i, j);
-            count += isConnected_gmtx(hpgraph->edgeMtx, j, i);
-        }
-    }
-
-    return count;
-}
-
-uint32_t countVertices_hpg(void const* const graphPtr) {
-    DEBUG_ASSERT(isValid_hpg(graphPtr))
-    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)graphPtr;
-
-    uint32_t count = 0;
-    for (uint32_t i = 0; i < hpgraph->hpaths->size; i++)
-        count += !isConnected_gmtx(hpgraph->subsumptionMtx, 0, i);
-
-    return count;
-}
-
 void construct_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* const pathGraph) {
     DEBUG_ERROR_IF(hpgraph == NULL)
     DEBUG_ASSERT(isValid_sg(pathGraph))
@@ -292,6 +257,41 @@ void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* co
 
     if (pathTrace->isAllocated)
         free_vpath(pathTrace);
+}
+
+uint32_t countEdges_hpg(void const* const graphPtr) {
+    DEBUG_ASSERT(isValid_hpg(graphPtr))
+    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)graphPtr;
+
+    if (hpgraph->hpaths->size == 0)
+        return 0;
+
+    uint32_t count = 0;
+    for (uint32_t i = 0; i < hpgraph->hpaths->size - 1; i++) {
+        if (isConnected_gmtx(hpgraph->subsumptionMtx, 0, i))
+            continue;
+
+        for (uint32_t j = i + 1; j < hpgraph->hpaths->size; j++) {
+            if (isConnected_gmtx(hpgraph->subsumptionMtx, 0, j))
+                continue;
+
+            count += isConnected_gmtx(hpgraph->edgeMtx, i, j);
+            count += isConnected_gmtx(hpgraph->edgeMtx, j, i);
+        }
+    }
+
+    return count;
+}
+
+uint32_t countVertices_hpg(void const* const graphPtr) {
+    DEBUG_ASSERT(isValid_hpg(graphPtr))
+    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)graphPtr;
+
+    uint32_t count = 0;
+    for (uint32_t i = 0; i < hpgraph->hpaths->size; i++)
+        count += !isConnected_gmtx(hpgraph->subsumptionMtx, 0, i);
+
+    return count;
 }
 
 void dump_hpg(void const* const graphPtr, FILE* const output) {

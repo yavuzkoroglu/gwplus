@@ -110,8 +110,7 @@ bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* co
             DEBUG_ASSERT(isValid_vpath(vpath))
             DEBUG_ASSERT(vpath->len > 0)
 
-            uint32_t const lastVertexId = vpath->array[vpath->len - 1];
-            construct_nitr_sg(itr, graph, lastVertexId);
+            construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
             for (
                 uint32_t neighborId;
                 graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
@@ -202,10 +201,9 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
             DEBUG_ASSERT(isValid_vpath(vpath))
             DEBUG_ASSERT(vpath->len > 0)
 
-            uint32_t const target       = vpath->array[0];
-            uint32_t const lastVertexId = vpath->array[vpath->len - 1];
+            uint32_t const target = vpath->array[0];
             NeighborIterator itr[1];
-            construct_nitr_sg(itr, graph, lastVertexId);
+            construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
             for (
                 uint32_t neighborId;
                 graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
@@ -318,9 +316,8 @@ bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph
             DEBUG_ASSERT(isValid_vpath(vpath))
             DEBUG_ASSERT(vpath->len > 0)
 
-            uint32_t const lastVertexId = vpath->array[vpath->len - 1];
             NeighborIterator itr[1];
-            construct_nitr_sg(itr, graph, lastVertexId);
+            construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
             for (
                 uint32_t neighborId;
                 graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));

@@ -33,6 +33,8 @@ static void showUsage(void) {
     fputs(
         "\n"
         "Usage: gwplus (edge|prime|vertex) <GraphWalker-JSON-file> <output-JSON-file> [-v]\n"
+        "\n"
+        "Note: gwplus may generate multiple JSON files if the input GraphWalker model is NOT well-formed.\n"
         "\n",
         stderr
     );

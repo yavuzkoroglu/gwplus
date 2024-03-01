@@ -8,26 +8,6 @@
 #include "padkit/reallocate.h"
 #include "vpatharray.h"
 
-void constructVerticesAsPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph) {
-    DEBUG_ERROR_IF(vpaths == NULL)
-    DEBUG_ASSERT(isValid_sg(graph))
-
-    uint32_t const vertex_count = graph->countVertices(graph->graphPtr);
-    uint32_t const initial_cap  = vertex_count > VPATH_ARRAY_DEFAULT_INITIAL_CAP ? vertex_count : VPATH_ARRAY_DEFAULT_INITIAL_CAP;
-
-    constructEmpty_vpa(vpaths, initial_cap);
-
-    VertexIterator itr[1];
-    construct_vitr_sg(itr, graph);
-    for (
-        uint32_t vertexId;
-        graph->isValidVertex(graph->graphPtr, (vertexId = graph->nextVertexId_vitr(itr)));
-    ) {
-        VertexPath* const vpath = pushEmpty_vpa(vpaths, graph);
-        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(vpath, vertexId, 1))
-    }
-}
-
 void constructAllKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph, uint32_t const k) {
     DEBUG_ERROR_IF(vpaths == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
@@ -47,12 +27,10 @@ void constructAllKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* co
     VertexPath vpath[1] = {NOT_A_VPATH};
     while (stack->size > 0) {
         clone_vpath(vpath, pop_vpa(stack));
-
         DEBUG_ASSERT(vpath->len > 0)
-        uint32_t const lastVertexId = vpath->array[vpath->len - 1];
 
         NeighborIterator itr[1];
-        construct_nitr_sg(itr, graph, lastVertexId);
+        construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
         for (
             uint32_t neighborId;
             graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
@@ -84,12 +62,10 @@ void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph c
     VertexPath vpath[1] = {NOT_A_VPATH};
     while (stack->size > 0) {
         clone_vpath(vpath, pop_vpa(stack));
-
         DEBUG_ASSERT(vpath->len > 0)
-        uint32_t const lastVertexId = vpath->array[vpath->len - 1];
 
         NeighborIterator itr[1];
-        construct_nitr_sg(itr, graph, lastVertexId);
+        construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
         size_t extensions_count = 0;
         for (
             uint32_t neighborId;
@@ -139,6 +115,70 @@ void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph c
     free_vpath(vpath);
 }
 
+void constructAllShortestPaths_vpa(VertexPathArray* const paths, SimpleGraph const* const graph) {
+    DEBUG_ERROR_IF(paths == NULL)
+    DEBUG_ASSERT(isValid_sg(graph))
+
+    constructEmpty_vpa(paths, graph->countVertices(graph->graphPtr));
+    paths->size = paths->cap;
+
+    VertexPathArray stack[2] = {NOT_A_VPATH_ARRAY, NOT_A_VPATH_ARRAY};
+    VertexPathArray* stack_A = stack;
+    VertexPathArray* stack_B = stack_A + 1;
+
+    constructEmpty_vpa(stack_A, graph->countVertices(graph->graphPtr));
+    constructEmpty_vpa(stack_B, graph->countVertices(graph->graphPtr));
+
+    StartVertexIterator svitr[1];
+    construct_svitr_sg(svitr, graph->graphPtr);
+    for (
+        uint32_t s;
+        graph->isValidVertex(graph->graphPtr, (s = graph->nextVertexId_svitr(svitr)));
+    ) {
+        VertexPath* const vpath = pushEmpty_vpa(stack_A, graph);
+        DEBUG_ASSERT(isValid_vpath(vpath))
+
+        VertexPath* const shortestPath = paths->array + s;
+        constructEmpty_vpath(shortestPath, graph);
+
+        extend_vpath(vpath, s, 0);
+    }
+
+    while (stack_A->size > 0) {
+        if (stack_B > stack_A) {
+            stack_A++;
+            stack_B--;
+        } else {
+            stack_A--;
+            stack_B++;
+        }
+
+        while (stack_B->size > 0) {
+            VertexPath* const vpath = pop_vpa(stack_B);
+            DEBUG_ASSERT(isValid_vpath(vpath))
+            DEBUG_ASSERT(vpath->len > 0)
+
+            NeighborIterator itr[1];
+            construct_nitr_sg(itr, graph->graphPtr, vpath->array[vpath->len - 1]);
+            for (
+                uint32_t nextVertexId;
+                graph->isValidVertex(graph->graphPtr, (nextVertexId = graph->nextVertexId_nitr(itr)));
+            ) {
+                VertexPath* const shortestPath = paths->array + nextVertexId;
+                if (isValid_vpath(shortestPath)) continue;
+
+                clone_vpath(shortestPath, vpath);
+                DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(shortestPath, nextVertexId, 1))
+
+                pushClone_vpa(stack_A, shortestPath);
+            }
+        }
+    }
+
+    free_vpa(stack_A);
+    free_vpa(stack_B);
+}
+
 void constructAllUpToKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph, uint32_t const k) {
     DEBUG_ERROR_IF(vpaths == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
@@ -150,14 +190,12 @@ void constructAllUpToKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const
     for (uint32_t i = 0; i < vpaths->size; i++) {
         VertexPath* const vpath = vpaths->array + i;
         DEBUG_ASSERT(isValid_vpath(vpath))
-
         DEBUG_ASSERT(vpath->len > 0)
-        uint32_t const lastVertexId = vpath->array[vpath->len - 1];
 
         if (vpath->len == k) continue;
 
         NeighborIterator itr[1];
-        construct_nitr_sg(itr, graph, lastVertexId);
+        construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
         for (
             uint32_t neighborId;
             graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
@@ -177,6 +215,26 @@ void constructEmpty_vpa(VertexPathArray* const vpaths, uint32_t const initial_ca
     vpaths->size    = 0;
     vpaths->array   = calloc((size_t)initial_cap, sizeof(VertexPath));
     DEBUG_ERROR_IF(vpaths->array == NULL)
+}
+
+void constructVerticesAsPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph) {
+    DEBUG_ERROR_IF(vpaths == NULL)
+    DEBUG_ASSERT(isValid_sg(graph))
+
+    uint32_t const vertex_count = graph->countVertices(graph->graphPtr);
+    uint32_t const initial_cap  = vertex_count > VPATH_ARRAY_DEFAULT_INITIAL_CAP ? vertex_count : VPATH_ARRAY_DEFAULT_INITIAL_CAP;
+
+    constructEmpty_vpa(vpaths, initial_cap);
+
+    VertexIterator itr[1];
+    construct_vitr_sg(itr, graph);
+    for (
+        uint32_t vertexId;
+        graph->isValidVertex(graph->graphPtr, (vertexId = graph->nextVertexId_vitr(itr)));
+    ) {
+        VertexPath* const vpath = pushEmpty_vpa(vpaths, graph);
+        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(vpath, vertexId, 1))
+    }
 }
 
 void dump_vpa(VertexPathArray const* const vpaths, FILE* const output) {

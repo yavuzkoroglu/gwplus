@@ -67,6 +67,15 @@ obj/hpathgraph.o: obj                   \
     src/hpathgraph.c                    \
     ; ${COMPILE} ${INCLUDES} src/hpathgraph.c -c -o obj/hpathgraph.o
 
+obj/nflowgraph.o: obj                   \
+    include/nflowgraph.h                \
+    include/sgi.h                       \
+    include/vpath.h                     \
+    include/vpatharray.h                \
+    padkit/include/padkit/debug.h       \
+    src/nflowgraph.c                    \
+    ; ${COMPILE} ${INCLUDES} src/nflowgraph.c -c -o obj/nflowgraph.o
+
 obj/sgi.o: obj                          \
     include/sgi.h                       \
     padkit/include/padkit/debug.h       \

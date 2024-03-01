@@ -37,13 +37,6 @@
     #define VPATH_ARRAY_DEFAULT_INITIAL_CAP 1024
 
     /**
-     * @brief Constructs 1-paths from all the vertices of a SimpleGraph.
-     * @param vpaths A pointer to the VertexPathArray.
-     * @param graph A pointer to the constant SimpleGraph.
-     */
-    void constructVerticesAsPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph);
-
-    /**
      * @brief Constructs all paths of a SimpleGraph with path length k.
      * @param vpaths A pointer to the VertexPathArray.
      * @param graph A pointer to the constant SimpleGraph.
@@ -58,6 +51,13 @@
     void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph const* const graph);
 
     /**
+     * @brief Constructs a VertexPathArray that contains a shortest path to a vertex at every index.
+     * @param paths A pointer to the VertexPathArray.
+     * @param graph A pointer to the constant SimpleGraph.
+     */
+    void constructAllShortestPaths_vpa(VertexPathArray* const paths, SimpleGraph const* const graph);
+
+    /**
      * @brief Constructs all paths of a SimpleGraph up to path length k, inclusive.
      * @param vpaths A pointer to the VertexPathArray.
      * @param graph A pointer to the constant SimpleGraph.
@@ -70,6 +70,13 @@
      * @param initial_cap The initial capacity of the VertexPathArray.
      */
     void constructEmpty_vpa(VertexPathArray* const vpaths, uint32_t const initial_cap);
+
+    /**
+     * @brief Constructs 1-paths from all the vertices of a SimpleGraph.
+     * @param vpaths A pointer to the VertexPathArray.
+     * @param graph A pointer to the constant SimpleGraph.
+     */
+    void constructVerticesAsPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph);
 
     /**
      * @brief Dumps a VertexPathArray.

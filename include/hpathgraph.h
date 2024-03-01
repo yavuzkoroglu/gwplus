@@ -39,18 +39,6 @@
      })
 
     /**
-     * @brief Counts the total number of edges in a HyperPathGraph.
-     * @param graphPtr A pointer to the constant HyperPathGraph.
-     */
-    uint32_t countEdges_hpg(void const* const graphPtr);
-
-    /**
-     * @brief Counts the total number of vertices (hyperpaths) in a HyperPathGraph.
-     * @param graphPtr A pointer to the constant HyperPathGraph.
-     */
-    uint32_t countVertices_hpg(void const* const graphPtr);
-
-    /**
      * @brief Constructs a HyperPathGraph from a VertexPathGraph.
      * @param hpgraph A pointer to the HyperPathGraph.
      * @param pathGraph A pointer to the constant SGI of a VertexPathGraph.
@@ -85,6 +73,18 @@
      * @param hpgraph A pointer to the HyperPathGraph.
      */
     void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* const hpgraph);
+
+    /**
+     * @brief Counts the total number of edges in a HyperPathGraph.
+     * @param graphPtr A pointer to the constant HyperPathGraph.
+     */
+    uint32_t countEdges_hpg(void const* const graphPtr);
+
+    /**
+     * @brief Counts the total number of vertices (hyperpaths) in a HyperPathGraph.
+     * @param graphPtr A pointer to the constant HyperPathGraph.
+     */
+    uint32_t countVertices_hpg(void const* const graphPtr);
 
     /**
      * @brief Dumps an HyperPathGraph.
