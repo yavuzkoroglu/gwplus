@@ -7,6 +7,7 @@
 #include <string.h>
 #include "hpathgraph.h"
 #include "padkit/debug.h"
+#include "vector.h"
 
 void construct_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* const pathGraph) {
     DEBUG_ERROR_IF(hpgraph == NULL)
@@ -83,10 +84,12 @@ void constructAcyclic_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* cons
     ) {
         uint32_t const parentId = hpgraph->hpaths->size - 1;
 
+        /*
         puts("");
         dumpVertex_hpg(hpgraph, stdout, parentId);
         printf(":");
         dump_vpath(hpath, stdout);
+        */
 
         for (uint32_t i = 0; i < hpath->len; i++) {
             uint32_t childId = hpath->array[i];
@@ -106,12 +109,14 @@ void constructAcyclic_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* cons
             }
         }
 
+        /*
         dump_hpg(hpgraph, stdout);
+        */
     }
     pop_vpa(hpgraph->hpaths);
 }
 
-static void constructPathTrace2_hpg(VertexPath* const pathTrace, HyperPathGraph* const hpgraph, uint32_t const rootId) {
+void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const hpgraph, uint32_t const rootId) {
     DEBUG_ERROR_IF(pathTrace == NULL)
     DEBUG_ASSERT(isValid_hpg(hpgraph))
     DEBUG_ASSERT(rootId < hpgraph->hpaths->size)
@@ -119,15 +124,127 @@ static void constructPathTrace2_hpg(VertexPath* const pathTrace, HyperPathGraph*
     SimpleGraph hyperPathGraph[1];
     construct_sgi_hpg(hyperPathGraph, hpgraph);
 
-    VertexPath traces[2]    = {NOT_A_VPATH, NOT_A_VPATH};
-    VertexPath* trace_A     = traces;
-    VertexPath* trace_B     = traces + 1;
+    VertexPath traces[3]        = {NOT_A_VPATH, NOT_A_VPATH, NOT_A_VPATH};
+    VertexPath* trace_A         = traces;
+    VertexPath* trace_B         = traces + 1;
+    VertexPath* partialTrace    = traces + 2;
 
     constructEmpty_vpath(trace_A, hyperPathGraph);
     constructEmpty_vpath(trace_B, hyperPathGraph);
 
+    extend_vpath(trace_A, rootId, 0);
+
+    GraphMatrix coverMtx[1];
+    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, hpgraph->hpaths->size))
+
     while (trace_A->len != trace_B->len) {
-        
+        flush_vpath(trace_B);
+
+        /*
+        printf("trace_A = ");
+        dump_vpath(trace_A, stdout);
+        */
+
+        for (uint32_t i = 0; i < trace_A->len; i++) {
+            uint32_t const pathId = trace_A->array[i];
+
+            if (hpgraph->pathGraph->isValidVertex(hpgraph->pathGraph->graphPtr, pathId)) {
+                extend_vpath(trace_B, pathId, 0);
+                continue;
+            }
+
+            clone_vpath(partialTrace, hpgraph->hpaths->array + pathId);
+            DEBUG_ASSERT(partialTrace->len > 0)
+
+            for (uint32_t k = 0; k < partialTrace->len; k++)
+                DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(hpgraph->subsumptionMtx, 0, partialTrace->array[k]))
+
+            if (trace_A->len == 1) {
+                concat_vpath(trace_B, partialTrace);
+                break;
+            }
+
+            uint32_t const prevPathId = (trace_B->len > 0)
+                ? trace_B->array[trace_B->len - 1]
+                : trace_A->array[(i + trace_A->len - 1) % trace_A->len];
+
+            uint32_t const nextPathId = (i == trace_A->len - 1)
+                ? trace_B->array[0]
+                : trace_A->array[i + 1];
+
+            if (isConnected_gmtx(coverMtx, 0, pathId)) {
+                if (isValidEdge_hpg(hpgraph, prevPathId, nextPathId))
+                    continue;
+
+                uint32_t len    = 0xFFFFFFFF;
+                uint32_t start  = 0xFFFFFFFF;
+                uint32_t end    = 0xFFFFFFFF;
+                for (uint32_t j = 0; j < partialTrace->len; j++) {
+                    if (isValidEdge_hpg(hpgraph, prevPathId, partialTrace->array[j])) {
+                        uint32_t const limit = j + partialTrace->len;
+                        for (uint32_t k = j; k < limit; k++) {
+                            if (isValidEdge_hpg(hpgraph, partialTrace->array[k % partialTrace->len], nextPathId)) {
+                                uint32_t const candidate_len = k - j + 1;
+                                if (candidate_len < len) {
+                                    len     = candidate_len;
+                                    start   = j;
+                                    end     = k;
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                DEBUG_ERROR_IF(start == 0xFFFFFFFF)
+                DEBUG_ERROR_IF(end == 0xFFFFFFFF)
+
+                for (uint32_t j = start; j <= end; j++)
+                    extend_vpath(trace_B, partialTrace->array[j % partialTrace->len], 0);
+            } else {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathId))
+
+                uint32_t len    = 0xFFFFFFFF;
+                uint32_t start  = 0xFFFFFFFF;
+                uint32_t end    = 0xFFFFFFFF;
+                for (uint32_t j = 0; j < partialTrace->len; j++) {
+                    if (isValidEdge_hpg(hpgraph, prevPathId, partialTrace->array[j])) {
+                        uint32_t const limit = j + partialTrace->len + partialTrace->len - 1;
+                        for (uint32_t k = j + partialTrace->len - 1; k < limit; k++) {
+                            if (isValidEdge_hpg(hpgraph, partialTrace->array[k % partialTrace->len], nextPathId)) {
+                                uint32_t const candidate_len = k - j + 1;
+                                if (candidate_len < len) {
+                                    len     = candidate_len;
+                                    start   = j;
+                                    end     = k;
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                /*
+                if (start == 0xFFFFFFFF) {
+                    printf("Cannot extend %u\n", pathId);
+                }
+                */
+                DEBUG_ERROR_IF(start == 0xFFFFFFFF)
+                DEBUG_ERROR_IF(end == 0xFFFFFFFF)
+
+                /*
+                printf("start, end = %u, %u\n", start, end);
+                */
+
+                for (uint32_t j = start; j <= end; j++)
+                    extend_vpath(trace_B, partialTrace->array[j % partialTrace->len], 0);
+            }
+
+            /*
+            printf("trace_B = ");
+            dump_vpath(trace_B, stdout);
+            */
+        }
 
         if (trace_A < trace_B) {
             trace_A++;
@@ -139,103 +256,17 @@ static void constructPathTrace2_hpg(VertexPath* const pathTrace, HyperPathGraph*
     }
 
     clone_vpath(pathTrace, trace_A);
+    DEBUG_ASSERT(isValid_vpath(trace_A))
+    DEBUG_ASSERT(isValid_vpath(pathTrace))
     pathTrace->graph = hpgraph->pathGraph;
+    DEBUG_ASSERT(isValid_vpath(pathTrace))
+
+    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
 
     free_vpath(trace_A);
     free_vpath(trace_B);
-}
-
-void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const hpgraph, uint32_t const rootId) {
-    DEBUG_ERROR_IF(pathTrace == NULL)
-    DEBUG_ASSERT(isValid_hpg(hpgraph))
-    DEBUG_ASSERT(rootId < hpgraph->hpaths->size)
-
-    SimpleGraph hyperPathGraph[1];
-    construct_sgi_hpg(hyperPathGraph, hpgraph);
-
-    if (pathTrace->isAllocated) {
-        flush_vpath(pathTrace);
-        pathTrace->graph = hyperPathGraph;
-    } else {
-        constructEmpty_vpath(pathTrace, hyperPathGraph);
-    }
-
-    extend_vpath(pathTrace, rootId, 0);
-
-    VertexPath secondTrace[1];
-    constructEmpty_vpath(secondTrace, hyperPathGraph);
-
-    VertexPath partialTrace[1] = {NOT_A_VPATH};
-
-    VertexPath* current = pathTrace;
-    VertexPath* next    = secondTrace;
-
-    GraphMatrix coverMtx[1];
-    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, hpgraph->hpaths->size))
-
-    while (current->len != next->len) {
-        flush_vpath(next);
-
-        for (uint32_t i = 0; i < current->len; i++) {
-            uint32_t const prevPathId   = current->array[(i + current->len - 1) % current->len];
-            uint32_t const pathId       = current->array[i];
-            uint32_t const nextPathId   = current->array[(i + 1) % current->len];
-
-            if (hpgraph->pathGraph->isValidVertex(hpgraph->pathGraph->graphPtr, pathId)) {
-                extend_vpath(next, pathId, 0);
-                continue;
-            }
-
-            clone_vpath(partialTrace, hpgraph->hpaths->array + pathId);
-            DEBUG_ASSERT(partialTrace->len > 0)
-
-            for (uint32_t k = 0; k < partialTrace->len; k++)
-                DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(hpgraph->subsumptionMtx, 0, partialTrace->array[k]))
-
-            dump_vpath(next, stdout);
-
-            #ifndef NDEBUG
-                uint32_t nRotations = partialTrace->len;
-            #endif
-            while (prevPathId != pathId && !isValidEdge_hpg(hpgraph, prevPathId, partialTrace->array[0])) {
-                DEBUG_ASSERT(nRotations > 0)
-                #ifndef NDEBUG
-                    nRotations--;
-                #endif
-                DEBUG_ASSERT_NDEBUG_EXECUTE(rotate_vpath(partialTrace))
-            }
-
-            if (nextPathId == pathId || isValidEdge_hpg(hpgraph, partialTrace->array[partialTrace->len - 1], nextPathId)) {
-                concat_vpath(next, partialTrace);
-                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathId))
-                continue;
-            }
-
-            uint32_t r = 0;
-            while (!isValidEdge_hpg(hpgraph, partialTrace->array[r], nextPathId)) {
-                r++;
-                DEBUG_ASSERT(r < partialTrace->len)
-            }
-
-            if (!isConnected_gmtx(coverMtx, 0, pathId)) {
-                concat_vpath(next, partialTrace);
-                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathId))
-            }
-            for (uint32_t k = 0; k <= r; k++)
-                extend_vpath(next, partialTrace->array[k], 0);
-        }
-
-        VertexPath* const tmp   = current;
-        current                 = next;
-        next                    = tmp;
-    }
-
-    free_vpath(secondTrace);
     if (partialTrace->isAllocated)
         free_vpath(partialTrace);
-    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
-
-    pathTrace->graph = hpgraph->pathGraph;
 }
 
 void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* const hpgraph) {

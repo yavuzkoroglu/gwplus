@@ -28,10 +28,11 @@ void clone_vpath(VertexPath* const clone, VertexPath const* const original) {
     if (clone->isAllocated) {
         flush_vpath(clone);
         clone->graph = original->graph;
-        increaseCapIfNecessary_vpath(clone);
     } else {
         constructEmpty_vpath(clone, original->graph);
     }
+    clone->len = original->len;
+    increaseCapIfNecessary_vpath(clone);
 
     size_t const size_in_bytes = (size_t)original->len * sizeof(uint32_t);
     memcpy(clone->array, original->array, size_in_bytes);
@@ -40,7 +41,6 @@ void clone_vpath(VertexPath* const clone, VertexPath const* const original) {
     clone->isSimple = original->isSimple;
     clone->isCycle  = original->isCycle;
     clone->isPrime  = original->isPrime;
-    clone->len      = original->len;
 }
 
 bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* const graph, uint32_t const from, uint32_t const to) {
