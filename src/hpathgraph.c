@@ -83,12 +83,10 @@ void constructAcyclic_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* cons
     ) {
         uint32_t const parentId = hpgraph->hpaths->size - 1;
 
-        /*
         puts("");
         dumpVertex_hpg(hpgraph, stdout, parentId);
         printf(":");
         dump_vpath(hpath, stdout);
-        */
 
         for (uint32_t i = 0; i < hpath->len; i++) {
             uint32_t childId = hpath->array[i];
@@ -108,11 +106,43 @@ void constructAcyclic_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* cons
             }
         }
 
-        /*
         dump_hpg(hpgraph, stdout);
-        */
     }
     pop_vpa(hpgraph->hpaths);
+}
+
+static void constructPathTrace2_hpg(VertexPath* const pathTrace, HyperPathGraph* const hpgraph, uint32_t const rootId) {
+    DEBUG_ERROR_IF(pathTrace == NULL)
+    DEBUG_ASSERT(isValid_hpg(hpgraph))
+    DEBUG_ASSERT(rootId < hpgraph->hpaths->size)
+
+    SimpleGraph hyperPathGraph[1];
+    construct_sgi_hpg(hyperPathGraph, hpgraph);
+
+    VertexPath traces[2]    = {NOT_A_VPATH, NOT_A_VPATH};
+    VertexPath* trace_A     = traces;
+    VertexPath* trace_B     = traces + 1;
+
+    constructEmpty_vpath(trace_A, hyperPathGraph);
+    constructEmpty_vpath(trace_B, hyperPathGraph);
+
+    while (trace_A->len != trace_B->len) {
+        
+
+        if (trace_A < trace_B) {
+            trace_A++;
+            trace_B--;
+        } else {
+            trace_A--;
+            trace_B++;
+        }
+    }
+
+    clone_vpath(pathTrace, trace_A);
+    pathTrace->graph = hpgraph->pathGraph;
+
+    free_vpath(trace_A);
+    free_vpath(trace_B);
 }
 
 void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const hpgraph, uint32_t const rootId) {
@@ -161,6 +191,8 @@ void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const h
 
             for (uint32_t k = 0; k < partialTrace->len; k++)
                 DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(hpgraph->subsumptionMtx, 0, partialTrace->array[k]))
+
+            dump_vpath(next, stdout);
 
             #ifndef NDEBUG
                 uint32_t nRotations = partialTrace->len;
@@ -354,9 +386,9 @@ void dumpVertex_hpg(void const* const graphPtr, FILE* const output, uint32_t con
     if (startVertexId == vertexId)
         fputs(" s", output);
     else if (vertexId < startVertexId)
-        fprintf(output, " p%"PRIu32, vertexId);
+        fprintf(output, " %"PRIu32, vertexId);
     else
-        fprintf(output, " h%"PRIu32, vertexId - startVertexId - 1);
+        fprintf(output, " %"PRIu32, vertexId);
 }
 
 void free_hpg(HyperPathGraph* const hpgraph) {

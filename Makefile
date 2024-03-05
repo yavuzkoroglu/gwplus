@@ -15,14 +15,14 @@ bin/gwplus:                             \
     padkit/compile.mk                   \
     padkit/lib/libpadkit.a              \
     ${OBJECTS}                          \
-    ; ${COMPILE} padkit/lib/libpadkit.a ${OBJECTS} -o bin/gwplus
+    ; ${COMPILE} ${OBJECTS} padkit/lib/libpadkit.a -o bin/gwplus
 
 bin/toygraph:                           \
     bin                                 \
     padkit/compile.mk                   \
     padkit/lib/libpadkit.a              \
     ${TOYOBJS}                          \
-    ; ${COMPILE} padkit/lib/libpadkit.a ${TOYOBJS} -o bin/toygraph
+    ; ${COMPILE} ${TOYOBJS} padkit/lib/libpadkit.a -o bin/toygraph
 
 clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov html latex
 
