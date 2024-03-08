@@ -138,7 +138,11 @@ bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* co
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
 
-                stack_A_size -= !extend_vpath(vpath_to_extend, neighborId, 1);
+                if (!extend_vpath(vpath_to_extend, neighborId, 1)) {
+                    stack_A_size--;
+                } else {
+                    stack_A_size -= vpath_to_extend->isCycle;
+                }
             }
         }
     }
@@ -345,7 +349,11 @@ bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
 
-                stack_A_size -= !extend_vpath(vpath_to_extend, neighborId, 1);
+                if (!extend_vpath(vpath_to_extend, neighborId, 1)) {
+                    stack_A_size--;
+                } else {
+                    stack_A_size -= vpath_to_extend->isCycle;
+                }
             }
         }
     }
