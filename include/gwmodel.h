@@ -513,13 +513,6 @@
     uint32_t findVertexId_gwma(GWModelArray const* const gwma, char const* const v_id_str, size_t const v_id_str_len);
 
     /**
-     * @brief Finds the first registered incoming GWEdge towards a GWVertex.
-     * @param gwma A pointer to the GWModelArray.
-     * @param v_id The vertex id.
-     */
-    uint32_t firstEdgeTowards_gwma(GWModelArray const* const gwma, uint32_t const v_id);
-
-    /**
      * @brief Frees a GWModelArray.
      * @param gwma A pointer to the GWModelArray.
      */
