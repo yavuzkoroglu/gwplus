@@ -117,7 +117,7 @@ void dumpVertex_sg(SimpleGraph const* const graph, FILE* const output, uint32_t 
 }
 
 bool isValid_sg(SimpleGraph const* const graph) {
-    return graph != NULL && graph->isValid(graph->graphPtr);
+    return graph != NULL && graph->graphPtr != NULL && graph->isValid(graph->graphPtr);
 }
 
 bool isValidEdge_sg(SimpleGraph const* const graph, uint32_t const sourceVertexId, uint32_t const targetVertexId) {

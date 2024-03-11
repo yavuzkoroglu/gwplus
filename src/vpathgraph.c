@@ -30,6 +30,8 @@ void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const grap
             if (!splice_vpath(splice, p_j)) continue;
 
             connect_gmtx(vpgraph->spliceMtx, i, j);
+            if (splice->len <= p_i->len + 1) continue;
+
             for (uint32_t k = 0; k < sz; k++) {
                 if (k == i || k == j) continue;
 

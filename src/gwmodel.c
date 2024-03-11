@@ -2039,6 +2039,8 @@ void constructEmpty_gwma(
     gwma->size_shared_vertices      = 0;
     gwma->size_vertices             = 0;
 
+    gwma->adjLists                  = NULL;
+
     gwma->edges = malloc((size_t)initial_cap_edges * sizeof(GWEdge));
     DEBUG_ERROR_IF(gwma->edges == NULL)
 
@@ -2314,6 +2316,94 @@ void dumpVertex_gwma(void const* const graphPtr, FILE* const output, uint32_t co
     }
 }
 
+void fillAdjLists_gwma(GWModelArray* const gwma) {
+    DEBUG_ASSERT(isValid_gwma(gwma))
+    DEBUG_ASSERT(gwma->adjLists == NULL)
+
+    if (gwma->isVertexCoverage) {
+        gwma->adjLists = calloc(gwma->size_vertices, sizeof(uint32_t*));
+        DEBUG_ERROR_IF(gwma->adjLists == NULL)
+
+        for (uint32_t v0_id = 0; v0_id < gwma->size_vertices; v0_id++) {
+            GWVertex const* const v0 = gwma->vertices + v0_id;
+            DEBUG_ASSERT(isValid_gwvertex(v0))
+
+            if (v0->original_v_id != v0_id) continue;
+
+            size_t const sz = (size_t)gwma->size_vertices;
+
+            gwma->adjLists[v0_id] = malloc((sz + 1) * sizeof(uint32_t));
+            DEBUG_ERROR_IF(gwma->adjLists[v0_id] == NULL)
+
+            gwma->adjLists[v0_id][0] = 0;
+
+            for (uint32_t v1_id = 0; v1_id < gwma->size_vertices; v1_id++) {
+                GWVertex const* const v1 = gwma->vertices + v1_id;
+                DEBUG_ASSERT(isValid_gwvertex(v1))
+
+                if (v1->original_v_id != v1_id) continue;
+
+                for (uint32_t e_id = 0; e_id < gwma->size_edges; e_id++) {
+                    GWEdge const* const e = gwma->edges + e_id;
+                    DEBUG_ASSERT(isValid_gwedge(e))
+
+                    uint32_t const va_id = e->source;
+                    uint32_t const vb_id = e->target;
+                    DEBUG_ASSERT(va_id < gwma->size_vertices)
+                    DEBUG_ASSERT(vb_id < gwma->size_vertices)
+
+                    GWVertex const* const v_a = gwma->vertices + va_id;
+                    GWVertex const* const v_b = gwma->vertices + vb_id;
+                    DEBUG_ASSERT(isValid_gwvertex(v_a))
+                    DEBUG_ASSERT(isValid_gwvertex(v_b))
+
+                    if (areEqual_gwvertex(v0, v_a) && areEqual_gwvertex(v1, v_b)) {
+                        gwma->adjLists[v0_id][++gwma->adjLists[v0_id][0]] = v1_id;
+                        DEBUG_ASSERT(gwma->adjLists[v0_id][0] <= sz)
+                    }
+                }
+            }
+        }
+    } else {
+        size_t const sz = (size_t)gwma->size_edges;
+
+        gwma->adjLists = malloc(sz * sizeof(uint32_t*));
+        DEBUG_ERROR_IF(gwma->adjLists == NULL)
+
+        for (uint32_t e0_id = 0; e0_id < gwma->size_edges; e0_id++) {
+            gwma->adjLists[e0_id] = malloc((sz + 1) * sizeof(uint32_t));
+            DEBUG_ERROR_IF(gwma->adjLists[e0_id] == NULL)
+
+            gwma->adjLists[e0_id][0] = 0;
+
+            GWEdge const* const e0 = gwma->edges + e0_id;
+            DEBUG_ASSERT(isValid_gwedge(e0))
+
+            uint32_t const v_id = e0->target;
+            DEBUG_ASSERT(v_id < gwma->size_vertices)
+
+            GWVertex const* const v = gwma->vertices + v_id;
+            DEBUG_ASSERT(isValid_gwvertex(v))
+
+            for (uint32_t e1_id = 0; e1_id < gwma->size_edges; e1_id++) {
+                GWEdge const* const e1 = gwma->edges + e1_id;
+                DEBUG_ASSERT(isValid_gwedge(e1))
+
+                uint32_t const vp_id = e1->source;
+                DEBUG_ASSERT(vp_id < gwma->size_vertices)
+
+                GWVertex const* const vp = gwma->vertices + vp_id;
+                DEBUG_ASSERT(isValid_gwvertex(vp))
+
+                if (!areEqual_gwvertex(v, vp)) continue;
+
+                gwma->adjLists[e0_id][++gwma->adjLists[e0_id][0]] = e1_id;
+                DEBUG_ASSERT(gwma->adjLists[e0_id][0] <= sz)
+            }
+        }
+    }
+}
+
 void fillUsingJSON_gwma(GWModelArray* const gwma, FILE* const jsonFile) {
     JSONParser jp[1];
 
@@ -2420,6 +2510,17 @@ void free_gwma(GWModelArray* const gwma) {
     for (ChunkTable* ctbl = gwma->tables + GWMA_TBL_LAST; ctbl >= gwma->tables; ctbl--)
         free_ctbl(ctbl);
 
+    if (gwma->adjLists != NULL) {
+        if (gwma->isVertexCoverage) {
+            for (uint32_t i = 0; i < gwma->size_vertices; i++)
+                free(gwma->adjLists[i]);
+        } else {
+            for (uint32_t i = 0; i < gwma->size_edges; i++)
+                free(gwma->adjLists[i]);
+        }
+        free(gwma->adjLists);
+    }
+
     *gwma = NOT_A_GWMODEL_ARRAY;
 }
 
@@ -2479,38 +2580,52 @@ bool isValidEdge_gwma(void const* const graphPtr, uint32_t const sourceVertexId,
 
     GWModelArray const* const gwma = (GWModelArray const*)graphPtr;
 
-    if (gwma->isVertexCoverage) {
-        GWVertex const* const sourceVertex = gwma->vertices + sourceVertexId;
-        DEBUG_ASSERT(isValid_gwvertex(sourceVertex))
+    if (gwma->adjLists == NULL) {
+        if (gwma->isVertexCoverage) {
+            GWVertex const* const sourceVertex = gwma->vertices + sourceVertexId;
+            DEBUG_ASSERT(isValid_gwvertex(sourceVertex))
 
-        GWVertex const* const targetVertex = gwma->vertices + targetVertexId;
-        DEBUG_ASSERT(isValid_gwvertex(targetVertex))
+            GWVertex const* const targetVertex = gwma->vertices + targetVertexId;
+            DEBUG_ASSERT(isValid_gwvertex(targetVertex))
 
-        for (GWEdge const* edge = gwma->edges + gwma->size_edges - 1; edge >= gwma->edges; edge--) {
-            DEBUG_ASSERT(isValid_gwedge(edge))
+            for (GWEdge const* edge = gwma->edges + gwma->size_edges - 1; edge >= gwma->edges; edge--) {
+                DEBUG_ASSERT(isValid_gwedge(edge))
 
-            GWVertex const* const v_a = gwma->vertices + edge->source;
-            GWVertex const* const v_b = gwma->vertices + edge->target;
+                GWVertex const* const v_a = gwma->vertices + edge->source;
+                GWVertex const* const v_b = gwma->vertices + edge->target;
+                DEBUG_ASSERT(isValid_gwvertex(v_a))
+                DEBUG_ASSERT(isValid_gwvertex(v_b))
+
+                if (areEqual_gwvertex(v_a, sourceVertex) && areEqual_gwvertex(v_b, targetVertex))
+                    return 1;
+            }
+            return 0;
+        } else {
+            GWEdge const* const sourceEdge = gwma->edges + sourceVertexId;
+            DEBUG_ASSERT(isValid_gwedge(sourceEdge))
+
+            GWEdge const* const targetEdge = gwma->edges + targetVertexId;
+            DEBUG_ASSERT(isValid_gwedge(targetEdge))
+
+            GWVertex const* const v_a = gwma->vertices + sourceEdge->target;
+            GWVertex const* const v_b = gwma->vertices + targetEdge->source;
             DEBUG_ASSERT(isValid_gwvertex(v_a))
             DEBUG_ASSERT(isValid_gwvertex(v_b))
 
-            if (areEqual_gwvertex(v_a, sourceVertex) && areEqual_gwvertex(v_b, targetVertex))
-                return 1;
+            return areEqual_gwvertex(v_a, v_b);
         }
-        return 0;
     } else {
-        GWEdge const* const sourceEdge = gwma->edges + sourceVertexId;
-        DEBUG_ASSERT(isValid_gwedge(sourceEdge))
+        /* Binary search on adjLists */
+        uint32_t l = 1;
+        uint32_t r = gwma->adjLists[sourceVertexId][0] + 1;
+        DEBUG_ASSERT(gwma->adjLists[sourceVertexId] != NULL)
 
-        GWEdge const* const targetEdge = gwma->edges + targetVertexId;
-        DEBUG_ASSERT(isValid_gwedge(targetEdge))
+        while (l < r) {
+            uint32_t m = (r + l) >> 1;
+            if (gwma->adjLists[sourceVertexId][m] > targetVertexId) r = m; else l = m + 1;
+        }
 
-        GWVertex const* const v_a = gwma->vertices + sourceEdge->target;
-        GWVertex const* const v_b = gwma->vertices + targetEdge->source;
-        DEBUG_ASSERT(isValid_gwvertex(v_a))
-        DEBUG_ASSERT(isValid_gwvertex(v_b))
-
-        return areEqual_gwvertex(v_a, v_b);
+        return r > 1 && gwma->adjLists[sourceVertexId][r - 1] == targetVertexId;
     }
 }
 
@@ -2550,16 +2665,23 @@ uint32_t nextVertexId_nitr_gwma(NeighborIterator* const itr) {
     if (itr->nextNeighborId == 0xFFFFFFFF)
         return 0xFFFFFFFF;
 
-    while (
-        !isValidVertex_gwma(itr->graphPtr, itr->nextNeighborId)                 ||
-        !isValidEdge_gwma(itr->graphPtr, itr->vertexId, itr->nextNeighborId)
-    ) {
-        itr->nextNeighborId--;
-        if (itr->nextNeighborId == 0xFFFFFFFF)
-            return 0xFFFFFFFF;
-    }
+    GWModelArray const* const gwma = (GWModelArray const*)itr->graphPtr;
 
-    return itr->nextNeighborId--;
+    if (gwma->adjLists == NULL) {
+        while (
+            !isValidVertex_gwma(itr->graphPtr, itr->nextNeighborId)                 ||
+            !isValidEdge_gwma(itr->graphPtr, itr->vertexId, itr->nextNeighborId)
+        ) {
+            itr->nextNeighborId--;
+            if (itr->nextNeighborId == 0xFFFFFFFF)
+                return 0xFFFFFFFF;
+        }
+        return itr->nextNeighborId--;
+    } else if (itr->nextNeighborId == 0) {
+        return (itr->nextNeighborId = 0xFFFFFFFF);
+    } else {
+        return gwma->adjLists[itr->vertexId][itr->nextNeighborId--];
+    }
 }
 
 uint32_t nextVertexId_svitr_gwma(StartVertexIterator* const itr) {
@@ -2616,22 +2738,32 @@ uint32_t nextVertexId_vitr_gwma(VertexIterator* const itr) {
 
     GWModelArray const* const gwma = (GWModelArray const*)itr->graphPtr;
 
-    if (gwma->isVertexCoverage) {
-        GWVertex const* vertex = gwma->vertices + itr->nextVertexId;
-        DEBUG_ASSERT(isValid_gwvertex(vertex))
+    if (gwma->adjLists == NULL) {
+        if (gwma->isVertexCoverage) {
+            GWVertex const* vertex = gwma->vertices + itr->nextVertexId;
+            DEBUG_ASSERT(isValid_gwvertex(vertex))
 
-        while (vertex->original_v_id != itr->nextVertexId) {
-            itr->nextVertexId--;
+            while (vertex->original_v_id != itr->nextVertexId) {
+                itr->nextVertexId--;
+                if (itr->nextVertexId == 0xFFFFFFFF)
+                    return 0xFFFFFFFF;
+
+                vertex = gwma->vertices + itr->nextVertexId;
+                DEBUG_ASSERT(isValid_gwvertex(vertex))
+            }
+
+            return itr->nextVertexId--;
+        } else {
+            while (itr->nextVertexId != 0xFFFFFFFF && !isValidVertex_gwma(itr->graphPtr, itr->nextVertexId))
+                itr->nextVertexId--;
+
             if (itr->nextVertexId == 0xFFFFFFFF)
                 return 0xFFFFFFFF;
-
-            vertex = gwma->vertices + itr->nextVertexId;
-            DEBUG_ASSERT(isValid_gwvertex(vertex))
+            else
+                return itr->nextVertexId--;
         }
-
-        return itr->nextVertexId--;
     } else {
-        while (itr->nextVertexId != 0xFFFFFFFF && !isValidVertex_gwma(itr->graphPtr, itr->nextVertexId))
+        while (gwma->adjLists[itr->nextVertexId] == NULL)
             itr->nextVertexId--;
 
         if (itr->nextVertexId == 0xFFFFFFFF)
@@ -2703,7 +2835,11 @@ void setFirstNextId_nitr_gwma(NeighborIterator* const itr) {
     DEBUG_ASSERT(isValid_nitr_gwma(itr))
     GWModelArray const* const gwma = (GWModelArray const*)itr->graphPtr;
 
-    itr->nextNeighborId = (gwma->isVertexCoverage) ? gwma->size_vertices - 1 : gwma->size_edges - 1;
+    if (gwma->adjLists == NULL) {
+        itr->nextNeighborId = (gwma->isVertexCoverage) ? gwma->size_vertices - 1 : gwma->size_edges - 1;
+    } else {
+        itr->nextNeighborId = gwma->adjLists[itr->vertexId][0];
+    }
 }
 
 void setFirstNextId_svitr_gwma(StartVertexIterator* const itr) {

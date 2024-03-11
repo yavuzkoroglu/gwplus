@@ -366,6 +366,7 @@
         uint32_t    len_predefinedEdgePath;
         uint32_t    size_shared_vertices;
         uint32_t    size_vertices;
+        uint32_t**  adjLists;
         GWEdge*     edges;
         GWModel*    models;
         uint32_t*   predefinedEdgePath;
@@ -382,7 +383,7 @@
         { NOT_A_CHUNK_TABLE },                                                              \
         0xFFFFFFFF, GWMA_START_ELEMENT_TYPE_INVALID, 0,                                     \
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                                                 \
-        NULL, NULL, NULL, NULL, NULL                                                        \
+        NULL, NULL, NULL, NULL, NULL, NULL                                                  \
     })
 
     /**
@@ -496,6 +497,12 @@
      * @param output A pointer to the output FILE.
      */
     void dumpVertex_gwma(void const* const graphPtr, FILE* const output, uint32_t const vertexId);
+
+    /**
+     * @brief Fills adjacency lists of a GWModelArray for better iteration performance.
+     * @param gwma A pointer to the GWModelArray.
+     */
+    void fillAdjLists_gwma(GWModelArray* const gwma);
 
     /**
      * @brief Fill a GWModelArray using a JSON file stream.

@@ -66,6 +66,15 @@
     void clone_vpath(VertexPath* const clone, VertexPath const* const original);
 
     /**
+     * @brief Computes and caches the shortest path between two vertices. If these vertices are the same, the shortest path is empty.
+     * @param shortestPath A pointer to the shortestPath.
+     * @param graph A pointer to the SimpleGraph.
+     * @param from The vertex index of the source vertex.
+     * @param to The vertex index of the target vertex.
+     */
+    bool cacheComputeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* const graph, uint32_t const from, uint32_t const to);
+
+    /**
      * @brief Computes the shortest path between two vertices. If these vertices are the same, the shortest path is empty.
      * @param shortestPath A pointer to the shortestPath.
      * @param graph A pointer to the SimpleGraph.
@@ -143,6 +152,11 @@
      * @param vpath A pointer to the VertexPath.
      */
     void free_vpath(VertexPath* const vpath);
+
+    /**
+     * @brief Frees static caches if they are allocated for performance.
+     */
+    void freeStaticCaches_vpath(void);
 
     /**
      * @brief Increases the capacity of a VertexPath if it is necessary.

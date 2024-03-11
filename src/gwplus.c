@@ -85,6 +85,9 @@ int main(int argc, char* argv[]) {
 
     fillUsingJSON_gwma(gwma, jsonFile);
 
+    /* For performance optimization */
+    fillAdjLists_gwma(gwma);
+
     /* Close <GraphWalker-JSON-file> */
     DEBUG_ASSERT(fclose(jsonFile) == 0)
     NDEBUG_EXECUTE(fclose(jsonFile))

@@ -118,6 +118,17 @@
     } SimpleGraph;
 
     /**
+     * @def NOT_A_SG
+     *   A special SimpleGraph denoting a NOT-SimpleGraph that fails the isValid_sg() test.
+     */
+    #define NOT_A_SG ((SimpleGraph){ NULL,  \
+        NULL, NULL, NULL, NULL,             \
+        NULL, NULL, NULL, NULL,             \
+        NULL, NULL, NULL, NULL,             \
+        NULL, NULL, NULL, NULL              \
+    })
+
+    /**
      * @brief Constructs a NeighborIterator for a vertex in a SimpleGraph.
      * @param itr A pointer to the NeighborIterator.
      * @param graph A pointer to the constant SimpleGraph.
