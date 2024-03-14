@@ -82,15 +82,18 @@ EXAMPLE USES:
 
 ### Prerequisites
 
-1. The command-line JSON processor: `jq`
-2. The command-line engine for GraphWalker: `graphwalker-cli-4.3.2.jar`
+1. MacOS
+2. Build *gwplus*: `make -e MODE=release`
+3. The command-line JSON processor: `jq` [https://jqlang.github.io/jq/download/](https://jqlang.github.io/jq/download/)
+4. GraphWalker CLI: `graphwalker-cli-4.3.2.jar` [https://graphwalker.github.io/#download](https://graphwalker.github.io/#download)
+5. *gdate* utility: `brew install coreutils`
 
-MacOS users can install `jq` using `brew install jq`.
+Execute the following BASH script to perform all the experiments:
 
-For GraphWalker: [https://graphwalker.github.io/#download](https://graphwalker.github.io/#download)
+```
+./experiments.sh
+```
 
 ## Side Uses
-
-### Measure Coverages
 
 ### Find Shortest Paths
