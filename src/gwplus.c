@@ -136,7 +136,7 @@ static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const 
         VertexPath const* const path = vpgraph->vpaths->array + pathId;
         DEBUG_ASSERT(isValid_vpath(path))
 
-        fprintf(output, "    %u [label=\"p%u:\\l", pathId, pathId);
+        fprintf(output, "    %"PRIu32" [label=\"p%"PRIu32":\\l", pathId, pathId);
 
         for (uint32_t i = 0; i < path->len; i++) {
             char const* const label = get_chunk(chunk_names, path->array[i]);
@@ -153,14 +153,14 @@ static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const 
     for (
         uint32_t pathId;
         pathGraph->isValidVertex(vpgraph, (pathId = pathGraph->nextVertexId_nitr(itr)));
-    ) fprintf(output, "    s -> %u;\n", pathId);
+    ) fprintf(output, "    s -> %"PRIu32";\n", pathId);
 
     for (uint32_t p0_id = 0; p0_id < nPaths - 1; p0_id++) {
         construct_nitr_sg(itr, pathGraph, p0_id);
         for (
             uint32_t p1_id;
             pathGraph->isValidVertex(vpgraph, (p1_id = pathGraph->nextVertexId_nitr(itr)));
-        ) fprintf(output, "    %u -> %u;\n", p0_id, p1_id);
+        ) fprintf(output, "    %"PRIu32" -> %"PRIu32";\n", p0_id, p1_id);
     }
 
     fputs("}", output);
@@ -192,20 +192,20 @@ static void generateDotOfSimpleGraph(FILE* const output, SimpleGraph const* cons
         char const* const label = get_chunk(gwma->useLineGraph ? chunk_edge_names : chunk_vertex_names, v_id);
         DEBUG_ERROR_IF(label == NULL)
 
-        fprintf(output, "    %u [label=\"%s\"];\n", v_id, label);
+        fprintf(output, "    %"PRIu32" [label=\"%s\"];\n", v_id, label);
     }
 
     if (!gwma->useLineGraph) {
         if (gwma->s_type == GWMA_START_ELEMENT_TYPE_VERTEX) {
-            fprintf(output, "    reset -> %u;\n", gwma->s_id);
+            fprintf(output, "    reset -> %"PRIu32";\n", gwma->s_id);
         } else {
             char const* const label = get_chunk(chunk_edge_names, gwma->s_id);
             DEBUG_ERROR_IF(label == NULL)
 
-            fprintf(output, "    reset -> %u [label=\"%s\"];\n", gwma->s_id, label);
+            fprintf(output, "    reset -> %"PRIu32" [label=\"%s\"];\n", gwma->s_id, label);
         }
     } else if (gwma->s_type == GWMA_START_ELEMENT_TYPE_EDGE) {
-        fprintf(output, "    reset -> %u;\n", gwma->s_id);
+        fprintf(output, "    reset -> %"PRIu32";\n", gwma->s_id);
     } else {
         char const* const label = get_chunk(chunk_vertex_names, gwma->s_id);
         DEBUG_ERROR_IF(label == NULL)
@@ -215,7 +215,7 @@ static void generateDotOfSimpleGraph(FILE* const output, SimpleGraph const* cons
         for (
             uint32_t s_id;
             graph->isValidVertex(gwma, (s_id = graph->nextVertexId_svitr(svitr)));
-        ) fprintf(output, "    reset -> %u [label=\"%s\"];\n", s_id, label);
+        ) fprintf(output, "    reset -> %"PRIu32" [label=\"%s\"];\n", s_id, label);
     }
 
     construct_vitr_sg(vitr, graph);
@@ -249,7 +249,7 @@ static void generateDotOfSimpleGraph(FILE* const output, SimpleGraph const* cons
                         char const* const label = get_chunk(chunk_edge_names, e_id);
                         DEBUG_ERROR_IF(label == NULL)
 
-                        fprintf(output, "    %u -> %u [label=\"%s\"];\n", v0_id, v1_id, label);
+                        fprintf(output, "    %"PRIu32" -> %"PRIu32" [label=\"%s\"];\n", v0_id, v1_id, label);
                         break;
                     }
                 }
@@ -274,7 +274,7 @@ static void generateDotOfSimpleGraph(FILE* const output, SimpleGraph const* cons
             for (
                 uint32_t v1_id;
                 graph->isValidVertex(gwma, (v1_id = graph->nextVertexId_nitr(nitr)));
-            ) fprintf(output, "    %u -> %u [label=\"%s\"];\n", v0_id, v1_id, label);
+            ) fprintf(output, "    %"PRIu32" -> %"PRIu32" [label=\"%s\"];\n", v0_id, v1_id, label);
         }
     }
 
@@ -310,7 +310,7 @@ static void generateTestRequirements(
 
                 uint32_t nRequirements;
                 DEBUG_ASSERT(strspn(countRequirements, "0123456789") == strlen_chunk(requirementsChunk, i))
-                sscanf(countRequirements, "%u", &nRequirements);
+                sscanf(countRequirements, "%"PRIu32, &nRequirements);
 
                 constructEmpty_vpa(requirements, nRequirements);
                 REPEAT_CNTR (_dcntr1, nRequirements) {
@@ -322,7 +322,7 @@ static void generateTestRequirements(
 
                     uint32_t requirementLen;
                     DEBUG_ASSERT(strspn(requirementLength, "0123456789") == strlen_chunk(requirementsChunk, i))
-                    sscanf(requirementLength, "%u", &requirementLen);
+                    sscanf(requirementLength, "%"PRIu32, &requirementLen);
 
                     DEBUG_ASSERT(requirements->size < requirements->cap)
                     VertexPath* const requirement = requirements->array + requirements->size++;
@@ -382,13 +382,13 @@ static void saveHyperpaths(FILE* const output, SimpleGraph const* const hyperPat
         VertexPath const* const hpath = hpgraph->hpaths->array + h_id;
         DEBUG_ASSERT(hpath->len > 0)
 
-        fprintf(output, "h%u:", h_id - nPaths);
+        fprintf(output, "h%"PRIu32":", h_id - nPaths);
         for (uint32_t i = 0; i < hpath->len; i++) {
             uint32_t const hp_id = hpath->array[i];
             if (hp_id < nPaths)
-                fprintf(output, " p%u", hp_id);
+                fprintf(output, " p%"PRIu32"", hp_id);
             else
-                fprintf(output, " h%u", hp_id - nPaths);
+                fprintf(output, " h%"PRIu32"", hp_id - nPaths);
         }
         fputs("\n", output);
     }
@@ -409,13 +409,13 @@ static void saveTestRequirements(FILE* const requirementsFile, VertexPathArray c
         fputs("vertexpaths\n", requirementsFile);
     }
 
-    fprintf(requirementsFile, "%u\n", requirements->size);
+    fprintf(requirementsFile, "%"PRIu32"\n", requirements->size);
     for (uint32_t requirementId = 0; requirementId < requirements->size; requirementId++) {
         VertexPath const* const requirement = requirements->array + requirementId;
         DEBUG_ASSERT(isValid_vpath(requirement))
         DEBUG_ASSERT(requirement->len > 0)
 
-        fprintf(requirementsFile, "%u\n", requirement->len);
+        fprintf(requirementsFile, "%"PRIu32"\n", requirement->len);
         for (uint32_t i = 0; i < requirement->len; i++) {
             char const* const id_str = get_chunk(chunk_ids, requirement->array[i]);
             DEBUG_ERROR_IF(id_str == NULL)
@@ -510,6 +510,15 @@ static void showErrorNoInputFileGiven(void) {
         "[ERROR] - No input file given (no -i or --input option found)\n"
         "\n"
         "gwplus --help for more instructions\n"
+        "\n",
+        stderr
+    );
+}
+
+static void showErrorNotWellformed(void) {
+    fputs(
+        "\n"
+        "[ERROR] - The model is NOT well-formed\n"
         "\n",
         stderr
     );
@@ -1183,6 +1192,45 @@ int main(int argc, char* argv[]) {
 
     if (testOutputFileName != NULL) {
         VERBOSE_MSG("Generating Test(s)...")
+
+        uint32_t const nHyperpaths = hyperPathGraph->countVertices(hpgraph);
+        VERBOSE_MSG("# Hyperpaths = %"PRIu32, nHyperpaths)
+
+        if (nHyperpaths == 2) {
+            VertexPathArray testPaths[1];
+            constructTestPaths_hpg(testPaths, hpgraph);
+
+            DEBUG_ASSERT(testPaths->size > 0)
+
+            VertexPath const* const testPath = testPaths->array;
+            DEBUG_ASSERT(isValid_vpath(testPath))
+
+            VERBOSE_MSG("Test Length = %"PRIu32, testPath->len)
+
+            setPredefinedPath_gwma(gwma, testPath->array, testPath->len);
+
+            VERBOSE_MSG("Saving the test to '%s'...", testOutputFileName)
+
+            FILE* const testFile = fopen(testOutputFileName, "w");
+            if (testFile == NULL) {
+                showErrorCannotOpenFile(testOutputFileName);
+
+                free_vpa(testPaths);
+                free_hpg(hpgraph);
+                free_vpg(vpgraph);
+                free_vpa(requirements);
+                free_gwma(gwma);
+
+                return EXIT_FAILURE;
+            }
+
+            graph->dump(gwma, testFile);
+
+            DEBUG_ASSERT(fclose(testFile) == 0)
+            NDEBUG_EXECUTE(fclose(testFile))
+        } else {
+            showErrorNotWellformed();
+        }
     }
 
     if (isValid_hpg(hpgraph))
