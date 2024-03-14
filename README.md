@@ -102,8 +102,8 @@ digraph SimpleGraph {
 
 A visualization of the above DOT graph is below:
 
-![The Simple Graph of the Toy Graph](exps/001/sg.pdf)
-
+![The Simple Graph of the Toy Graph](exps/001/sg.svg)
+g
 ### Example #2
 
 ### Example #3
