@@ -60,7 +60,7 @@ COVERAGE OPTIONS:
   TXT-FILE                     Custom test requirements from a TXT file
 
 CUSTOM-TEST OPTIONS:
-  -b,-g,--builtin,--given      Uses the predefinedEdgeIds of the input model
+  -b,--builtin                 Uses the predefinedEdgeIds of the input model
   TXT-FILE(s)                  Reads custom test(s) from TXT file(s)
 
 EXAMPLE USES:
@@ -106,7 +106,16 @@ A visualization of the above DOT graph is as follows:
 
 The fourth option `-p pg.dot` saves the path graph of test requirements. A visualization of the path graph is below:
 
+![The Path Graph of the Toy Graph](exps/001/pg.svg)
+
 The fifth option `-h hp.txt` saves the hyperpaths of the path graph. You can print these hyperpaths using `cat hp.txt` and produce the following result:
+
+```
+h0: p5 p2
+h1: h0 p0
+h2: h1 p1
+h3: p3 p4 h2
+```
 
 The sixth option `-t test.json` saves the model + a list of predefinedEdgeIds denoting a test path that satisfies the *prime3* coverage criterion. You can give this file to GraphWalker CLI using the following command:
 
@@ -181,6 +190,8 @@ bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt
 
 The example command above does NOT generate tests but measures the edge coverage of two tests. The output should look like as follows:
 
+**WARNING:** GWPlus cannot measure coverage for subgraphs, you must use unified models.
+
 ### Example #4
 
 ```
@@ -203,9 +214,8 @@ The unified model is as follows:
 
 1. MacOS
 2. Build *gwplus*: `make -e MODE=release`
-3. The command-line JSON processor: `jq` [https://jqlang.github.io/jq/download/](https://jqlang.github.io/jq/download/)
-4. GraphWalker CLI: `graphwalker-cli-4.3.2.jar` [https://graphwalker.github.io/#download](https://graphwalker.github.io/#download)
-5. *gdate* utility: `brew install coreutils`
+3. GraphWalker CLI: `graphwalker-cli-4.3.2.jar` [https://graphwalker.github.io/#download](https://graphwalker.github.io/#download)
+4. *gdate* utility: `brew install coreutils`
 
 Execute the following BASH script to perform all the experiments:
 

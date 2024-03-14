@@ -104,12 +104,12 @@ static void convertToEdgePathsAndIncludeRemainingEdges(
     DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(edgeMtx))
 }
 
-static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const hyperPathGraph, GWModelArray const* const gwma) {
+static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const pathGraph, GWModelArray const* const gwma) {
     DEBUG_ERROR_IF(output == NULL)
-    DEBUG_ASSERT(isValid_hpg(hyperPathGraph->graphPtr))
+    DEBUG_ASSERT(isValid_vpg(pathGraph->graphPtr))
     DEBUG_ASSERT(isValid_gwma(gwma))
 
-    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)hyperPathGraph->graphPtr;
+    VertexPathGraph const* const vpgraph = (VertexPathGraph const*)pathGraph->graphPtr;
 
     Chunk const* const chunk_names = gwma->useLineGraph
         ? gwma->chunks + GWMA_CHUNK_EDGE_NAMES
@@ -122,9 +122,9 @@ static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const 
         output
     );
 
-    uint32_t const nPaths = hpgraph->pathGraph->countVertices(hpgraph->pathGraph->graphPtr);
-    for (uint32_t pathId = 0; pathId < nPaths; pathId++) {
-        VertexPath const* const path = hpgraph->hpaths->array + pathId;
+    uint32_t const nPaths = pathGraph->countVertices(pathGraph->graphPtr);
+    for (uint32_t pathId = 0; pathId < nPaths - 1; pathId++) {
+        VertexPath const* const path = vpgraph->vpaths->array + pathId;
         DEBUG_ASSERT(isValid_vpath(path))
 
         fprintf(output, "    %u [label=\"p%u:\\l", pathId, pathId);
@@ -136,21 +136,21 @@ static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const 
             fprintf(output, "%s\\l", label);
         }
 
-        fputs("];\n", output);
+        fputs("\"];\n", output);
     }
 
     NeighborIterator itr[1];
-    construct_nitr_sg(itr, hyperPathGraph, nPaths);
+    construct_nitr_sg(itr, pathGraph, nPaths - 1);
     for (
         uint32_t pathId;
-        hyperPathGraph->isValidVertex(hpgraph, (pathId = hyperPathGraph->nextVertexId_nitr(itr)));
+        pathGraph->isValidVertex(vpgraph, (pathId = pathGraph->nextVertexId_nitr(itr)));
     ) fprintf(output, "    s -> %u;\n", pathId);
 
-    for (uint32_t p0_id = 0; p0_id < nPaths; p0_id++) {
-        construct_nitr_sg(itr, hyperPathGraph, p0_id);
+    for (uint32_t p0_id = 0; p0_id < nPaths - 1; p0_id++) {
+        construct_nitr_sg(itr, pathGraph, p0_id);
         for (
             uint32_t p1_id;
-            hyperPathGraph->isValidVertex(hpgraph, (p1_id = hyperPathGraph->nextVertexId_nitr(itr)));
+            pathGraph->isValidVertex(vpgraph, (p1_id = pathGraph->nextVertexId_nitr(itr)));
         ) fprintf(output, "    %u -> %u;\n", p0_id, p1_id);
     }
 
@@ -369,17 +369,17 @@ static void saveHyperpaths(FILE* const output, SimpleGraph const* const hyperPat
     HyperPathGraph const* const hpgraph = (HyperPathGraph const*)hyperPathGraph->graphPtr;
     uint32_t const              nPaths  = hpgraph->pathGraph->countVertices(hpgraph->pathGraph->graphPtr);
 
-    for (uint32_t h_id = nPaths + 1; h_id < hpgraph->hpaths->size; h_id++) {
+    for (uint32_t h_id = nPaths; h_id < hpgraph->hpaths->size; h_id++) {
         VertexPath const* const hpath = hpgraph->hpaths->array + h_id;
         DEBUG_ASSERT(hpath->len > 0)
 
-        fprintf(output, "h%u:", h_id);
+        fprintf(output, "h%u:", h_id - nPaths);
         for (uint32_t i = 0; i < hpath->len; i++) {
             uint32_t const hp_id = hpath->array[i];
             if (hp_id < nPaths)
                 fprintf(output, " p%u", hp_id);
             else
-                fprintf(output, " h%u", hp_id);
+                fprintf(output, " h%u", hp_id - nPaths);
         }
         fputs("\n", output);
     }
@@ -610,7 +610,7 @@ static void showUsage(void) {
         "  TXT-FILE                     Custom test requirements from a TXT file\n"
         "\n"
         "CUSTOM-TEST OPTIONS:\n"
-        "  -b,-g,--builtin,--given      Uses the predefinedEdgeIds of the input model\n"
+        "  -b,--builtin                 Uses the predefinedEdgeIds of the input model\n"
         "  TXT-FILE(s)                  Reads custom test(s) from TXT file(s)\n"
         "\n"
         "EXAMPLE USES:\n"
@@ -767,16 +767,14 @@ int main(int argc, char* argv[]) {
             while (
                 lastTestFileId < argc && (
                     str_eq(argv[lastTestFileId], "-b")          ||
-                    str_eq(argv[lastTestFileId], "-g")          ||
                     str_eq(argv[lastTestFileId], "--builtin")   ||
-                    str_eq(argv[lastTestFileId], "--given")     ||
                     argv[lastTestFileId][0] != '-'
                 )
             ) {
                 if (argv[lastTestFileId][0] != '-') {
                     VERBOSE_MSG("Test File #%d = %s", lastTestFileId - firstTestFileId + 1, argv[lastTestFileId])
                 } else {
-                    VERBOSE_MSG("Test File #%d = builtin (given)", lastTestFileId - firstTestFileId + 1)
+                    VERBOSE_MSG("Test File #%d = builtin", lastTestFileId - firstTestFileId + 1)
                 }
                 isArgProcessed[lastTestFileId] = 1;
                 lastTestFileId++;
@@ -1096,12 +1094,9 @@ int main(int argc, char* argv[]) {
     if (isValid_chunk(requirementsChunk))
         free_chunk(requirementsChunk);
 
+    VertexPathGraph vpgraph[1]      = {NOT_A_VPATH_GRAPH};
+    SimpleGraph     pathGraph[1]    = {NOT_A_SG};
     if (hyperPathsName != NULL || pathGraphName != NULL || testOutputFileName != NULL) {
-        HyperPathGraph  hpgraph[1]          = {NOT_A_HPATH_GRAPH};
-        VertexPathGraph vpgraph[1]          = {NOT_A_VPATH_GRAPH};
-        SimpleGraph     pathGraph[1]        = {NOT_A_SG};
-        SimpleGraph     hyperPathGraph[1]   = {NOT_A_SG};
-
         VERBOSE_MSG("Generating Path Graph...")
 
         int optimizationLevel;
@@ -1120,14 +1115,10 @@ int main(int argc, char* argv[]) {
             default:
                 optimizationLevel = 1;
         }
+        VERBOSE_MSG("Optimization Level = %d", optimizationLevel)
 
         construct_vpg(vpgraph, graph, requirements, optimizationLevel);
         construct_sgi_vpg(pathGraph, vpgraph);
-
-        VERBOSE_MSG("Generating Hyperpaths...")
-
-        constructAcyclic_hpg(hpgraph, pathGraph);
-        construct_sgi_hpg(hyperPathGraph, hpgraph);
 
         if (pathGraphName != NULL) {
             VERBOSE_MSG("Saving path graph to '%s'", pathGraphName)
@@ -1136,18 +1127,26 @@ int main(int argc, char* argv[]) {
             if (pathGraphFile == NULL) {
                 showErrorCannotOpenFile(pathGraphName);
 
-                free_hpg(hpgraph);
                 free_vpg(vpgraph);
                 free_gwma(gwma);
 
                 return EXIT_FAILURE;
             }
 
-            generateDotOfPathGraph(pathGraphFile, hpgraph, gwma);
+            generateDotOfPathGraph(pathGraphFile, pathGraph, gwma);
 
             DEBUG_ASSERT(fclose(pathGraphFile) == 0)
             NDEBUG_EXECUTE(fclose(pathGraphFile))
         }
+    }
+
+    HyperPathGraph  hpgraph[1]          = {NOT_A_HPATH_GRAPH};
+    SimpleGraph     hyperPathGraph[1]   = {NOT_A_SG};
+    if (hyperPathsName != NULL || testOutputFileName != NULL) {
+        VERBOSE_MSG("Generating Hyperpaths...")
+
+        constructAcyclic_hpg(hpgraph, pathGraph);
+        construct_sgi_hpg(hyperPathGraph, hpgraph);
 
         if (hyperPathsName != NULL) {
             VERBOSE_MSG("Saving hyperpaths to '%s'", hyperPathsName)
@@ -1168,14 +1167,17 @@ int main(int argc, char* argv[]) {
             DEBUG_ASSERT(fclose(hyperPathsFile) == 0)
             NDEBUG_EXECUTE(fclose(hyperPathsFile))
         }
-
-        if (testOutputFileName != NULL) {
-            VERBOSE_MSG("Generating Test(s)...")
-        }
-
-        free_hpg(hpgraph);
-        free_vpg(vpgraph);
     }
+
+    if (testOutputFileName != NULL) {
+        VERBOSE_MSG("Generating Test(s)...")
+    }
+
+    if (isValid_hpg(hpgraph))
+        free_hpg(hpgraph);
+
+    if (isValid_vpg(vpgraph))
+        free_vpg(vpgraph);
 
     if (lastTestFileId > firstTestFileId) {
         VERBOSE_MSG("Measuring Coverage...")
@@ -1183,6 +1185,7 @@ int main(int argc, char* argv[]) {
 
     VERBOSE_MSG("Finished.")
 
+    DEBUG_ASSERT(isValid_gwma(gwma))
     free_gwma(gwma);
 
     return EXIT_SUCCESS;

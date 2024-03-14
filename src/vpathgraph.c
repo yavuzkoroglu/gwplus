@@ -8,7 +8,7 @@
 #include "padkit/debug.h"
 #include "vpathgraph.h"
 
-void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const graph, VertexPathArray const* const vpaths) {
+void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const graph, VertexPathArray const* const vpaths, int const optimizationLevel) {
     DEBUG_ERROR_IF(vpgraph == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
     DEBUG_ASSERT(isValid_vpa(vpaths))
@@ -19,37 +19,83 @@ void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const grap
     DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(vpgraph->spliceMtx, sz + 1, sz))
 
     VertexPath splice[1] = {NOT_A_VPATH};
-    for (uint32_t i = 0; i < sz; i++) {
-        VertexPath* const p_i = vpaths->array + i;
-        DEBUG_ASSERT(p_i->len > 0)
-        DEBUG_ASSERT(p_i->graph == graph)
 
-        for (uint32_t j = 0; j < sz; j++) {
-            if (i == j) continue;
+    switch (optimizationLevel) {
+        case 2:
+            for (uint32_t i = 0; i < sz - 1; i++) {
+                VertexPath* const p_i = vpaths->array + i;
+                DEBUG_ASSERT(p_i->len == 1)
+                DEBUG_ASSERT(p_i->graph == graph)
 
-            VertexPath* const p_j = vpaths->array + j;
-            DEBUG_ASSERT(p_j->len > 0)
-            DEBUG_ASSERT(p_j->graph == graph)
+                uint32_t const v_i = p_i->array[0];
 
-            clone_vpath(splice, p_i);
-            if (!splice_vpath(splice, p_j)) continue;
+                for (uint32_t j = i + 1; j < sz; j++) {
+                    VertexPath* const p_j = vpaths->array + j;
+                    DEBUG_ASSERT(p_j->len == 1)
+                    DEBUG_ASSERT(p_j->graph == graph)
 
-            connect_gmtx(vpgraph->spliceMtx, i, j);
-            if (splice->len <= p_i->len + 1) continue;
+                    uint32_t const v_j = p_j->array[0];
 
-            for (uint32_t k = 0; k < sz; k++) {
-                if (k == i || k == j) continue;
+                    if (graph->isValidEdge(graph->graphPtr, v_i, v_j))
+                        connect_gmtx(vpgraph->spliceMtx, i, j);
 
-                VertexPath* const p_k = vpaths->array + k;
-                DEBUG_ASSERT(p_k->len > 0)
-                DEBUG_ASSERT(p_k->graph == graph)
-
-                if (isSubPath_vpath(p_k, splice)) {
-                    disconnect_gmtx(vpgraph->spliceMtx, i, j);
-                    break;
+                    if (graph->isValidEdge(graph->graphPtr, v_j, v_i))
+                        connect_gmtx(vpgraph->spliceMtx, j, i);
                 }
             }
-        }
+            break;
+        case 1:
+            for (uint32_t i = 0; i < sz; i++) {
+                VertexPath* const p_i = vpaths->array + i;
+                DEBUG_ASSERT(p_i->len > 1)
+                DEBUG_ASSERT(p_i->graph == graph)
+
+                for (uint32_t j = 0; j < sz; j++) {
+                    if (i == j) continue;
+
+                    VertexPath* const p_j = vpaths->array + j;
+                    DEBUG_ASSERT(p_j->len > 1)
+                    DEBUG_ASSERT(p_j->graph == graph)
+
+                    if (p_i->array[1] == p_j->array[0])
+                        connect_gmtx(vpgraph->spliceMtx, i, j);
+                }
+            }
+            break;
+        case 0:
+        default:
+            for (uint32_t i = 0; i < sz; i++) {
+                VertexPath* const p_i = vpaths->array + i;
+                DEBUG_ASSERT(p_i->len > 1)
+                DEBUG_ASSERT(p_i->graph == graph)
+
+                for (uint32_t j = 0; j < sz; j++) {
+                    if (i == j) continue;
+
+                    VertexPath* const p_j = vpaths->array + j;
+                    DEBUG_ASSERT(p_j->len > 1)
+                    DEBUG_ASSERT(p_j->graph == graph)
+
+                    clone_vpath(splice, p_i);
+                    if (!splice_vpath(splice, p_j)) continue;
+
+                    connect_gmtx(vpgraph->spliceMtx, i, j);
+                    if (splice->len <= p_i->len + 1) continue;
+
+                    for (uint32_t k = 0; k < sz; k++) {
+                        if (k == i || k == j) continue;
+
+                        VertexPath* const p_k = vpaths->array + k;
+                        DEBUG_ASSERT(p_k->len > 0)
+                        DEBUG_ASSERT(p_k->graph == graph)
+
+                        if (isSubPath_vpath(p_k, splice)) {
+                            disconnect_gmtx(vpgraph->spliceMtx, i, j);
+                            break;
+                        }
+                    }
+                }
+            }
     }
 
     for (uint32_t i = 0; i < sz; i++) {

@@ -35,8 +35,9 @@
      * @brief Constructs a VertexPathGraph from a VertexPathArray.
      * @param vpgraph A pointer to the VertexPathGraph.
      * @param vpaths A pointer to the constant VertexPathArray.
+     * @param optimizationLevel Performance optimization level for the path graph generation algorithm.
      */
-    void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const graph, VertexPathArray const* const vpaths);
+    void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const graph, VertexPathArray const* const vpaths, int const optimizationLevel);
 
     /**
      * @brief Constructs a SimpleGraph from a VertexPathGraph. Note that this is a graph of paths.
