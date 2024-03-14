@@ -1,0 +1,10 @@
+digraph SimpleGraph {
+    node [shape="rectangle"];
+    reset [shape="none", label="", width=0, height=0];
+    1 [label=""];
+    0 [label=""];
+    reset -> 0 [label="0"];
+    1 -> 0 [label="2"];
+    0 -> 1 [label="1"];
+    0 -> 0 [label="0"];
+}

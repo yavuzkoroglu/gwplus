@@ -151,27 +151,28 @@ The GraphWalker CLI output should look like as follows:
 The final option `-v` enables verbose messages in output. A correct execution should produce something similar to the following timestamped output:
 
 ```
-[2024-03-14 09:37:34] - Verbose enabled.
-[2024-03-14 09:37:34] - Input Model File = exps/001/m.json
-[2024-03-14 09:37:34] - Coverage Criterion = Prime Edge Path Coverage
-[2024-03-14 09:37:34] - Simple Graph Name = sg.dot
-[2024-03-14 09:37:34] - Path Graph File = pg.dot
-[2024-03-14 09:37:34] - Hyperpaths File = hp.txt
-[2024-03-14 09:37:34] - Output Model File with Predefined Edges = test.json
-[2024-03-14 09:37:34] - Creating Empty GraphWalker Model...
-[2024-03-14 09:37:34] - Filling the GraphWalker Model using 'exps/001/m.json'
-[2024-03-14 09:37:34] - Filling adjacency lists to optimize path generation...
-[2024-03-14 09:37:34] - Starting Element is an EDGE
-[2024-03-14 09:37:34] - # Vertices = 2
-[2024-03-14 09:37:34] - # Edges = 3
-[2024-03-14 09:37:34] - Saving the simple graph to 'sg.dot'...
-[2024-03-14 09:37:34] - Generating Test Requirements...
-[2024-03-14 09:37:34] - Generating Path Graph...
-[2024-03-14 09:37:34] - Saving path graph to 'pg.dot'
-[2024-03-14 09:37:34] - Generating Hyperpaths...
-[2024-03-14 09:37:34] - Saving hyperpaths to 'hp.txt'
-[2024-03-14 09:37:34] - Generating Test(s)...
-[2024-03-14 09:37:34] - Finished.
+[2024-03-14 12:15:57] - Verbose enabled.
+[2024-03-14 12:15:57] - Input Model File = exps/001/m.json
+[2024-03-14 12:15:57] - Coverage Criterion = Prime Edge Path Coverage
+[2024-03-14 12:15:57] - Simple Graph Name = sg.dot
+[2024-03-14 12:15:57] - Path Graph File = pg.dot
+[2024-03-14 12:15:57] - Hyperpaths File = hp.txt
+[2024-03-14 12:15:57] - Output Model File with Predefined Edges = test.json
+[2024-03-14 12:15:57] - Creating Empty GraphWalker Model...
+[2024-03-14 12:15:57] - Filling the GraphWalker Model using 'exps/001/m.json'
+[2024-03-14 12:15:57] - Filling adjacency lists to optimize path generation...
+[2024-03-14 12:15:57] - Starting Element is an EDGE
+[2024-03-14 12:15:57] - # Vertices = 2
+[2024-03-14 12:15:57] - # Edges = 3
+[2024-03-14 12:15:57] - Saving the simple graph to 'sg.dot'...
+[2024-03-14 12:15:57] - Generating/Loading Test Requirements...
+[2024-03-14 12:15:57] - Generating Path Graph...
+[2024-03-14 12:15:57] - Optimization Level = 0
+[2024-03-14 12:15:57] - Saving path graph to 'pg.dot'
+[2024-03-14 12:15:57] - Generating Hyperpaths...
+[2024-03-14 12:15:57] - Saving hyperpaths to 'hp.txt'
+[2024-03-14 12:15:57] - Generating Test(s)...
+[2024-03-14 12:15:57] - Finished.
 ```
 
 ### Example #2
@@ -189,6 +190,9 @@ bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt
 ```
 
 The example command above does NOT generate tests but measures the edge coverage of two tests. The output should look like as follows:
+
+```
+```
 
 **WARNING:** GWPlus cannot measure coverage for subgraphs, you must use unified models.
 
@@ -229,3 +233,8 @@ Execute the following BASH script to perform all the experiments:
 
 ### Obtaining Line Graphs
 
+It is possible to obtain a *line graph* with GWPlus. The following command produces the line graph of the toy GraphWalker model:
+
+```
+bin/gwplus -i exps/001/m.json -s linegraph.dot
+```

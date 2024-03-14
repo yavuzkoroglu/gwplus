@@ -15,8 +15,9 @@
 #include "padkit/timestamp.h"
 
 static void convertToEdgePathsAndIncludeRemainingEdges(
-    VertexPathArray* const newRequirements, SimpleGraph* const graph,
-    GWModelArray* const gwma, VertexPathArray const* const requirements
+    VertexPathArray* const newRequirements,
+    SimpleGraph* const graph, GWModelArray* const gwma,
+    VertexPathArray const* const requirements
 ) {
     DEBUG_ERROR_IF(newRequirements == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
@@ -59,7 +60,7 @@ static void convertToEdgePathsAndIncludeRemainingEdges(
                 DEBUG_ASSERT(isValid_gwedge(e))
 
                 GWVertex const* const v_a = gwma->vertices + e->source;
-                GWVertex const* const v_b = gwma->vertices + e->source;
+                GWVertex const* const v_b = gwma->vertices + e->target;
                 DEBUG_ASSERT(isValid_gwvertex(v_a))
                 DEBUG_ASSERT(isValid_gwvertex(v_b))
 
@@ -71,8 +72,8 @@ static void convertToEdgePathsAndIncludeRemainingEdges(
                             GWEdge const* const ep = gwma->edges + ep_id;
                             DEBUG_ASSERT(isValid_gwedge(ep))
 
-                            GWVertex const* const v_c = gwma->vertices + e->source;
-                            GWVertex const* const v_d = gwma->vertices + e->source;
+                            GWVertex const* const v_c = gwma->vertices + ep->source;
+                            GWVertex const* const v_d = gwma->vertices + ep->target;
                             DEBUG_ASSERT(isValid_gwvertex(v_c))
                             DEBUG_ASSERT(isValid_gwvertex(v_d))
 
@@ -102,6 +103,13 @@ static void convertToEdgePathsAndIncludeRemainingEdges(
     freeAdjLists_gwma(gwma);
     memcpy(gwma, newGwma, sizeof(GWModelArray));
     DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(edgeMtx))
+
+    for (uint32_t requirementId = 0; requirementId < newRequirements->size; requirementId++) {
+        VertexPath* const requirement = newRequirements->array + requirementId;
+        DEBUG_ERROR_IF(requirement == NULL)
+
+        requirement->graph = graph;
+    }
 }
 
 static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const pathGraph, GWModelArray const* const gwma) {
@@ -938,44 +946,45 @@ int main(int argc, char* argv[]) {
 
     bool    useLineGraph;
     Chunk   requirementsChunk[1] = {NOT_A_CHUNK};
-    if (coverageCriterion == CUSTOM_COVERAGE) {
-        FILE* const customRequirements = fopen(coverageString, "r");
-        if (customRequirements == NULL) {
-            showErrorCannotOpenFile(coverageString);
-            return EXIT_FAILURE;
-        }
+    switch (coverageCriterion) {
+        case CUSTOM_COVERAGE:
+            {
+                FILE* const customRequirements = fopen(coverageString, "r");
+                if (customRequirements == NULL) {
+                    showErrorCannotOpenFile(coverageString);
+                    return EXIT_FAILURE;
+                }
 
-        DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(requirementsChunk, CHUNK_RECOMMENDED_PARAMETERS))
-        DEBUG_ERROR_IF(fromStream_chunk(requirementsChunk, customRequirements, "\n") == 0xFFFFFFFF)
-        NDEBUG_EXECUTE(fromStream_chunk(requirementsChunk, customRequirements, "\n"))
+                DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(requirementsChunk, CHUNK_RECOMMENDED_PARAMETERS))
+                DEBUG_ERROR_IF(fromStream_chunk(requirementsChunk, customRequirements, "\n") == 0xFFFFFFFF)
+                NDEBUG_EXECUTE(fromStream_chunk(requirementsChunk, customRequirements, "\n"))
 
-        char const* const line = get_chunk(requirementsChunk, 0);
-        DEBUG_ERROR_IF(line == NULL)
+                char const* const line = get_chunk(requirementsChunk, 0);
+                DEBUG_ERROR_IF(line == NULL)
 
-        if (str_eq(line, "vertexpaths")) {
+                if (str_eq(line, "vertexpaths")) {
+                    useLineGraph = 0;
+                } else if (str_eq(line, "edgepaths")) {
+                    useLineGraph = 1;
+                } else {
+                    showErrorInvalidInputSyntax(coverageString);
+                    DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+                    DEBUG_ASSERT(fclose(customRequirements) == 0)
+                    NDEBUG_EXECUTE(fclose(customRequirements))
+                    return EXIT_FAILURE;
+                }
+
+                DEBUG_ASSERT(fclose(customRequirements) == 0)
+                NDEBUG_EXECUTE(fclose(customRequirements))
+            }
+            break;
+        case VERTEX_COVERAGE:
+        case PRIME1_COVERAGE:
+        case PRIME2_COVERAGE:
             useLineGraph = 0;
-        } else if (str_eq(line, "edgepaths")) {
+            break;
+        default:
             useLineGraph = 1;
-        } else {
-            showErrorInvalidInputSyntax(coverageString);
-            DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
-            DEBUG_ASSERT(fclose(customRequirements) == 0)
-            NDEBUG_EXECUTE(fclose(customRequirements))
-            return EXIT_FAILURE;
-        }
-
-        DEBUG_ASSERT(fclose(customRequirements) == 0)
-        NDEBUG_EXECUTE(fclose(customRequirements))
-    } else {
-        switch (coverageCriterion) {
-            case VERTEX_COVERAGE:
-            case PRIME1_COVERAGE:
-            case PRIME2_COVERAGE:
-                useLineGraph = 0;
-                break;
-            default:
-                useLineGraph = 1;
-        }
     }
 
     if (inputFileName == NULL) {
@@ -1066,32 +1075,32 @@ int main(int argc, char* argv[]) {
         NDEBUG_EXECUTE(fclose(simpleGraph))
     }
 
-    VertexPathArray requirements[1] = {NOT_A_VPATH_ARRAY};
-    if (requirementsName != NULL || hyperPathsName != NULL || pathGraphName != NULL || testOutputFileName != NULL) {
-        VERBOSE_MSG("Generating/Loading Test Requirements...")
-        generateTestRequirements(requirements, coverageCriterion, graph, gwma, requirementsChunk);
+    VertexPathArray requirements[1];
 
-        if (requirementsName != NULL) {
-            VERBOSE_MSG("Saving test requirements to '%s'", requirementsName)
+    VERBOSE_MSG("Generating/Loading Test Requirements...")
+    generateTestRequirements(requirements, coverageCriterion, graph, gwma, requirementsChunk);
 
-            FILE* const requirementsFile = fopen(requirementsName, "w");
-            if (requirementsFile == NULL) {
-                showErrorCannotOpenFile(requirementsName);
+    if (requirementsName != NULL) {
+        VERBOSE_MSG("Saving test requirements to '%s'", requirementsName)
 
-                if (isValid_chunk(requirementsChunk))
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+        FILE* const requirementsFile = fopen(requirementsName, "w");
+        if (requirementsFile == NULL) {
+            showErrorCannotOpenFile(requirementsName);
 
-                free_gwma(gwma);
+            if (isValid_chunk(requirementsChunk))
+                DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
 
-                return EXIT_FAILURE;
-            }
+            free_gwma(gwma);
 
-            saveTestRequirements(requirementsFile, requirements, gwma);
-
-            DEBUG_ASSERT(fclose(requirementsFile) == 0)
-            NDEBUG_EXECUTE(fclose(requirementsFile))
+            return EXIT_FAILURE;
         }
+
+        saveTestRequirements(requirementsFile, requirements, gwma);
+
+        DEBUG_ASSERT(fclose(requirementsFile) == 0)
+        NDEBUG_EXECUTE(fclose(requirementsFile))
     }
+
     if (isValid_chunk(requirementsChunk))
         free_chunk(requirementsChunk);
 
@@ -1129,6 +1138,7 @@ int main(int argc, char* argv[]) {
                 showErrorCannotOpenFile(pathGraphName);
 
                 free_vpg(vpgraph);
+                free_vpa(requirements);
                 free_gwma(gwma);
 
                 return EXIT_FAILURE;
@@ -1158,6 +1168,7 @@ int main(int argc, char* argv[]) {
 
                 free_hpg(hpgraph);
                 free_vpg(vpgraph);
+                free_vpa(requirements);
                 free_gwma(gwma);
 
                 return EXIT_FAILURE;
@@ -1185,6 +1196,9 @@ int main(int argc, char* argv[]) {
     }
 
     VERBOSE_MSG("Finished.")
+
+    DEBUG_ASSERT(isValid_vpa(requirements))
+    free_vpa(requirements);
 
     DEBUG_ASSERT(isValid_gwma(gwma))
     free_gwma(gwma);
