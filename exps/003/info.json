@@ -1,0 +1,10 @@
+{
+    "Model Name":"tlc",
+    "SubGraphs":"?",
+    "Vertices":"?",
+    "SharedVertices":"?",
+    "Edges":"?",
+    "DuplicateEdges":"?",
+    "StartElement":"EDGE",
+    "Well-Formed":true
+}

@@ -104,11 +104,65 @@ static void convertToEdgePathsAndIncludeRemainingEdges(
     DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(edgeMtx))
 }
 
-static void generateDotOfSimpleGraph(FILE* const output, SimpleGraph const* const graph, GWModelArray const* const gwma) {
+static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const hyperPathGraph, GWModelArray const* const gwma) {
+    DEBUG_ERROR_IF(output == NULL)
+    DEBUG_ASSERT(isValid_hpg(hyperPathGraph->graphPtr))
+    DEBUG_ASSERT(isValid_gwma(gwma))
+
+    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)hyperPathGraph->graphPtr;
+
+    Chunk const* const chunk_names = gwma->useLineGraph
+        ? gwma->chunks + GWMA_CHUNK_EDGE_NAMES
+        : gwma->chunks + GWMA_CHUNK_VERTEX_NAMES;
+
+    fputs(
+        "digraph PathGraph {\n"
+        "    node [shape=\"rectangle\"];\n"
+        "    s [shape=\"circle\"];\n",
+        output
+    );
+
+    uint32_t const nPaths = hpgraph->pathGraph->countVertices(hpgraph->pathGraph->graphPtr);
+    for (uint32_t pathId = 0; pathId < nPaths; pathId++) {
+        VertexPath const* const path = hpgraph->hpaths->array + pathId;
+        DEBUG_ASSERT(isValid_vpath(path))
+
+        fprintf(output, "    %u [label=\"p%u:\\l", pathId, pathId);
+
+        for (uint32_t i = 0; i < path->len; i++) {
+            char const* const label = get_chunk(chunk_names, path->array[i]);
+            DEBUG_ERROR_IF(label == NULL)
+
+            fprintf(output, "%s\\l", label);
+        }
+
+        fputs("];\n", output);
+    }
+
+    NeighborIterator itr[1];
+    construct_nitr_sg(itr, hyperPathGraph, nPaths);
+    for (
+        uint32_t pathId;
+        hyperPathGraph->isValidVertex(hpgraph, (pathId = hyperPathGraph->nextVertexId_nitr(itr)));
+    ) fprintf(output, "    s -> %u;\n", pathId);
+
+    for (uint32_t p0_id = 0; p0_id < nPaths; p0_id++) {
+        construct_nitr_sg(itr, hyperPathGraph, p0_id);
+        for (
+            uint32_t p1_id;
+            hyperPathGraph->isValidVertex(hpgraph, (p1_id = hyperPathGraph->nextVertexId_nitr(itr)));
+        ) fprintf(output, "    %u -> %u;\n", p0_id, p1_id);
+    }
+
+    fputs("}", output);
+}
+
+static void generateDotOfSimpleGraph(FILE* const output, SimpleGraph const* const graph) {
     DEBUG_ERROR_IF(output == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
-    DEBUG_ASSERT(isValid_gwma(gwma))
-    DEBUG_ASSERT(graph->graphPtr == gwma)
+    DEBUG_ASSERT(isValid_gwma(graph->graphPtr))
+
+    GWModelArray const* const gwma = (GWModelArray const*)graph->graphPtr;
 
     Chunk const* const chunk_vertex_names   = gwma->chunks + GWMA_CHUNK_VERTEX_NAMES;
     Chunk const* const chunk_edge_names     = gwma->chunks + GWMA_CHUNK_EDGE_NAMES;
@@ -304,6 +358,30 @@ static void generateTestRequirements(
         default:
             constructAllUpToKPaths_vpa(requirements, graph, (uint32_t)coverageCriterion);
             eliminateSubPaths_vpa(requirements);
+    }
+}
+
+static void saveHyperpaths(FILE* const output, SimpleGraph const* const hyperPathGraph) {
+    DEBUG_ERROR_IF(output == NULL)
+    DEBUG_ASSERT(isValid_sg(hyperPathGraph))
+    DEBUG_ASSERT(isValid_hpg(hyperPathGraph->graphPtr))
+
+    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)hyperPathGraph->graphPtr;
+    uint32_t const              nPaths  = hpgraph->pathGraph->countVertices(hpgraph->pathGraph->graphPtr);
+
+    for (uint32_t h_id = nPaths + 1; h_id < hpgraph->hpaths->size; h_id++) {
+        VertexPath const* const hpath = hpgraph->hpaths->array + h_id;
+        DEBUG_ASSERT(hpath->len > 0)
+
+        fprintf(output, "h%u:", h_id);
+        for (uint32_t i = 0; i < hpath->len; i++) {
+            uint32_t const hp_id = hpath->array[i];
+            if (hp_id < nPaths)
+                fprintf(output, " p%u", hp_id);
+            else
+                fprintf(output, " h%u", hp_id);
+        }
+        fputs("\n", output);
     }
 }
 
@@ -536,7 +614,7 @@ static void showUsage(void) {
         "  TXT-FILE(s)                  Reads custom test(s) from TXT file(s)\n"
         "\n"
         "EXAMPLE USES:\n"
-        "  bin/gwplus -i exps/001/m.json -c prime3 -h h.txt -p p.dot -r r.txt -s s.dot -t t.json -v\n"
+        "  bin/gwplus -i exps/001/m.json -c prime3 -s sg.dot -p pg.dot -h hp.txt -t test.json -v\n"
         "  bin/gwplus -i exps/003/m.json -c 0 -t testpath.json -v\n"
         "  bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt -v\n"
         "  bin/gwplus -i exps/002/m.json -u unified.json -v\n"
@@ -983,15 +1061,15 @@ int main(int argc, char* argv[]) {
             return EXIT_FAILURE;
         }
 
-        generateDotOfSimpleGraph(simpleGraph, graph, gwma);
+        generateDotOfSimpleGraph(simpleGraph, graph);
 
         DEBUG_ASSERT(fclose(simpleGraph) == 0)
         NDEBUG_EXECUTE(fclose(simpleGraph))
     }
 
     VertexPathArray requirements[1] = {NOT_A_VPATH_ARRAY};
-    if (requirementsName != NULL || testOutputFileName != NULL) {
-        VERBOSE_MSG("Generating Test Requirements...")
+    if (requirementsName != NULL || hyperPathsName != NULL || pathGraphName != NULL || testOutputFileName != NULL) {
+        VERBOSE_MSG("Generating/Loading Test Requirements...")
         generateTestRequirements(requirements, coverageCriterion, graph, gwma, requirementsChunk);
 
         if (requirementsName != NULL) {
@@ -1003,6 +1081,8 @@ int main(int argc, char* argv[]) {
 
                 if (isValid_chunk(requirementsChunk))
                     DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+
+                free_gwma(gwma);
 
                 return EXIT_FAILURE;
             }
@@ -1016,28 +1096,89 @@ int main(int argc, char* argv[]) {
     if (isValid_chunk(requirementsChunk))
         free_chunk(requirementsChunk);
 
-    if (pathGraphName != NULL || testOutputFileName != NULL) {
+    if (hyperPathsName != NULL || pathGraphName != NULL || testOutputFileName != NULL) {
+        HyperPathGraph  hpgraph[1]          = {NOT_A_HPATH_GRAPH};
+        VertexPathGraph vpgraph[1]          = {NOT_A_VPATH_GRAPH};
+        SimpleGraph     pathGraph[1]        = {NOT_A_SG};
+        SimpleGraph     hyperPathGraph[1]   = {NOT_A_SG};
+
         VERBOSE_MSG("Generating Path Graph...")
+
+        int optimizationLevel;
+        switch (coverageCriterion) {
+            case VERTEX_COVERAGE:
+            case EDGE_COVERAGE:
+                optimizationLevel = 2;
+                break;
+            case CUSTOM_COVERAGE:
+            case PRIME1_COVERAGE:
+            case PRIME2_COVERAGE:
+            case PRIME3_COVERAGE:
+                optimizationLevel = 0;
+                break;
+            case EPAIR_COVERAGE:
+            default:
+                optimizationLevel = 1;
+        }
+
+        construct_vpg(vpgraph, graph, requirements, optimizationLevel);
+        construct_sgi_vpg(pathGraph, vpgraph);
+
+        VERBOSE_MSG("Generating Hyperpaths...")
+
+        constructAcyclic_hpg(hpgraph, pathGraph);
+        construct_sgi_hpg(hyperPathGraph, hpgraph);
 
         if (pathGraphName != NULL) {
             VERBOSE_MSG("Saving path graph to '%s'", pathGraphName)
-        }
-    }
 
-    if (hyperPathsName != NULL || testOutputFileName != NULL) {
-        VERBOSE_MSG("Generating Hyperpaths...")
+            FILE* const pathGraphFile = fopen(pathGraphName, "w");
+            if (pathGraphFile == NULL) {
+                showErrorCannotOpenFile(pathGraphName);
+
+                free_hpg(hpgraph);
+                free_vpg(vpgraph);
+                free_gwma(gwma);
+
+                return EXIT_FAILURE;
+            }
+
+            generateDotOfPathGraph(pathGraphFile, hpgraph, gwma);
+
+            DEBUG_ASSERT(fclose(pathGraphFile) == 0)
+            NDEBUG_EXECUTE(fclose(pathGraphFile))
+        }
 
         if (hyperPathsName != NULL) {
             VERBOSE_MSG("Saving hyperpaths to '%s'", hyperPathsName)
+
+            FILE* const hyperPathsFile = fopen(hyperPathsName, "w");
+            if (hyperPathsFile == NULL) {
+                showErrorCannotOpenFile(hyperPathsName);
+
+                free_hpg(hpgraph);
+                free_vpg(vpgraph);
+                free_gwma(gwma);
+
+                return EXIT_FAILURE;
+            }
+
+            saveHyperpaths(hyperPathsFile, hyperPathGraph);
+
+            DEBUG_ASSERT(fclose(hyperPathsFile) == 0)
+            NDEBUG_EXECUTE(fclose(hyperPathsFile))
         }
+
+        if (testOutputFileName != NULL) {
+            VERBOSE_MSG("Generating Test(s)...")
+        }
+
+        free_hpg(hpgraph);
+        free_vpg(vpgraph);
     }
 
     if (lastTestFileId > firstTestFileId) {
         VERBOSE_MSG("Measuring Coverage...")
-    }
-
-    if (testOutputFileName != NULL) {
-        VERBOSE_MSG("Generating Test(s)...")
     }
 
     VERBOSE_MSG("Finished.")
@@ -1047,141 +1188,3 @@ int main(int argc, char* argv[]) {
     return EXIT_SUCCESS;
 }
 #undef VERBOSE_MSG
-
-/*
-#define ARGV_COV_STR 1
-#define ARGV_IFILENM 2
-#define ARGV_OFILENM 3
-#define ARGV_VERBOSE 4
-#define VERBOSE_MSG(...) if (verbose) { printf("[%s] - ", get_timestamp()); printf(__VA_ARGS__); puts(""); }
-int main(int argc, char* argv[]) {
-    if (argc < 4) {
-        showUsage();
-        return EXIT_SUCCESS;
-    }
-
-    bool const verbose = (argc > 4 && STR_EQ_CONST(argv[ARGV_VERBOSE], "-v"));
-    VERBOSE_MSG("Verbose enabled.")
-
-    int32_t k;
-    bool isVertexCoverage = 0;
-    if (STR_EQ_CONST(argv[ARGV_COV_STR], "prime")) {
-        k = 0;
-        VERBOSE_MSG("Coverage Criterion = Prime Path Coverage")
-    } else if (STR_EQ_CONST(argv[ARGV_COV_STR], "edge")) {
-        k = 1;
-        VERBOSE_MSG("Coverage Criterion = Edge Coverage")
-    } else if (STR_EQ_CONST(argv[ARGV_COV_STR], "vertex")) {
-        k = 1;
-        isVertexCoverage = 1;
-        VERBOSE_MSG("Coverage Criterion = Vertex Coverage")
-    } else {
-        showUnknownCoverage(argv[ARGV_COV_STR]);
-        showUsage();
-        return EXIT_FAILURE;
-    }
-
-    GWModelArray gwma[1];
-    constructEmpty_gwma(gwma, isVertexCoverage, GWMA_DEFAULT_PARAMETERS);
-
-    VERBOSE_MSG("Loading %s...", argv[ARGV_IFILENM])
-    FILE* const jsonFile = fopen(argv[ARGV_IFILENM], "r");
-    if (jsonFile == NULL) {
-        showCannotOpenFile(argv[ARGV_IFILENM]);
-        return EXIT_FAILURE;
-    }
-
-    fillUsingJSON_gwma(gwma, jsonFile);
-
-    fillAdjLists_gwma(gwma);
-
-    DEBUG_ASSERT(fclose(jsonFile) == 0)
-    NDEBUG_EXECUTE(fclose(jsonFile))
-
-    SimpleGraph graph[1];
-    construct_sgi_gwma(graph, gwma);
-
-    if (gwma->s_type == GWMA_START_ELEMENT_TYPE_EDGE) {
-        VERBOSE_MSG("Starting Element is an EDGE")
-    } else {
-        VERBOSE_MSG("Starting Element is a VERTEX")
-    }
-
-    VERBOSE_MSG("         # Vertices = %"PRIu32, gwma->size_vertices)
-    VERBOSE_MSG("            # Edges = %"PRIu32, isVertexCoverage ? graph->countEdges(gwma) : graph->countVertices(gwma))
-
-    if (!isVertexCoverage)
-        VERBOSE_MSG("       # Edge Pairs = %"PRIu32, graph->countEdges(gwma))
-
-    VertexPathArray requirements[1];
-    if (k == 0) {
-        constructAllPrimePaths_vpa(requirements, graph);
-    } else {
-        constructAllUpToKPaths_vpa(requirements, graph, (uint32_t)k);
-        eliminateSubPaths_vpa(requirements);
-    }
-    VERBOSE_MSG("# Test Requirements = %"PRIu32, requirements->size)
-
-    VertexPathGraph vpgraph[1];
-    construct_vpg(vpgraph, graph, requirements);
-
-    SimpleGraph pathGraph[1];
-    construct_sgi_vpg(pathGraph, vpgraph);
-
-    VERBOSE_MSG("   # Direct Splices = %"PRIu32, pathGraph->countEdges(vpgraph))
-
-    HyperPathGraph hpgraph[1];
-    constructAcyclic_hpg(hpgraph, pathGraph);
-
-    SimpleGraph hyperPathGraph[1];
-    construct_sgi_hpg(hyperPathGraph, hpgraph);
-
-    VERBOSE_MSG("       # HyperPaths = %"PRIu32, hyperPathGraph->countVertices(hpgraph))
-    if (hyperPathGraph->countVertices(hpgraph) > 2) {
-        fputs(
-            "\n"
-            "ERROR: The GraphWalker model is NOT well-formed.\n"
-            "\n",
-            stderr
-        );
-        return EXIT_FAILURE;
-    }
-
-    VertexPathArray testPaths[1];
-    constructTestPaths_hpg(testPaths, hpgraph);
-
-    VERBOSE_MSG("        # TestPaths = %"PRIu32, testPaths->size)
-
-    VertexPath const* const testPath = testPaths->array;
-    DEBUG_ASSERT(isValid_vpath(testPath))
-
-    VERBOSE_MSG(" LengthOf(TestPath) = %"PRIu32, testPath->len)
-
-    setPredefinedPath_gwma(gwma, testPath->array, testPath->len);
-
-    VERBOSE_MSG("Dumping the final model to %s...", argv[ARGV_OFILENM])
-    FILE* const output = fopen(argv[ARGV_OFILENM], "w");
-    if (output == NULL) {
-        showCannotOpenFile(argv[ARGV_OFILENM]);
-        return EXIT_FAILURE;
-    }
-
-    graph->dump(gwma, output);
-
-    DEBUG_ASSERT(fclose(output) == 0)
-    NDEBUG_EXECUTE(fclose(output))
-
-    free_vpa(testPaths);
-    free_hpg(hpgraph);
-    free_vpg(vpgraph);
-    free_vpa(requirements);
-    free_gwma(gwma);
-
-    VERBOSE_MSG("Finished")
-}
-#undef ARGV_COV_STR
-#undef ARGV_IFILENM
-#undef ARGV_OFILENM
-#undef ARGV_VERBOSE
-#undef VERBOSE_MSG
-*/

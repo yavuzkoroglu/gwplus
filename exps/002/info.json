@@ -1,0 +1,10 @@
+{
+    "Model Name":"toygraph2",
+    "SubGraphs":2,
+    "Vertices":4,
+    "SharedVertices":1,
+    "Edges":5,
+    "DuplicateEdges":0,
+    "StartElement":"EDGE",
+    "Well-Formed":true
+}

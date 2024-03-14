@@ -64,13 +64,45 @@ CUSTOM-TEST OPTIONS:
   TXT-FILE(s)                  Reads custom test(s) from TXT file(s)
 
 EXAMPLE USES:
-  bin/gwplus -i exps/001/m.json -c prime3 -h h.txt -p p.dot -r r.txt -s s.dot -t t.json -v
+  bin/gwplus -i exps/001/m.json -c prime3 -s sg.dot -p pg.dot -h hp.txt -t test.json -v
   bin/gwplus -i exps/003/m.json -c 0 -t testpath.json -v
   bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt -v
   bin/gwplus -i exps/002/m.json -u unified.json -v
 ```
 
 ### Example #1
+
+```
+bin/gwplus -i exps/001/m.json -c prime3 -s sg.dot -p pg.dot -h hp.txt -t test.json -v
+```
+
+The first option in this example is `-i exps/001/m.json`. This option sets the input GraphWalker model to a toy graph. When opened in GraphWalker studio, this toy graph appears as below.
+
+![The GraphWalker Model of a Toy Graph](exps/001/wellformed.png)
+
+The second option `-c prime3` sets the coverage criterion to the highest setting.
+
+The third option `-s sg.dot` generates the simple graph of the toy graph. After executing the example command, you can print the graph to the terminal using `cat sg.dot` and produce the following result.
+
+```
+digraph SimpleGraph {
+    node [shape="rectangle"];
+    reset [shape="none", label="", width=0, height=0];
+    2 [label="2"];
+    1 [label="1"];
+    0 [label="0"];
+    reset -> 0;
+    2 -> 1 [label=""];
+    2 -> 0 [label=""];
+    1 -> 2 [label=""];
+    0 -> 1 [label=""];
+    0 -> 0 [label=""];
+}
+```
+
+A visualization of the above DOT graph is below:
+
+![The Simple Graph of the Toy Graph](exps/001/sg.pdf)
 
 ### Example #2
 
