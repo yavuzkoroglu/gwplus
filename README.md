@@ -228,3 +228,5 @@ Execute the following BASH script to perform all the experiments:
 ### Finding Shortest Paths
 
 ### Obtaining Line Graphs
+
+## Frequently Asked Questions
