@@ -2,7 +2,6 @@ include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
 OBJECTS=obj/gwmodel.o obj/gwplus.o obj/hpathgraph.o obj/sgi.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
-TOYOBJS=obj/hpathgraph.o obj/sgi.o obj/toygraph.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
 
 all: bin/gwplus
 

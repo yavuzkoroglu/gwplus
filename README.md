@@ -44,30 +44,30 @@ GENERAL OPTIONS:
   -p,--pathgraph DOT-FILE      Output the path graph to a DOT file
   -r,--requirements TXT-FILE   Output the test requirements to a TXT file
   -s,--simplegraph DOT-FILE    Output the simple graph to a DOT file
-  -t,--tests JSON-FILE         Output a unified GraphWalker model with predefinedEdgeIds that satisfy COVERAGE
+  -t,--tests JSON-FILE         Output a unified GraphWalker model with predefinedEdgeIds
   -u,--unify JSON-FILE         Output a unified GraphWalker model with no tests
   -v,--verbose                 Timestamped status information to stdout
   -V,--version                 Output version number and exit
 
 COVERAGE OPTIONS:
-  vertex                       Tests must cover all vertices of a GraphWalker model
-  edge                         (Default) Tests must cover all edges of a GraphWalker model
-  edgepair                     Tests must cover all edge-pairs of a GraphWalker model
-  NUMBER                       Tests must cover all edge paths up to a length (0=vertex, 1=edge, 2=edgepair, etc.)
-  prime1                       Tests must cover all prime vertex paths of a GraphWalker model
-  prime2                       Tests must cover all prime vertex paths and edges of a GraphWalker model
-  prime3                       Tests must cover all prime edge paths of a GraphWalker model
-  TXT-FILE                     Uses custom test requirements from a TXT file
+  vertex                       All vertices of a GraphWalker model
+  edge                         (Default) All edges of a GraphWalker model
+  edgepair                     All edge-pairs of a GraphWalker model
+  NUMBER                       All edge paths up to a length (0=vertex, 1=edge, 2=edgepair, etc.)
+  prime1                       All prime vertex paths of a GraphWalker model
+  prime2                       All prime vertex paths and edges of a GraphWalker model
+  prime3                       All prime edge paths of a GraphWalker model
+  TXT-FILE                     Custom test requirements from a TXT file
 
 CUSTOM-TEST OPTIONS:
   -b,-g,--builtin,--given      Uses the predefinedEdgeIds of the input model
   TXT-FILE(s)                  Reads custom test(s) from TXT file(s)
 
 EXAMPLE USES:
-  bin/gwplus -i experiments/toygraph/model.json -c prime3 -h hyperpaths.txt -p pathgraph.dot -r requirements.txt -s simplegraph.dot -t testpath.json -v
-  bin/gwplus -i experiments/tlc/model.json -c 0 -t testpath.json -v
-  bin/gwplus -i experiments/tlc/model.json -c edge -m graphwalker_vertex_coverage_100_seed_104881.txt graphwalker_vertex_coverage_100_seed_108218.txt -v
-  bin/gwplus -i experiments/toygraph2/model.json -u unified.json -v
+  bin/gwplus -i exps/001/m.json -c prime3 -h hps.txt -p pg.dot -r req.txt -s sg.dot -t tp.json -v
+  bin/gwplus -i exps/003/m.json -c 0 -t testpath.json -v
+  bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt -v
+  bin/gwplus -i exps/002/m.json -u unified.json -v
 ```
 
 ### Example #1
