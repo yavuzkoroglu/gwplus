@@ -53,7 +53,7 @@ COVERAGE OPTIONS:
   vertex                       All vertices of a GraphWalker model
   edge                         (Default) All edges of a GraphWalker model
   edgepair                     All edge-pairs of a GraphWalker model
-  NUMBER                       All edge paths up to a length (0=vertex, 1=edge, 2=edgepair, etc.)
+  NUMBER                       All edge paths up to a length (0=vertex, 1=edge, etc.)
   prime1                       All prime vertex paths of a GraphWalker model
   prime2                       All prime vertex paths and edges of a GraphWalker model
   prime3                       All prime edge paths of a GraphWalker model
@@ -64,7 +64,7 @@ CUSTOM-TEST OPTIONS:
   TXT-FILE(s)                  Reads custom test(s) from TXT file(s)
 
 EXAMPLE USES:
-  bin/gwplus -i exps/001/m.json -c prime3 -h hps.txt -p pg.dot -r req.txt -s sg.dot -t tp.json -v
+  bin/gwplus -i exps/001/m.json -c prime3 -h h.txt -p p.dot -r r.txt -s s.dot -t t.json -v
   bin/gwplus -i exps/003/m.json -c 0 -t testpath.json -v
   bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt -v
   bin/gwplus -i exps/002/m.json -u unified.json -v
