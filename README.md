@@ -6,11 +6,8 @@ Computes the shortest test path that satisfies a coverage criterion for a GraphW
 
 * [How to Build](#how-to-build)
 * [Usage](#usage)
-* [Examples](#examples)
-    - [Toy Graph](#toy-graph)
-    - [TLC](#tlc)
-* [Known Issues](#known-issues)
-	 - [Half Debug Half Release Builds](#half-debug-half-release-builds)
+* [Experiments](#experiments)
+* [Side Uses](#side-uses)
 
 ## How to Build
 
@@ -30,133 +27,70 @@ bin/gwplus
 
 ## Usage
 
-`gwplus` usage syntax:
+You should obtain the following output after executing `bin/gwplus`:
 
 ```
-Usage: gwplus (edge|prime|vertex) <GraphWalker-JSON-file> <output-JSON-file> [-v]
+GWPlus: Fast Optimal Test Generator for GraphWalker
+
+Usage: gwplus <options>
+
+GENERAL OPTIONS:
+  -c,--coverage COVERAGE       Set the coverage criterion
+  -C,--copyright               Output the copyright message and exit
+  -H,--help                    Output this help message and exit
+  -h,--hyperpaths TXT-FILE     Output the hyperpaths to a TXT file
+  -i,--input JSON-FILE         (Mandatory) An input GraphWalker model in JSON format
+  -m,--measure CUSTOM-TEST(s)  Output coverage of custom test(s)
+  -p,--pathgraph DOT-FILE      Output the path graph to a DOT file
+  -r,--requirements TXT-FILE   Output the test requirements to a TXT file
+  -s,--simplegraph DOT-FILE    Output the simple graph to a DOT file
+  -t,--tests JSON-FILE         Output a unified GraphWalker model with predefinedEdgeIds that satisfy COVERAGE
+  -u,--unify JSON-FILE         Output a unified GraphWalker model with no tests
+  -v,--verbose                 Timestamped status information to stdout
+  -V,--version                 Output version number and exit
+
+COVERAGE OPTIONS:
+  vertex                       Tests must cover all vertices of a GraphWalker model
+  edge                         (Default) Tests must cover all edges of a GraphWalker model
+  edgepair                     Tests must cover all edge-pairs of a GraphWalker model
+  NUMBER                       Tests must cover all edge paths up to a length (0=vertex, 1=edge, 2=edgepair, etc.)
+  prime1                       Tests must cover all prime vertex paths of a GraphWalker model
+  prime2                       Tests must cover all prime vertex paths and edges of a GraphWalker model
+  prime3                       Tests must cover all prime edge paths of a GraphWalker model
+  TXT-FILE                     Uses custom test requirements from a TXT file
+
+CUSTOM-TEST OPTIONS:
+  -b,-g,--builtin,--given      Uses the predefinedEdgeIds of the input model
+  TXT-FILE(s)                  Reads custom test(s) from TXT file(s)
+
+EXAMPLE USES:
+  bin/gwplus -i experiments/toygraph/model.json -c prime3 -h hyperpaths.txt -p pathgraph.dot -r requirements.txt -s simplegraph.dot -t testpath.json -v
+  bin/gwplus -i experiments/tlc/model.json -c 0 -t testpath.json -v
+  bin/gwplus -i experiments/tlc/model.json -c edge -m graphwalker_vertex_coverage_100_seed_104881.txt graphwalker_vertex_coverage_100_seed_108218.txt -v
+  bin/gwplus -i experiments/toygraph2/model.json -u unified.json -v
 ```
 
-### Coverage Parameter `edge|prime|vertex`
+### Example #1
 
-- **edge**: Edge Coverage
-- **prime**: Prime Path Coverage
-- **vertex**: Vertex Coverage
+### Example #2
 
-### Optional Verbose Parameter `-v`
+### Example #3
 
-Prints timestamped status messages to `stdout`. Omitting verbose messages may speed up test generation.
+### Example #4
 
-## Examples
+## Experiments
 
-### Toy Graph
+### Prerequisites
 
-![Toy Graph Model](examples/toygraph/wellformed.png)
+1. The command-line JSON processor: `jq`
+2. The command-line engine for GraphWalker: `graphwalker-cli-4.3.2.jar`
 
-Use the following command to generate the test path that satisfy prime path coverage for the graph above:
+MacOS users can install `jq` using `brew install jq`.
 
-```
-bin/gwplus prime examples/toygraph/wellformed.json testpath.json -v
-```
+For GraphWalker: [https://graphwalker.github.io/#download](https://graphwalker.github.io/#download)
 
-The output of the command above should be:
+## Side Uses
 
-```
-[2024-02-21 15:52:37] - Verbose enabled.
-[2024-02-21 15:52:37] - Coverage Criterion = Prime Path Coverage
-[2024-02-21 15:52:37] - Loading examples/toygraph/wellformed.json...
-[2024-02-21 15:52:37] - Starting Element is an EDGE
-[2024-02-21 15:52:37] -          # Vertices = 2
-[2024-02-21 15:52:37] -             # Edges = 3
-[2024-02-21 15:52:37] -        # Edge Pairs = 5
-[2024-02-21 15:52:37] - # Test Requirements = 6
-[2024-02-21 15:52:37] -    # Direct Splices = 14
-[2024-02-21 15:52:37] -        # HyperPaths = 2
-[2024-02-21 15:52:37] -         # TestPaths = 1
-[2024-02-21 15:52:37] -  LengthOf(TestPath) = 9
-[2024-02-21 15:52:37] - Dumping the final model to testpath.json...
-[2024-02-21 15:52:37] - Finished
-```
+### Measure Coverages
 
-To reproduce this predefined test, you can use the GraphWalker Command-Line Interface (CLI) as follows:
-
-```
-java -jar graphwalker-cli-<version>.jar offline -m testpath.json "predefined_path(predefined_path)"
-```
-
-The output of the command above should be:
-
-```
-{"currentElementName":"0"}
-{"currentElementName":""}
-{"currentElementName":"0"}
-{"currentElementName":""}
-{"currentElementName":"0"}
-{"currentElementName":""}
-{"currentElementName":"1"}
-{"currentElementName":""}
-{"currentElementName":"2"}
-{"currentElementName":""}
-{"currentElementName":"0"}
-{"currentElementName":""}
-{"currentElementName":"1"}
-{"currentElementName":""}
-{"currentElementName":"2"}
-{"currentElementName":""}
-{"currentElementName":"1"}
-{"currentElementName":""}
-{"currentElementName":"2"}
-{"currentElementName":""}
-```
-
-Use the following command to see some of the internal variables computed to generate the test path:
-
-```
-bin/toygraph
-```
-
-### TLC
-
-For edge coverage:
-
-```
-bin/gwplus edge examples/tlc/wellformed.json testpath.json
-```
-
-For prime coverage:
-
-```
-bin/gwplus prime examples/tlc/wellformed.json testpath.json
-```
-
-For vertex coverage:
-
-```
-bin/gwplus vertex examples/tlc/wellformed.json testpath.json
-```
-
-## Known Issues
-
-### Half Debug Half Release Builds
-
-#### Symptoms
-
-During execution you may get the following error:
-
-```
-Failed Assertion => (constructEmpty_chunk( chunk_model_ids, (size_t)initial_cap_models * guess_id_str_len, initial_cap_models ))
-Error in src/gwmodel.c::constructEmpty_gwma():XXXX
-```
-
-#### Reason
-
-In `debug` builds, `constructEmpty_chunk()` returns `bool`. In `release` builds, it is a `void` function. If some parts of the binary are in `debug` mode whereas the others are in `release` mode, the `debug` mode code may try to assert the return value, leading to an error.
-
-#### Solution
-
-Please execute the following command and then rebuild.
-
-```
-make clean
-```
-
-To rebuild, `make` or `make -e MODE=release`.
+### Find Shortest Paths

@@ -1,7 +1,7 @@
 /**
  * @file nflowgraph.c
  * @brief Implements the functions defined in nflowgraph.h.
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #include "nflowgraph.h"
 #include "padkit/debug.h"

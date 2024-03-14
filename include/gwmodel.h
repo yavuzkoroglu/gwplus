@@ -7,7 +7,7 @@
  * These vertices are connected via directed edges also with string indices
  * and names.
  *
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #ifndef GWMODEL_H
     #define GWMODEL_H
@@ -321,7 +321,7 @@
      *   The index of the starting element.
      * @var GWModelArray::s_type
      *   The starting element type (vertex or edge)
-     * @var GWModelArray::isVertexCoverage
+     * @var GWModelArray::useLineGraph
      *   Vertex Coverage must be handled differently.
      * @var GWModelArray::size_edges
      *   The total number of GWEdge objects residing in the GWModelArray.
@@ -353,7 +353,7 @@
         ChunkTable  tables[GWMA_TBL_LAST + 1];
         uint32_t    s_id;
         uint32_t    s_type:16;
-        uint32_t    isVertexCoverage:16;
+        uint32_t    useLineGraph:16;
         uint32_t    guess_edge_count_per_vertex;
         uint32_t    guess_vertex_count_per_shared;
         uint32_t    cap_edges;
@@ -457,7 +457,7 @@
     /**
      * @brief Constructs an empty GWModelArray.
      * @param gwma A pointer to the GWModelArray.
-     * @param isVertexCoverage Vertex Coverage must be handled differently.
+     * @param useLineGraph Vertex Coverage must be handled differently.
      * @param initial_cap_edges The initial edge capacity.
      * @param initial_cap_models The initial model capacity.
      * @param initial_cap_shared_vertices The initial shared vertex capacity.
@@ -466,7 +466,7 @@
      * @param guess_name_len An estimation of name length.
      */
     void constructEmpty_gwma(
-        GWModelArray* const gwma, bool const isVertexCoverage,
+        GWModelArray* const gwma, bool const useLineGraph,
         uint32_t const initial_cap_edges, uint32_t const initial_cap_models,
         uint32_t const initial_cap_shared_vertices, uint32_t const initial_cap_vertices,
         size_t const guess_id_str_len, size_t const guess_name_len
@@ -524,6 +524,12 @@
      * @param gwma A pointer to the GWModelArray.
      */
     void free_gwma(GWModelArray* const gwma);
+
+    /**
+     * @brief Frees the adjacency lists of a GWModelArray.
+     * @param gwma A pointer to the GWModelArray.
+     */
+    void freeAdjLists_gwma(GWModelArray* const gwma);
 
     /**
      * @brief (SGI-compatible) Checks if a GWModelArray is valid.

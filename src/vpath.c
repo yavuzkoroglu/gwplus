@@ -1,7 +1,7 @@
 /**
  * @file vpath.c
  * @brief Implements the functions defined in vpath.h
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #include <string.h>
 #include "padkit/reallocate.h"
@@ -597,8 +597,13 @@ void constructEmpty_vpath(VertexPath* const vpath, SimpleGraph const* const grap
     DEBUG_ERROR_IF(vpath == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
 
-    uint32_t const initial_cap = graph->countVertices(graph->graphPtr) + 1;
-    DEBUG_ERROR_IF(initial_cap == 0)
+    constructEmptyCapped_vpath(vpath, graph, graph->countVertices(graph->graphPtr) + 1);
+}
+
+void constructEmptyCapped_vpath(VertexPath* const vpath, SimpleGraph const* const graph, uint32_t const initialCap) {
+    DEBUG_ERROR_IF(vpath == NULL)
+    DEBUG_ASSERT(isValid_sg(graph))
+    DEBUG_ASSERT(initialCap > 0)
 
     vpath->graph        = graph;
     vpath->isAllocated  = 1;
@@ -606,9 +611,10 @@ void constructEmpty_vpath(VertexPath* const vpath, SimpleGraph const* const grap
     vpath->isCycle      = 0;
     vpath->isPrime      = 0;
     vpath->len          = 0;
-    vpath->cap          = initial_cap;
-    vpath->sorted       = malloc((size_t)initial_cap * sizeof(uint32_t));
-    vpath->array        = malloc((size_t)initial_cap * sizeof(uint32_t));
+    vpath->cap          = initialCap;
+    vpath->sorted       = malloc((size_t)initialCap * sizeof(uint32_t));
+    vpath->array        = malloc((size_t)initialCap * sizeof(uint32_t));
+    DEBUG_ERROR_IF(vpath->sorted == NULL)
     DEBUG_ERROR_IF(vpath->array == NULL)
 }
 

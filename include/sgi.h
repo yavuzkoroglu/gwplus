@@ -1,7 +1,7 @@
 /**
  * @file sgi.h
  * @brief Simple Graph Interface (SGI).
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #ifndef SGI_H
     #define SGI_H

@@ -1,7 +1,7 @@
 /**
  * @file vpatharray.h
  * @brief Defines VPathArray.
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #ifndef VPATHARRAY_H
     #define VPATHARRAY_H

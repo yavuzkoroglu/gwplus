@@ -1,7 +1,7 @@
 /**
  * @file vpathgraph.h
  * @brief Defines SGI-compatible VertexPathGraph and related function.
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #ifndef VPATHGRAPH_H
     #define VPATHGRAPH_H

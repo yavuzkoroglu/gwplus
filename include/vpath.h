@@ -2,7 +2,7 @@
  * @file vpath.h
  * @brief Defines a SGI-compatible vertex path.
  * @see tgi.h
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #ifndef VPATH_H
     #define VPATH_H
@@ -111,6 +111,14 @@
      * @param graph A pointer to the SimpleGraph.
      */
     void constructEmpty_vpath(VertexPath* const vpath, SimpleGraph const* const graph);
+
+    /**
+     * @brief Constructs an empty VertexPath under a SimpleGraph with an arbitrary initial capacity.
+     * @param vpath A pointer to the VertexPath.
+     * @param graph A pointer to the SimpleGraph.
+     * @param initialCap The initial capacity.
+     */
+    void constructEmptyCapped_vpath(VertexPath* const vpath, SimpleGraph const* const graph, uint32_t const initialCap);
 
     /**
      * @brief Checks if a VertexPath contains a vertex.

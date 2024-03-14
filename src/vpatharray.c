@@ -1,7 +1,7 @@
 /**
  * @file vpatharray.c
  * @brief Implements the functions defined in vpatharray.h
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #include <inttypes.h>
 #include <string.h>

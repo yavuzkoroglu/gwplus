@@ -4,7 +4,7 @@ INCLUDES=-Iinclude -Ipadkit/include
 OBJECTS=obj/gwmodel.o obj/gwplus.o obj/hpathgraph.o obj/sgi.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
 TOYOBJS=obj/hpathgraph.o obj/sgi.o obj/toygraph.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
 
-all: bin/gwplus bin/toygraph
+all: bin/gwplus
 
 .PHONY: all clean cleanobjects documentation objects
 
@@ -16,13 +16,6 @@ bin/gwplus:                             \
     padkit/lib/libpadkit.a              \
     ${OBJECTS}                          \
     ; ${COMPILE} ${OBJECTS} padkit/lib/libpadkit.a -o bin/gwplus
-
-bin/toygraph:                           \
-    bin                                 \
-    padkit/compile.mk                   \
-    padkit/lib/libpadkit.a              \
-    ${TOYOBJS}                          \
-    ; ${COMPILE} ${TOYOBJS} padkit/lib/libpadkit.a -o bin/toygraph
 
 clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov html latex
 
@@ -44,6 +37,7 @@ obj/gwmodel.o: obj                      \
     ; ${COMPILE} ${INCLUDES} src/gwmodel.c -c -o obj/gwmodel.o
 
 obj/gwplus.o: obj                       \
+    include/coverage.h                  \
     include/gwmodel.h                   \
     include/sgi.h                       \
     include/vpath.h                     \
@@ -81,16 +75,6 @@ obj/sgi.o: obj                          \
     padkit/include/padkit/debug.h       \
     src/sgi.c                           \
     ; ${COMPILE} ${INCLUDES} src/sgi.c -c -o obj/sgi.o
-
-obj/toygraph.o: obj                     \
-    include/sgi.h                       \
-    include/vpath.h                     \
-    include/vpatharray.h                \
-    include/vpathgraph.h                \
-    include/hpathgraph.h                \
-    padkit/include/padkit/debug.h       \
-    src/toygraph.c                      \
-    ; ${COMPILE} ${INCLUDES} src/toygraph.c -c -o obj/toygraph.o
 
 obj/vpath.o: obj                        \
     include/sgi.h                       \

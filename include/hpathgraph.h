@@ -1,7 +1,7 @@
 /**
  * @file hpathgraph.h
  * @brief Defines SGI compatible HyperPathGraph and related functions.
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #ifndef HPGRAPH_H
     #define HPGRAPH_H

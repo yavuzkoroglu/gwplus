@@ -1,3 +1,8 @@
+/**
+ * @file vpathgraph.c
+ * @brief Implements the functions defined in vpathgraph.h
+ * @author Anonymized for ICSE2025
+ */
 #include <inttypes.h>
 #include <stdlib.h>
 #include "padkit/debug.h"

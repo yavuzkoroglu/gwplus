@@ -1,7 +1,7 @@
-7/**
+/**
  * @file nflowgraph.h
  * @brief Defines NetworkFlowTransition, NetworkFlowGraph, and related functions.
- * @author Yavuz Koroglu
+ * @author Anonymized for ICSE2025
  */
 #ifndef NFLOWGRAPH_H
     #define NFLOWGRAPH_H

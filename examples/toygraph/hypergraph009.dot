@@ -1,8 +1,0 @@
-digraph H009 {
-    node [shape=circle,fixedsize=1,width=0.4,height=0.4,fillcolor="darkgray"];
-	edge [arrowsize=0.5];
-	nodesep=0.1;
-	ranksep=0.1;
-    s -> h3;
-    h3 [style="filled",shape="record",label="{h3|{p0|p1|p3|p4|p2|p5}}",width=2,height=0.8];
-}
