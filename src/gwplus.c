@@ -117,6 +117,7 @@ static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const 
 
     fputs(
         "digraph PathGraph {\n"
+        "    rankdir=LR;\n"
         "    node [shape=\"rectangle\"];\n"
         "    s [shape=\"circle\"];\n",
         output
