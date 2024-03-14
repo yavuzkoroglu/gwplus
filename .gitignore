@@ -89,3 +89,10 @@ graphwalker-cli-4.3.2.jar
 
 # Test paths
 testpath.json
+
+# Example Artifacts
+hp.txt
+pg.dot
+sg.dot
+r.txt
+unified.json
