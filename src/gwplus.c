@@ -515,6 +515,18 @@ static void showErrorNoInputFileGiven(void) {
     );
 }
 
+static void showErrorNotImplementedYet(char const* const functionality) {
+    DEBUG_ERROR_IF(functionality == NULL)
+
+    fprintf(
+        stderr,
+        "\n"
+        "[ERROR] - %s is NOT implemented yet\n"
+        "\n",
+        functionality
+    );
+}
+
 static void showErrorNotWellformed(void) {
     fputs(
         "\n"
@@ -1241,6 +1253,8 @@ int main(int argc, char* argv[]) {
 
     if (lastTestFileId > firstTestFileId) {
         VERBOSE_MSG("Measuring Coverage...")
+
+        showErrorNotImplementedYet("Coverage Measurement");
     }
 
     VERBOSE_MSG("Finished.")
