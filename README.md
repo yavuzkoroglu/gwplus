@@ -66,7 +66,7 @@ CUSTOM-TEST OPTIONS:
 EXAMPLE USES:
   bin/gwplus -i exps/001/m.json -c prime3 -s sg.dot -p pg.dot -h hp.txt -t test.json -v
   bin/gwplus -i exps/003/m.json -c 0 -t testpath.json -v
-  bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt -v
+  bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt 
   bin/gwplus -i exps/002/m.json -u unified.json -v
 ```
 
@@ -76,13 +76,13 @@ EXAMPLE USES:
 bin/gwplus -i exps/001/m.json -c prime3 -s sg.dot -p pg.dot -h hp.txt -t test.json -v
 ```
 
-The first option in this example is `-i exps/001/m.json`. This option sets the input GraphWalker model to a toy graph. When opened in GraphWalker studio, this toy graph appears as below.
+The first option in this example is `-i exps/001/m.json`. This option sets the input GraphWalker model to a toy graph whose meta information is in `exps/001/info.json`. When opened in GraphWalker studio, this toy graph appears as follows:
 
 ![The GraphWalker Model of a Toy Graph](exps/001/wellformed.png)
 
 The second option `-c prime3` sets the coverage criterion to the highest setting.
 
-The third option `-s sg.dot` generates the simple graph of the toy graph. After executing the example command, you can print the graph to the terminal using `cat sg.dot` and produce the following result.
+The third option `-s sg.dot` saves the simple graph of the toy graph. After executing the example command, you can print the graph to the terminal using `cat sg.dot` and produce the following result:
 
 ```
 digraph SimpleGraph {
@@ -100,15 +100,102 @@ digraph SimpleGraph {
 }
 ```
 
-A visualization of the above DOT graph is below:
+A visualization of the above DOT graph is as follows:
 
 ![The Simple Graph of the Toy Graph](exps/001/sg.svg)
-g
+
+The fourth option `-p pg.dot` saves the path graph of test requirements. A visualization of the path graph is below:
+
+The fifth option `-h hp.txt` saves the hyperpaths of the path graph. You can print these hyperpaths using `cat hp.txt` and produce the following result:
+
+The sixth option `-t test.json` saves the model + a list of predefinedEdgeIds denoting a test path that satisfies the *prime3* coverage criterion. You can give this file to GraphWalker CLI using the following command:
+
+```
+java -jar graphwalker-cli-4.3.2.jar offline -m test.json "predefined_path(predefined_path)"
+```
+
+The GraphWalker CLI output should look like as follows:
+
+```
+{"currentElementName":"0"}
+{"currentElementName":""}
+{"currentElementName":"0"}
+{"currentElementName":""}
+{"currentElementName":"0"}
+{"currentElementName":""}
+{"currentElementName":"1"}
+{"currentElementName":""}
+{"currentElementName":"2"}
+{"currentElementName":""}
+{"currentElementName":"0"}
+{"currentElementName":""}
+{"currentElementName":"1"}
+{"currentElementName":""}
+{"currentElementName":"2"}
+{"currentElementName":""}
+{"currentElementName":"1"}
+{"currentElementName":""}
+{"currentElementName":"2"}
+{"currentElementName":""}
+```
+
+The final option `-v` enables verbose messages in output. A correct execution should produce something similar to the following timestamped output:
+
+```
+[2024-03-14 09:37:34] - Verbose enabled.
+[2024-03-14 09:37:34] - Input Model File = exps/001/m.json
+[2024-03-14 09:37:34] - Coverage Criterion = Prime Edge Path Coverage
+[2024-03-14 09:37:34] - Simple Graph Name = sg.dot
+[2024-03-14 09:37:34] - Path Graph File = pg.dot
+[2024-03-14 09:37:34] - Hyperpaths File = hp.txt
+[2024-03-14 09:37:34] - Output Model File with Predefined Edges = test.json
+[2024-03-14 09:37:34] - Creating Empty GraphWalker Model...
+[2024-03-14 09:37:34] - Filling the GraphWalker Model using 'exps/001/m.json'
+[2024-03-14 09:37:34] - Filling adjacency lists to optimize path generation...
+[2024-03-14 09:37:34] - Starting Element is an EDGE
+[2024-03-14 09:37:34] - # Vertices = 2
+[2024-03-14 09:37:34] - # Edges = 3
+[2024-03-14 09:37:34] - Saving the simple graph to 'sg.dot'...
+[2024-03-14 09:37:34] - Generating Test Requirements...
+[2024-03-14 09:37:34] - Generating Path Graph...
+[2024-03-14 09:37:34] - Saving path graph to 'pg.dot'
+[2024-03-14 09:37:34] - Generating Hyperpaths...
+[2024-03-14 09:37:34] - Saving hyperpaths to 'hp.txt'
+[2024-03-14 09:37:34] - Generating Test(s)...
+[2024-03-14 09:37:34] - Finished.
+```
+
 ### Example #2
+
+```
+bin/gwplus -i exps/003/m.json -c 0 -t testpath.json -v
+```
+
+The example command above generates the optimal test path that satisfies *vertex coverage*. Notice that the option `-c 0` is equivalent to `-c vertex`.
 
 ### Example #3
 
+```
+bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt
+```
+
+The example command above does NOT generate tests but measures the edge coverage of two tests. The output should look like as follows:
+
 ### Example #4
+
+```
+bin/gwplus -i exps/002/m.json -u unified.json -v
+```
+
+The example command above does NOT generate tests or measure coverage but generates a unified GraphWalker model by merging the original model's subgraphs.
+
+The original model contains two subgraphs connected by shared vertices *B* an *C* as follows:
+
+![The Original Model](exps/002/original.png)
+
+The unified model is as follows:
+
+![The Unified Model](exps/002/unified.png)
 
 ## Experiments
 
@@ -128,4 +215,6 @@ Execute the following BASH script to perform all the experiments:
 
 ## Side Uses
 
-### Find Shortest Paths
+### Finding Shortest Paths
+
+### Obtaining Line Graphs

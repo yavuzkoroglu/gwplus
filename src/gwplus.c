@@ -616,7 +616,7 @@ static void showUsage(void) {
         "EXAMPLE USES:\n"
         "  bin/gwplus -i exps/001/m.json -c prime3 -s sg.dot -p pg.dot -h hp.txt -t test.json -v\n"
         "  bin/gwplus -i exps/003/m.json -c 0 -t testpath.json -v\n"
-        "  bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt -v\n"
+        "  bin/gwplus -i exps/003/m.json -c edge -m exps/003/t1.txt exps/003/t2.txt\n"
         "  bin/gwplus -i exps/002/m.json -u unified.json -v\n"
         "\n",
         stderr
