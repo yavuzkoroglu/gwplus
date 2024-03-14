@@ -229,4 +229,3 @@ Execute the following BASH script to perform all the experiments:
 
 ### Obtaining Line Graphs
 
-## Frequently Asked Questions
