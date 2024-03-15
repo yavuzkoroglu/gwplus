@@ -11,11 +11,9 @@ bin: ; mkdir bin
 
 bin/gwplus:                             \
     bin                                 \
-    cleanlibpadkit                      \
-    cleanobjects                        \
+    objects                             \
     padkit/compile.mk                   \
     padkit/lib/libpadkit.a              \
-    ${OBJECTS}                          \
     ; ${COMPILE} ${OBJECTS} padkit/lib/libpadkit.a -o bin/gwplus
 
 clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov html latex
@@ -106,7 +104,7 @@ obj/vpathgraph.o: obj                   \
     src/vpathgraph.c                    \
     ; ${COMPILE} ${INCLUDES} src/vpathgraph.c -c -o obj/vpathgraph.o
 
-objects: ${OBJECTS}
+objects: cleanobjects ${OBJECTS}
 
 padkit: ; git clone https://github.com/yavuzkoroglu/padkit.git
 
@@ -114,4 +112,4 @@ padkit/compile.mk: padkit; $(make padkit/compile.mk)
 
 padkit/include/padkit.h: padkit; make -C padkit include/padkit.h
 
-padkit/lib/libpadkit.a: padkit; make -C padkit lib/libpadkit.a
+padkit/lib/libpadkit.a: cleanlibpadkit padkit; make -C padkit lib/libpadkit.a
