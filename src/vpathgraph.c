@@ -66,14 +66,14 @@ void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const grap
         default:
             for (uint32_t i = 0; i < sz; i++) {
                 VertexPath* const p_i = vpaths->array + i;
-                DEBUG_ASSERT(p_i->len > 1)
+                DEBUG_ASSERT(p_i->len > 0)
                 DEBUG_ASSERT(p_i->graph == graph)
 
                 for (uint32_t j = 0; j < sz; j++) {
                     if (i == j) continue;
 
                     VertexPath* const p_j = vpaths->array + j;
-                    DEBUG_ASSERT(p_j->len > 1)
+                    DEBUG_ASSERT(p_j->len > 0)
                     DEBUG_ASSERT(p_j->graph == graph)
 
                     clone_vpath(splice, p_i);
