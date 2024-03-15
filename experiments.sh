@@ -18,7 +18,7 @@ echo "# REPEATS = $NREPEATS"
 
 for model in $MODELS
 do
-    echo "Model,Tool,Coverage,Ratio,Seed,i,Test Length (#edges),Test Generation Time (milliseconds)" >> $EXPS/$model/results.csv
+    echo "Model,Tool,Method,Coverage,Ratio,Seed,i,Test Length (#edges),Test Generation Time (milliseconds)" > $EXPS/$model/results.csv
 
     for coverage in $GWPLUS_COVERAGES
     do
@@ -32,7 +32,7 @@ do
             tm=$(($end-$start))
             ((tm=tm/1000000))
 
-            echo "$model,GWPlus,$coverage,100,0,$i,$len,$tm" >> $EXPS/$model/results.csv
+            echo "$model,GWPlus,NA,$coverage,100,0,$i,$len,$tm" >> $EXPS/$model/results.csv
         done
     done
 
@@ -53,7 +53,7 @@ do
                         ((len=len/2))
                         tm=$(($end-$start))
                         ((tm=tm/1000000))
-                        echo "$model,GraphWalker,$coverage,$ratio,$seed,$i,$len,$tm" >> $EXPS/$model/results.csv
+                        echo "$model,GraphWalker,$method,$coverage,$ratio,$seed,$i,$len,$tm" >> $EXPS/$model/results.csv
                     done
                 done
             done

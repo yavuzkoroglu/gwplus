@@ -14,6 +14,72 @@
 #include "padkit/streq.h"
 #include "padkit/timestamp.h"
 
+static void convertToEdgePaths(
+    VertexPathArray* const newRequirements,
+    SimpleGraph* const graph, GWModelArray* const gwma,
+    VertexPathArray const* const requirements
+) {
+    DEBUG_ERROR_IF(newRequirements == NULL)
+    DEBUG_ASSERT(isValid_sg(graph))
+    DEBUG_ASSERT(isValid_gwma(gwma))
+    DEBUG_ASSERT(isValid_vpa(requirements))
+    DEBUG_ERROR_IF(gwma->useLineGraph)
+
+    GWModelArray newGwma[1];
+    memcpy(newGwma, gwma, sizeof(GWModelArray));
+    newGwma->useLineGraph   = 1;
+    newGwma->adjLists       = NULL;
+    fillAdjLists_gwma(newGwma);
+
+    SimpleGraph newGraph[1];
+    construct_sgi_gwma(newGraph, newGwma);
+
+    constructEmpty_vpa(newRequirements, requirements->cap);
+    for (uint32_t requirementId = 0; requirementId < requirements->size; requirementId++) {
+        VertexPath const* const requirement = requirements->array + requirementId;
+        DEBUG_ASSERT(isValid_vpath(requirement))
+        DEBUG_ASSERT(requirement->len > 0)
+
+        VertexPath* const newRequirement = pushEmpty_vpa(newRequirements, newGraph);
+        for (uint32_t i = 0; i < requirement->len - 1; i++) {
+            uint32_t const v_id     = requirement->array[i];
+            uint32_t const vp_id    = requirement->array[i + 1];
+            DEBUG_ASSERT(v_id < gwma->size_vertices)
+            DEBUG_ASSERT(vp_id < gwma->size_vertices)
+
+            GWVertex const* const v     = gwma->vertices + v_id;
+            GWVertex const* const vp    = gwma->vertices + vp_id;
+            DEBUG_ASSERT(isValid_gwvertex(v))
+            DEBUG_ASSERT(isValid_gwvertex(vp))
+
+            for (uint32_t e_id = 0; e_id < gwma->size_edges; e_id++) {
+                GWEdge const* const e = gwma->edges + e_id;
+                DEBUG_ASSERT(isValid_gwedge(e))
+
+                GWVertex const* const v_a = gwma->vertices + e->source;
+                GWVertex const* const v_b = gwma->vertices + e->target;
+                DEBUG_ASSERT(isValid_gwvertex(v_a))
+                DEBUG_ASSERT(isValid_gwvertex(v_b))
+
+                if (areEqual_gwvertex(v, v_a) && areEqual_gwvertex(vp, v_b)) {
+                    DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(newRequirement, e_id, 1))
+                    break;
+                }
+            }
+        }
+    }
+
+    freeAdjLists_gwma(gwma);
+    memcpy(gwma, newGwma, sizeof(GWModelArray));
+
+    for (uint32_t requirementId = 0; requirementId < newRequirements->size; requirementId++) {
+        VertexPath* const requirement = newRequirements->array + requirementId;
+        DEBUG_ERROR_IF(requirement == NULL)
+
+        requirement->graph = graph;
+    }
+}
+
 static void convertToEdgePathsAndIncludeRemainingEdges(
     VertexPathArray* const newRequirements,
     SimpleGraph* const graph, GWModelArray* const gwma,
@@ -351,17 +417,25 @@ static void generateTestRequirements(
             constructVerticesAsPaths_vpa(requirements, graph);
             break;
         case PRIME1_COVERAGE:
-        case PRIME3_COVERAGE:
             constructAllPrimePaths_vpa(requirements, graph);
+            {
+                VertexPathArray newRequirements[1];
+                convertToEdgePaths(newRequirements, graph, gwma, requirements);
+                free_vpa(requirements);
+                memcpy(requirements, newRequirements, sizeof(VertexPathArray));
+            }
             break;
         case PRIME2_COVERAGE:
+            constructAllPrimePaths_vpa(requirements, graph);
             {
-                constructAllPrimePaths_vpa(requirements, graph);
                 VertexPathArray newRequirements[1];
                 convertToEdgePathsAndIncludeRemainingEdges(newRequirements, graph, gwma, requirements);
                 free_vpa(requirements);
                 memcpy(requirements, newRequirements, sizeof(VertexPathArray));
             }
+            break;
+        case PRIME3_COVERAGE:
+            constructAllPrimePaths_vpa(requirements, graph);
             break;
         case EPAIR_COVERAGE:
         default:

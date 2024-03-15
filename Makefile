@@ -5,18 +5,22 @@ OBJECTS=obj/gwmodel.o obj/gwplus.o obj/hpathgraph.o obj/sgi.o obj/vpath.o obj/vp
 
 all: bin/gwplus
 
-.PHONY: all clean cleanobjects documentation objects
+.PHONY: all clean cleanobjects cleanpadkit documentation objects
 
 bin: ; mkdir bin
 
 bin/gwplus:                             \
     bin                                 \
+    cleanlibpadkit                      \
+    cleanobjects                        \
     padkit/compile.mk                   \
     padkit/lib/libpadkit.a              \
     ${OBJECTS}                          \
     ; ${COMPILE} ${OBJECTS} padkit/lib/libpadkit.a -o bin/gwplus
 
 clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov html latex
+
+cleanlibpadkit: ; rm -rf padkit/obj padkit/lib/libpadkit.a
 
 cleanobjects: ; rm -rf obj
 
