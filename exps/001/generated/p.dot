@@ -1,0 +1,32 @@
+digraph PathGraph {
+    rankdir=LR;
+    node [shape="rectangle"];
+    s [shape="circle"];
+    0 [label="p0:\lAB\lBC\lCD\lDA\lAB\l"];
+    1 [label="p1:\lBC\lCD\lDA\lAB\lBC\l"];
+    2 [label="p2:\lBC\lCD\lDA\lAB\lBH\lHI\lIH\l"];
+    3 [label="p3:\lCD\lDA\lAB\lBC\lCD\l"];
+    4 [label="p4:\lDA\lAB\lBC\lCD\lDA\l"];
+    5 [label="p5:\lDA\lAB\lBC\lCD\lDE\lEF\lFG\lGE\l"];
+    6 [label="p6:\lEF\lFG\lGE\lEF\l"];
+    7 [label="p7:\lFG\lGE\lEF\lFG\l"];
+    8 [label="p8:\lGE\lEF\lFG\lGE\l"];
+    9 [label="p9:\lHI\lIH\lHI\l"];
+    10 [label="p10:\lIH\lHI\lIH\l"];
+    s -> 9;
+    s -> 6;
+    s -> 0;
+    0 -> 2;
+    0 -> 1;
+    1 -> 3;
+    2 -> 9;
+    3 -> 5;
+    3 -> 4;
+    4 -> 0;
+    5 -> 6;
+    6 -> 7;
+    7 -> 8;
+    8 -> 6;
+    9 -> 10;
+    10 -> 9;
+}

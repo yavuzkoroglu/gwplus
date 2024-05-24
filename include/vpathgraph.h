@@ -1,7 +1,7 @@
 /**
  * @file vpathgraph.h
  * @brief Defines SGI-compatible VertexPathGraph and related function.
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #ifndef VPATHGRAPH_H
     #define VPATHGRAPH_H
@@ -33,49 +33,47 @@
 
     /**
      * @brief Constructs a VertexPathGraph from a VertexPathArray.
+     * @param pathGraph A pointer to the SGI of the VertexPathGraph.
      * @param vpgraph A pointer to the VertexPathGraph.
+     * @param graph A pointer to the constant graph the path graph is being constructed from.
      * @param vpaths A pointer to the constant VertexPathArray.
      * @param optimizationLevel Performance optimization level for the path graph generation algorithm.
      */
-    void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const graph, VertexPathArray const* const vpaths, int const optimizationLevel);
+    void construct_vpg(
+        SimpleGraph* const pathGraph, VertexPathGraph* const vpgraph,
+        SimpleGraph const* const graph, VertexPathArray const* const vpaths,
+        int const optimizationLevel
+    );
 
     /**
      * @brief Constructs a SimpleGraph from a VertexPathGraph. Note that this is a graph of paths.
      * @param graph A pointer to the SimpleGraph.
-     * @param vpgraph A pointer to the constant VertexPathGraph.
+     * @param vpgraph A pointer to the VertexPathGraph.
      */
-    void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph const* const vpgraph);
-
-    /**
-     * @brief Constructs a test path from a path trace.
-     * @param testPath A pointer to the test path.
-     * @param vpgraph A pointer to the constant VertexPathGraph.
-     * @param pathTrace A pointer to the constant path trace.
-     */
-    void constructTestPath_vpg(VertexPath* const testPath, VertexPathGraph const* const vpgraph, VertexPath const* const pathTrace);
+    void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph* const vpgraph);
 
     /**
      * @brief Counts the number of edges in a VertexPathGraph.
-     * @param graphPtr A pointer to the VertexPathGraph.
+     * @param graphPtr A pointer to the constant VertexPathGraph.
      */
     uint32_t countEdges_vpg(void const* const graphPtr);
 
     /**
      * @brief Counts the number of vertices in a VertexPathGraph.
-     * @param graphPtr A pointer to the VertexPathGraph.
+     * @param graphPtr A pointer to the constant VertexPathGraph.
      */
     uint32_t countVertices_vpg(void const* const graphPtr);
 
     /**
      * @brief Dumps a VertexPathGraph
-     * @param graphPtr A pointer to the VertexPathGraph.
+     * @param graphPtr A pointer to the constant VertexPathGraph.
      * @param output A pointer to the output FILE.
      */
     void dump_vpg(void const* const graphPtr, FILE* const output);
 
     /**
      * @brief Dumps one VertexPath from a VertexPathGraph.
-     * @param graphPtr A pointer to the VertexPathGraph.
+     * @param graphPtr A pointer to the constant VertexPathGraph.
      * @param output A pointer to the output FILE.
      * @param vertexId The VertexPath index.
      */
@@ -83,31 +81,37 @@
 
     /**
      * @brief Frees a VertexPathGraph.
-     * @param vpgraph A pointer to the VertexPathGraph.
+     * @param graphPtr A pointer to the VertexPathGraph.
      */
-    void free_vpg(VertexPathGraph* const vpgraph);
+    void free_vpg(void* const graphPtr);
+
+    /**
+     * @brief Returns the highest vertex index in a VertexPathGraph.
+     * @param graphPtr A pointer to the constant VertexPathGraph.
+     */
+    uint32_t highestVertexId_vpg(void const* const graphPtr);
 
     /**
      * @brief Checks if a VertexPathGraph is valid.
-     * @param graphPtr A pointer to the VertexPathGraph.
+     * @param graphPtr A pointer to the constant VertexPathGraph.
      */
     bool isValid_vpg(void const* const graphPtr);
 
     /**
      * @brief Checks if a VertexPathGraph's NeighborIterator is valid.
-     * @param itr A pointer to the NeighborIterator.
+     * @param itr A pointer to the constant NeighborIterator.
      */
     bool isValid_nitr_vpg(NeighborIterator const* const itr);
 
     /**
      * @brief Checks if a VertexPathGraph's StartVertexIterator is valid.
-     * @param itr A pointer to the StartVertexIterator.
+     * @param itr A pointer to the constant StartVertexIterator.
      */
     bool isValid_svitr_vpg(StartVertexIterator const* const itr);
 
     /**
      * @brief Checks if a VertexPathGraph's VertexIterator is valid.
-     * @param itr A pointer to the VertexIterator.
+     * @param itr A pointer to the constant VertexIterator.
      */
     bool isValid_vitr_vpg(VertexIterator const* const itr);
 
@@ -121,7 +125,7 @@
 
     /**
      * @brief Checks if a VertexPathGraph's StartVertexIterator is valid.
-     * @param graphPtr A pointer to the VertexPathGraph.
+     * @param graphPtr A pointer to the constant VertexPathGraph.
      * @param vertexId The VertexPath index.
      */
     bool isValidVertex_vpg(void const* const graphPtr, uint32_t const vertexId);

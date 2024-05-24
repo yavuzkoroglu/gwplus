@@ -1,7 +1,7 @@
 include padkit/compile.mk
 
 INCLUDES=-Iinclude -Ipadkit/include
-OBJECTS=obj/gwmodel.o obj/gwplus.o obj/hpathgraph.o obj/sgi.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
+OBJECTS=obj/eflowgraph.o obj/gwmodel.o obj/gwplus.o obj/hpathgraph.o obj/nflowgraph.o obj/sgi.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
 
 all: bin/gwplus
 
@@ -26,6 +26,19 @@ documentation: ; doxygen
 
 obj: ; mkdir obj
 
+obj/eflowgraph.o: obj                   \
+    include/eflowgraph.h                \
+    include/hpathgraph.h                \
+    include/nflowgraph.h                \
+    include/sgi.h                       \
+    include/vpath.h                     \
+    include/vpatharray.h                \
+    padkit/include/padkit/debug.h       \
+    padkit/include/padkit/graphmatrix.h	\
+    padkit/include/padkit/reallocate.h  \
+    src/eflowgraph.c                    \
+    ; ${COMPILE} ${INCLUDES} src/eflowgraph.c -c -o obj/eflowgraph.o
+
 obj/gwmodel.o: obj                      \
     include/gwmodel.h                   \
     include/sgi.h                       \
@@ -46,6 +59,8 @@ obj/gwplus.o: obj                       \
     include/vpathgraph.h                \
     include/hpathgraph.h                \
     padkit/include/padkit/debug.h       \
+    padkit/include/padkit/graphmatrix.h \
+    padkit/include/padkit/repeat.h      \
     padkit/include/padkit/streq.h       \
     padkit/include/padkit/timestamp.h   \
     src/gwplus.c                        \

@@ -2,7 +2,7 @@
  * @file vpath.h
  * @brief Defines a SGI-compatible vertex path.
  * @see tgi.h
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #ifndef VPATH_H
     #define VPATH_H
@@ -77,7 +77,7 @@
     /**
      * @brief Computes the shortest path between two vertices. If these vertices are the same, the shortest path is empty.
      * @param shortestPath A pointer to the shortestPath.
-     * @param graph A pointer to the SimpleGraph.
+     * @param graph A pointer to the constant SimpleGraph.
      * @param from The vertex index of the source vertex.
      * @param to The vertex index of the target vertex.
      */

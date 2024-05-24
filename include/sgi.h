@@ -1,7 +1,7 @@
 /**
  * @file sgi.h
  * @brief Simple Graph Interface (SGI).
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #ifndef SGI_H
     #define SGI_H
@@ -63,7 +63,7 @@
      * @brief A graph is simple if and only if there cannot be more than one edge from any vertex to any vertex.
      *
      * @var SimpleGraph::graphPtr
-     *   A pointer to the constant graph.
+     *   A pointer to the underlying graph.
      * @var SimpleGraph::countEdges
      *   A function that counts the edges of a graph.
      * @var SimpleGraph::countVertices
@@ -72,6 +72,8 @@
      *   A function that dumps a graph.
      * @var SimpleGraph::dumpVertex
      *   A function that dumps a graph's vertex.
+     * @var SimpleGraph::free
+     *   A function that frees the underlying graph of a SimpleGraph.
      * @var SimpleGraph::isValid
      *   A function that checks if a graph is valid.
      * @var SimpleGraph::isValid_nitr
@@ -98,11 +100,13 @@
      *   A function that sets the first vertex index of a VertexIterator.
      */
     typedef struct SimpleGraphInterface {
-        void const* graphPtr;
+        void*       graphPtr;
         uint32_t    (*countEdges)           (void const* const graphPtr);
         uint32_t    (*countVertices)        (void const* const graphPtr);
         void        (*dump)                 (void const* const graphPtr, FILE* const output);
         void        (*dumpVertex)           (void const* const graphPtr, FILE* const output, uint32_t const vertexId);
+        void        (*free)                 (void* const graphPtr);
+        uint32_t    (*highestVertexId)      (void const* const graphPtr);
         bool        (*isValid)              (void const* const graphPtr);
         bool        (*isValid_nitr)         (NeighborIterator const* const itr);
         bool        (*isValid_svitr)        (StartVertexIterator const* const itr);
@@ -118,14 +122,13 @@
     } SimpleGraph;
 
     /**
-     * @def NOT_A_SG
+     * @def NOT_AN_SG
      *   A special SimpleGraph denoting a NOT-SimpleGraph that fails the isValid_sg() test.
      */
-    #define NOT_A_SG ((SimpleGraph){ NULL,  \
-        NULL, NULL, NULL, NULL,             \
-        NULL, NULL, NULL, NULL,             \
-        NULL, NULL, NULL, NULL,             \
-        NULL, NULL, NULL, NULL              \
+    #define NOT_AN_SG ((SimpleGraph){ NULL, \
+        NULL, NULL, NULL, NULL, NULL, NULL, \
+        NULL, NULL, NULL, NULL, NULL, NULL, \
+        NULL, NULL, NULL, NULL, NULL, NULL  \
     })
 
     /**
@@ -151,43 +154,14 @@
     void construct_vitr_sg(VertexIterator* const itr, SimpleGraph const* const graph);
 
     /**
-     * @brief The default function to count the total number of edges in a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
+     * @brief Frees the underlying graph and invalidates the SimpleGraph.
+     * @param graph A pointer to the SimpleGraph.
      */
-    uint32_t countEdges_sg(SimpleGraph const* const graph);
-
-    /**
-     * @brief The default function to counts the total number of vertices in a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     */
-    uint32_t countVertices_sg(SimpleGraph const* const graph);
-
-    /**
-     * @brief The default function to dump a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param output A pointer to the output FILE.
-     */
-    void dump_sg(SimpleGraph const* const graph, FILE* const output);
-
-    /**
-     * @brief The default function to dump one vertex of a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param output A pointer to the output FILE.
-     * @param vertexId The vertex index.
-     */
-    void dumpVertex_sg(SimpleGraph const* const graph, FILE* const output, uint32_t const vertexId);
+    void free_sg(SimpleGraph* const graph);
 
     /**
      * @brief Checks if a SimpleGraph is valid.
      * @param graph A pointer to the constant SimpleGraph.
      */
     bool isValid_sg(SimpleGraph const* const graph);
-
-    /**
-     * @brief The default function to check if two vertices form a valid edge in a SimpleGraph.
-     * @param graph A pointer to the constant SimpleGraph.
-     * @param sourceVertexId The source vertex index.
-     * @param targetVertexId The target vertex index.
-     */
-    bool isValidEdge_sg(SimpleGraph const* const graph, uint32_t const sourceVertexId, uint32_t const targetVertexId);
 #endif

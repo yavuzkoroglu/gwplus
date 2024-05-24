@@ -1,7 +1,7 @@
 /**
  * @file vpatharray.c
  * @brief Implements the functions defined in vpatharray.h
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #include <inttypes.h>
 #include <string.h>
@@ -113,70 +113,6 @@ void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph c
 
     free_vpa(stack);
     free_vpath(vpath);
-}
-
-void constructAllShortestPaths_vpa(VertexPathArray* const paths, SimpleGraph const* const graph) {
-    DEBUG_ERROR_IF(paths == NULL)
-    DEBUG_ASSERT(isValid_sg(graph))
-
-    constructEmpty_vpa(paths, graph->countVertices(graph->graphPtr));
-    paths->size = paths->cap;
-
-    VertexPathArray stack[2] = {NOT_A_VPATH_ARRAY, NOT_A_VPATH_ARRAY};
-    VertexPathArray* stack_A = stack;
-    VertexPathArray* stack_B = stack_A + 1;
-
-    constructEmpty_vpa(stack_A, graph->countVertices(graph->graphPtr));
-    constructEmpty_vpa(stack_B, graph->countVertices(graph->graphPtr));
-
-    StartVertexIterator svitr[1];
-    construct_svitr_sg(svitr, graph->graphPtr);
-    for (
-        uint32_t s;
-        graph->isValidVertex(graph->graphPtr, (s = graph->nextVertexId_svitr(svitr)));
-    ) {
-        VertexPath* const vpath = pushEmpty_vpa(stack_A, graph);
-        DEBUG_ASSERT(isValid_vpath(vpath))
-
-        VertexPath* const shortestPath = paths->array + s;
-        constructEmpty_vpath(shortestPath, graph);
-
-        extend_vpath(vpath, s, 0);
-    }
-
-    while (stack_A->size > 0) {
-        if (stack_B > stack_A) {
-            stack_A++;
-            stack_B--;
-        } else {
-            stack_A--;
-            stack_B++;
-        }
-
-        while (stack_B->size > 0) {
-            VertexPath* const vpath = pop_vpa(stack_B);
-            DEBUG_ASSERT(isValid_vpath(vpath))
-            DEBUG_ASSERT(vpath->len > 0)
-
-            NeighborIterator itr[1];
-            construct_nitr_sg(itr, graph->graphPtr, vpath->array[vpath->len - 1]);
-            for (
-                uint32_t nextVertexId;
-                graph->isValidVertex(graph->graphPtr, (nextVertexId = graph->nextVertexId_nitr(itr)));
-            ) {
-                VertexPath* const shortestPath = paths->array + nextVertexId;
-                if (isValid_vpath(shortestPath)) continue;
-
-                clone_vpath(shortestPath, vpath);
-                DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(shortestPath, nextVertexId, 1))
-
-                pushClone_vpa(stack_A, shortestPath);
-            }
-        }
-    }
-
-    free_vpa(stack_A);
-    free_vpa(stack_B);
 }
 
 void constructAllUpToKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph, uint32_t const k) {

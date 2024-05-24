@@ -1,11 +1,12 @@
 /**
  * @file hpathgraph.h
  * @brief Defines SGI compatible HyperPathGraph and related functions.
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #ifndef HPGRAPH_H
     #define HPGRAPH_H
-    #include "vpathgraph.h"
+    #include "padkit/graphmatrix.h"
+    #include "vpatharray.h"
 
     /**
      * @struct HyperPathGraph
@@ -40,24 +41,32 @@
 
     /**
      * @brief Constructs a HyperPathGraph from a VertexPathGraph.
+     * @param hyperPathGraph A pointer to the SGI of the HyperPathGraph.
      * @param hpgraph A pointer to the HyperPathGraph.
      * @param pathGraph A pointer to the constant SGI of a VertexPathGraph.
      */
-    void construct_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* const pathGraph);
+    void construct_hpg(
+        SimpleGraph* const hyperPathGraph, HyperPathGraph* const hpgraph,
+        SimpleGraph const* const pathGraph
+    );
 
     /**
      * @brief Constructs a SimpleGraph out of a HyperPathGraph.
      * @param graph A pointer to the SimpleGraph.
-     * @param hpgraph A pointer to the constant HyperPathGraph.
+     * @param hpgraph A pointer to the HyperPathGraph.
      */
-    void construct_sgi_hpg(SimpleGraph* const graph, HyperPathGraph const* const hpgraph);
+    void construct_sgi_hpg(SimpleGraph* const graph, HyperPathGraph* const hpgraph);
 
     /**
-     * @brief Constructs an acyclic HyperPathGraph from a SGI-compatible VertexPathGraph.
+     * @brief Constructs an acyclic HyperPathGraph from an SGI-compatible VertexPathGraph.
+     * @param hyperPathGraph A pointer to the SGI of the HyperPathGraph.
      * @param hpgraph A pointer to the HyperPathGraph.
      * @param pathGraph A pointer to the constant SGI of a VertexPathGraph.
      */
-    void constructAcyclic_hpg(HyperPathGraph* const hpgraph, SimpleGraph const* const pathGraph);
+    void constructAcyclic_hpg(
+        SimpleGraph* const hyperPathGraph, HyperPathGraph* const hpgraph,
+        SimpleGraph const* const pathGraph
+    );
 
     /**
      * @brief Constructs a path trace from an HyperPath of an HyperPathGraph.
@@ -65,14 +74,18 @@
      * @param hpgraph A pointer to the HyperPathGraph (cannot be a constant, subsumptionMtx needs to be disconnected).
      * @param rootId The root hyper path index.
      */
+    /*
     void constructPathTrace_hpg(VertexPath* const pathTrace, HyperPathGraph* const hpgraph, uint32_t const rootId);
+    */
 
     /**
      * @brief Constructs testpaths from an HyperPathGraph.
      * @param testPaths A pointer to the test paths as a VertexPathArray.
      * @param hpgraph A pointer to the HyperPathGraph.
      */
+    /*
     void constructTestPaths_hpg(VertexPathArray* const testPaths, HyperPathGraph* const hpgraph);
+    */
 
     /**
      * @brief Counts the total number of edges in a HyperPathGraph.
@@ -103,9 +116,15 @@
 
     /**
      * @brief Frees a HyperPathGraph.
-     * @param hpgraph A pointer to the HyperPathGraph.
+     * @param graphPtr A pointer to the HyperPathGraph.
      */
-    void free_hpg(HyperPathGraph* const hpgraph);
+    void free_hpg(void* const graphPtr);
+
+    /**
+     * @brief Returns the highest vertex index in a HyperPathGraph.
+     * @param graphPtr A pointer to the constant HyperPathGraph.
+     */
+    uint32_t highestVertexId_hpg(void const* const graphPtr);
 
     /**
      * @brief Checks if a HyperPathGraph is valid.

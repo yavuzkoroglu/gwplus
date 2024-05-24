@@ -1,14 +1,19 @@
 /**
  * @file vpathgraph.c
  * @brief Implements the functions defined in vpathgraph.h
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #include <inttypes.h>
 #include <stdlib.h>
 #include "padkit/debug.h"
 #include "vpathgraph.h"
 
-void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const graph, VertexPathArray const* const vpaths, int const optimizationLevel) {
+void construct_vpg(
+    SimpleGraph* const pathGraph, VertexPathGraph* const vpgraph,
+    SimpleGraph const* const graph, VertexPathArray const* const vpaths,
+    int const optimizationLevel
+) {
+    DEBUG_ERROR_IF(pathGraph == NULL)
     DEBUG_ERROR_IF(vpgraph == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
     DEBUG_ASSERT(isValid_vpa(vpaths))
@@ -127,9 +132,11 @@ void construct_vpg(VertexPathGraph* const vpgraph, SimpleGraph const* const grap
 
     if (splice->isAllocated)
         free_vpath(splice);
+
+    construct_sgi_vpg(pathGraph, vpgraph);
 }
 
-void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph const* const vpgraph) {
+void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph* const vpgraph) {
     DEBUG_ERROR_IF(graph == NULL)
     DEBUG_ASSERT(isValid_vpg(vpgraph))
 
@@ -139,6 +146,8 @@ void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph const* const vp
         countVertices_vpg,
         dump_vpg,
         dumpVertex_vpg,
+        free_vpg,
+        highestVertexId_vpg,
         isValid_vpg,
         isValid_nitr_vpg,
         isValid_svitr_vpg,
@@ -152,80 +161,6 @@ void construct_sgi_vpg(SimpleGraph* const graph, VertexPathGraph const* const vp
         setFirstNextId_svitr_vpg,
         setFirstNextId_vitr_vpg
     };
-}
-
-void constructTestPath_vpg(VertexPath* const testPath, VertexPathGraph const* const vpgraph, VertexPath const* const pathTrace) {
-    DEBUG_ERROR_IF(testPath == NULL)
-    DEBUG_ASSERT(isValid_vpg(vpgraph))
-    DEBUG_ASSERT(isValid_vpath(pathTrace))
-
-    if (pathTrace->len == 0) {
-        if (testPath->isAllocated) {
-            flush_vpath(testPath);
-            testPath->graph = vpgraph->graph;
-        } else {
-            constructEmpty_vpath(testPath, vpgraph->graph);
-        }
-        return;
-    }
-
-    uint32_t const firstPathId = pathTrace->array[0];
-    DEBUG_ASSERT(isValidVertex_vpg(vpgraph, firstPathId))
-
-    VertexPath const* const firstPath = vpgraph->vpaths->array + firstPathId;
-    DEBUG_ASSERT(isValid_vpath(firstPath))
-    DEBUG_ASSERT(firstPath->len > 0)
-
-    uint32_t const firstVertexId = firstPath->array[0];
-    DEBUG_ASSERT(vpgraph->graph->isValidVertex(vpgraph->graph->graphPtr, firstVertexId))
-
-    computeShortestInitializer_vpath(testPath, vpgraph->graph, firstVertexId);
-
-    GraphMatrix coverMtx[1];
-    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, vpgraph->vpaths->size))
-
-    bool pathSkipped        = 0;
-    uint32_t prevPathId     = 0xFFFFFFFF;
-    VertexPath subSplice[1] = {NOT_A_VPATH};
-    for (uint32_t i = 0; i < pathTrace->len; i++) {
-        uint32_t const pathId = pathTrace->array[i];
-        DEBUG_ASSERT(isValidVertex_vpg(vpgraph, pathId))
-
-        if (isConnected_gmtx(coverMtx, 0, pathId)) {
-            pathSkipped = isValidVertex_vpg(vpgraph, prevPathId);
-            continue;
-        }
-
-        VertexPath const* const tail = vpgraph->vpaths->array + pathId;
-        DEBUG_ASSERT(isValid_vpath(tail))
-
-        DEBUG_ASSERT_NDEBUG_EXECUTE(splice_vpath(testPath, tail))
-        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathId))
-
-        if (pathSkipped) {
-            DEBUG_ASSERT(isValidVertex_vpg(vpgraph, prevPathId))
-
-            clone_vpath(subSplice, vpgraph->vpaths->array + prevPathId);
-            DEBUG_ASSERT_NDEBUG_EXECUTE(splice_vpath(subSplice, tail))
-
-            for (uint32_t subPathId = 0; subPathId < vpgraph->vpaths->size; subPathId++) {
-                if (subPathId == pathId || subPathId == prevPathId || isConnected_gmtx(coverMtx, 0, subPathId))
-                    continue;
-
-                VertexPath const* const subPath = vpgraph->vpaths->array + subPathId;
-                DEBUG_ASSERT(isValid_vpath(subPath))
-
-                if (isSubPath_vpath(subPath, subSplice))
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, subPathId))
-            }
-
-            pathSkipped = 0;
-        }
-    }
-
-    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
-    if (subSplice->isAllocated)
-        free_vpath(subSplice);
 }
 
 uint32_t countEdges_vpg(void const* const graphPtr) {
@@ -293,10 +228,17 @@ void dumpVertex_vpg(void const* const graphPtr, FILE* const output, uint32_t con
         fprintf(output, " p%"PRIu32, vertexId);
 }
 
-void free_vpg(VertexPathGraph* const vpgraph) {
-    DEBUG_ASSERT(isValid_vpg(vpgraph))
+void free_vpg(void* const graphPtr) {
+    DEBUG_ASSERT(isValid_vpg(graphPtr))
+    VertexPathGraph* const vpgraph = (VertexPathGraph*)graphPtr;
     DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(vpgraph->spliceMtx))
     *vpgraph = NOT_A_VPATH_GRAPH;
+}
+
+uint32_t highestVertexId_vpg(void const* const graphPtr) {
+    DEBUG_ASSERT(isValid_vpg(graphPtr))
+    VertexPathGraph const* const vpgraph = (VertexPathGraph const*)graphPtr;
+    return vpgraph->vpaths->size;
 }
 
 bool isValid_nitr_vpg(NeighborIterator const* const itr) {

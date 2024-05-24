@@ -1,14 +1,17 @@
 /**
  * @file vpath.c
  * @brief Implements the functions defined in vpath.h
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
+#include <inttypes.h>
 #include <string.h>
+#include <time.h>
+#include "padkit/graphmatrix.h"
 #include "padkit/reallocate.h"
 #include "padkit/streq.h"
 #include "vpath.h"
 
-static SimpleGraph cachedGraph[1]   = {NOT_A_SG};
+static SimpleGraph cachedGraph[1]   = {NOT_AN_SG};
 static VertexPath*** cacheTable     = NULL;
 
 bool canRotate_vpath(VertexPath* const vpath) {
@@ -47,6 +50,8 @@ void clone_vpath(VertexPath* const clone, VertexPath const* const original) {
 }
 
 bool cacheComputeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* const graph, uint32_t const from, uint32_t const to) {
+    static bool isAtExitRegistered = 0;
+
     DEBUG_ERROR_IF(shortestPath == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
     DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, from))
@@ -68,6 +73,13 @@ bool cacheComputeShortest_vpath(VertexPath* const shortestPath, SimpleGraph cons
         DEBUG_ASSERT(cacheTable == NULL)
         cacheTable = calloc(sz, sizeof(VertexPath**));
         DEBUG_ERROR_IF(cacheTable == NULL)
+
+        if (!isAtExitRegistered) {
+            DEBUG_ASSERT(atexit(freeStaticCaches_vpath) == 0)
+            NDEBUG_EXECUTE(atexit(freeStaticCaches_vpath))
+
+            isAtExitRegistered = 1;
+        }
     } else if (isValid_sg(cachedGraph) && cachedGraph->graphPtr != graph->graphPtr) {
         freeStaticCaches_vpath();
 
@@ -379,14 +391,13 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
             DEBUG_ASSERT(isValid_vpath(vpath))
             DEBUG_ASSERT(vpath->len > 0)
 
-            uint32_t const target = vpath->array[0];
             NeighborIterator itr[1];
             construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
             for (
                 uint32_t neighborId;
                 graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
             ) {
-                if (neighborId == target) {
+                if (neighborId == vpath->array[0]) {
                     clone_vpath(cycle, vpath);
                     for (uint32_t i = 0; i < stack_A_cap; i++) {
                         vpath = stack_A + i;
@@ -632,7 +643,7 @@ void dump_vpath(VertexPath const* const vpath, FILE* const output) {
     DEBUG_ERROR_IF(output == NULL)
 
     for (uint32_t i = 0; i < vpath->len; i++)
-        dumpVertex_sg(vpath->graph, output, vpath->array[i]);
+        fprintf(output, " %"PRIu32, vpath->array[i]);
 
     fputs("\n", output);
 }
@@ -737,14 +748,18 @@ void freeStaticCaches_vpath(void) {
 
     DEBUG_ERROR_IF(cacheTable == NULL)
     for (uint32_t i = 0; i < sz; i++) {
+        if (cacheTable[i] == NULL) continue;
         for (uint32_t j = 0; j < sz; j++) {
             if (cacheTable[i][j] != NULL && cacheTable[i][j]->isAllocated)
                 free_vpath(cacheTable[i][j]);
             free(cacheTable[i][j]);
+            cacheTable[i][j] = NULL;
         }
         free(cacheTable[i]);
+        cacheTable[i] = NULL;
     }
     free(cacheTable);
+    cacheTable = NULL;
 }
 
 void increaseCapIfNecessary_vpath(VertexPath* const vpath) {

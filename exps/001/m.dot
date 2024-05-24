@@ -1,0 +1,17 @@
+digraph Model {
+    rankdir=LR;
+    reset [shape="none",label="",width=0,height=0];
+    node [shape="circle"];
+    reset->A;
+    A -> B [label="AB"];
+    B -> C [label="BC"];
+    B -> H [label="BH"];
+    C -> D [label="CD"];
+    D -> A [label="DA"];
+    D -> E [label="DE"];
+    E -> F [label="EF"];
+    F -> G [label="FG"];
+    G -> E [label="GE"];
+    H -> I [label="HI"];
+    I -> H [label="IH"];
+}

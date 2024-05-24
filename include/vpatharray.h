@@ -1,7 +1,7 @@
 /**
  * @file vpatharray.h
  * @brief Defines VPathArray.
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #ifndef VPATHARRAY_H
     #define VPATHARRAY_H
@@ -49,13 +49,6 @@
      * @param graph A pointer to the constant SimpleGraph.
      */
     void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph const* const graph);
-
-    /**
-     * @brief Constructs a VertexPathArray that contains a shortest path to a vertex at every index.
-     * @param paths A pointer to the VertexPathArray.
-     * @param graph A pointer to the constant SimpleGraph.
-     */
-    void constructAllShortestPaths_vpa(VertexPathArray* const paths, SimpleGraph const* const graph);
 
     /**
      * @brief Constructs all paths of a SimpleGraph up to path length k, inclusive.

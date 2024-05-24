@@ -1,50 +1,40 @@
 /**
  * @file nflowgraph.h
  * @brief Defines NetworkFlowTransition, NetworkFlowGraph, and related functions.
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #ifndef NFLOWGRAPH_H
     #define NFLOWGRAPH_H
     #include "vpatharray.h"
 
     /**
-     * @struct NetworkFlowTransition
-     * @brief A NetworkFlowTransition consists four values that enable or disable the transition in a NetworkFlowGraph.
-     *
-     * @var NetworkFlowTransition::capacity
-     *    The amount of flow cannot exceed this capacity.
-     * @var NetworkFlowTransition::flow
-     *    A value between the lowerBound and capacity, inclusive.
-     * @var NetworkFlowTransition::lowerBound
-     *    The amount of flow cannot be lower than this.
-     * @var NetworkFlowTransition::residualCapacity
-     *    The remaining capacity which the flow does not utilize (negative value means the flow must utilize some capacity).
-     */
-    typedef struct NetworkFlowEdgeBody {
-        uint32_t capacity;
-        uint32_t flow;
-        uint32_t lowerBound;
-        int32_t residualCapacity;
-    } NetworkFlowTransition;
-
-    /**
      * @struct NetworkFlowGraph
-     * @brief A NetworkFlowGraph solves the node coverage problem.
+     * @brief A minimum network flow ensures the minimum number of test paths (restarts).
      *
      * @var NetworkFlowGraph::acyclicGraph
      *    The underlying SimpleGraph must be acyclic.
-     * @var NetworkFlowGraph::forwardTransitionMtx
-     *    A 2-D NetworkFlowTransition matrix representing forward-flow.
-     * @var NetworkFlowGraph::backwardTransitionMtx
-     *    A 2-D NetworkFlowTransition matrix representing backward-flow.
+     * @var NetworkFlowGraph::countVertices
+     *    The number of unique vertices in the NetworkFlowGraph.
+     * @var NetworkFlowGraph::size
+     *    The number of all vertices including PLUS duplicates.
+     * @var NetworkFlowGraph::largestOriginalId
+     *    The largest original vertex index represented in the NetworkFlowGraph.
+     * @var NetworkFlowGraph::originalVertexIds
+     *    A pointer to the first original vertex index in an array of original vertex indices.
+     * @var NetworkFlowGraph::vertexIds
+     *    A pointer to the array of NetworkFlowGraph vertex indices.
+     * @var NetworkFlowGraph::adjMtx
+     *    A pointer to the first row of an adjacency matrix.
      */
     typedef struct NetworkFlowGraphBody {
-        SimpleGraph const*      acyclicGraph;
-        uint32_t                countVertices;
-        uint32_t                size;
-        uint32_t*               originalVertexIds;
-        uint32_t*               vertexIds;
-        NetworkFlowTransition** transitionMtx;
+        SimpleGraph const*  acyclicGraph;
+        uint32_t            countVertices;
+        uint32_t            size;
+        uint32_t            largestOriginalId;
+        uint32_t*           originalVertexIds;
+        uint32_t*           vertexIds;
+        uint32_t**          flowMtx;
+        bool**              adjMtx;
     } NetworkFlowGraph;
 
     /**
@@ -87,41 +77,37 @@
      * @def NOT_AN_NFG
      *   A special NetworkFlowGraph that cannot pass the isValid_nfg() test.
      */
-    #define NOT_AN_NFG ((NetworkFlowGraph){ NULL, NULL, NULL })
+    #define NOT_AN_NFG ((NetworkFlowGraph){ NULL, 0, 0, 0, NULL, NULL, NULL, NULL })
 
     /**
-     * @def NOT_AN_NFT
-     *   A special NetworkFlowTransition which cannot pass the isValid_nft() test.
+     * @brief Computes the total outgoing flow from a vertex of a NetworkFlowGraph.
+     * @param flowGraph A pointer to the constant SGI of a NetworkFlowGraph.
+     * @param v The vertex index.
      */
-    #define NOT_AN_NFT ((NetworkFlowTransition){ 0, 0, 0, 0 })
+    uint32_t computeTotalFlow_nfg(SimpleGraph const* const flowGraph, uint32_t const v);
 
     /**
      * @brief Constructs a NetworkFlowGraph from an acyclic SimpleGraph.
+     * @param flowGraph A pointer to the SGI of the NetworkFlowGraph.
      * @param nfg A pointer to the NetworkFlowGraph.
      * @param acyclicGraph A pointer to the constant acyclic SimpleGraph.
      */
-    void construct_nfg(NetworkFlowGraph* const nfg, SimpleGraph const* const acyclicGraph);
+    void construct_nfg(SimpleGraph* const flowGraph, NetworkFlowGraph* const nfg, SimpleGraph const* const acyclicGraph);
 
     /**
      * @brief Constructs a SimpleGraph from a NetworkFlowGraph.
      * @param graph A pointer to the SimpleGraph.
-     * @param nfg A pointer to the constant NetworkFlowGraph.
+     * @param nfg A pointer to the NetworkFlowGraph.
      */
-    void construct_sgi_nfg(SimpleGraph* const graph, NetworkFlowGraph const* const nfg);
+    void construct_sgi_nfg(SimpleGraph* const graph, NetworkFlowGraph* const nfg);
 
     /**
-     * @brief Constructs a flow stack that satisfies the flow of a NetworkFlowGraph.
-     * @param stack A pointer to the flow stack.
-     * @param nfg A pointer to the constant NetworkFlowGraph.
+     * @brief Constructs a clone of a NetworkFlowGraph.
+     * @param cloneGraph A pointer to the SGI of the clone.
+     * @param clone A pointer to the clone NetworkFlowGraph.
+     * @param flowGraph A pointer to the constant SGI of the NetworkFlowGraph.
      */
-    void constructFlowStack_nfg(VertexPathArray* const stack, NetworkFlowGraph const* const nfg);
-
-    /**
-     * @brief Constructs a VertexPathArray that satisfies the flow of a NetworkFlowGraph.
-     * @param paths A pointer to the VertexPathArray.
-     * @param nfg A pointer to the constant NetworkFlowGraph.
-     */
-    void constructPaths_nfg(VertexPathArray* const paths, NetworkFlowGraph const* const nfg);
+    void constructClone_nfg(SimpleGraph* const cloneGraph, NetworkFlowGraph* const clone, SimpleGraph const* const flowGraph);
 
     /**
      * @brief (SGI-compatible) Counts the edges of a NetworkFlowGraph.
@@ -134,6 +120,15 @@
      * @param graphPtr A pointer to the constant NetworkFlowGraph.
      */
     uint32_t countVertices_nfg(void const* const graphPtr);
+
+    /**
+     * @brief Decrements flow from one vertex to another by some amount.
+     * @param nfg A pointer to the NetworkFlowGraph.
+     * @param from The source vertex index.
+     * @param to The target vertex index.
+     * @param amount The decrement amount.
+     */
+    void decrementFlow_nfg(NetworkFlowGraph* const nfg, uint32_t const from, uint32_t const to, uint32_t const amount);
 
     /**
      * @brief (SGI-compatible) Dumps a NetworkFlowGraph to an output FILE.
@@ -152,21 +147,30 @@
 
     /**
      * @brief Frees a NetworkFlowGraph.
-     * @param nfg A pointer to the NetworkFlowGraph.
+     * @param graphPtr A pointer to the NetworkFlowGraph.
      */
-    void free_nfg(NetworkFlowGraph* const nfg);
+    void free_nfg(void* const graphPtr);
+
+    /**
+     * @brief Returns the highest vertex index of a NetworkFlowGraph.
+     * @param graphPtr A pointer to the constant NetworkFlowGraph.
+     */
+    uint32_t highestVertexId_nfg(void const* const graphPtr);
+
+    /**
+     * @brief Increments flow from one vertex to another by some amount.
+     * @param nfg A pointer to the NetworkFlowGraph.
+     * @param from The source vertex index.
+     * @param to The target vertex index.
+     * @param amount The increment amount.
+     */
+    void incrementFlow_nfg(NetworkFlowGraph* const nfg, uint32_t const from, uint32_t const to, uint32_t const amount);
 
     /**
      * @brief Checks if a NetworkFlowGraph is valid.
      * @param graphPtr A pointer to the constant NetworkFlowGraph.
      */
     bool isValid_nfg(void const* const graphPtr);
-
-    /**
-     * @brief Checks if a NetworkFlowTransition is valid.
-     * @param transition A pointer to the constant NetworkFlowTransition.
-     */
-    bool isValid_nft(NetworkFlowTransition const* const transition);
 
     /**
      * @brief Checks if a NeighborIterator for a NetworkFlowGraph is valid.
@@ -187,24 +191,12 @@
     bool isValid_vitr_nfg(VertexIterator const* const itr);
 
     /**
-     * @brief Checks if a NetworkFlowTransition is valid backward transition.
-     * @param transition A pointer to the constant NetworkFlowTransition.
-     */
-    bool isValidBackward_nft(NetworkFlowTransition const* const transition);
-
-    /**
      * @brief Checks if an edge of a NetworkFlowGraph is valid.
      * @param graphPtr A pointer to the constant NetworkFlowGraph.
      * @param sourceVertexId The source vertex index.
      * @param targetVertexId The target vertex index.
      */
     bool isValidEdge_nfg(void const* const graphPtr, uint32_t const sourceVertexId, uint32_t const targetVertexId);
-
-    /**
-     * @brief Checks if a NetworkFlowTransition is valid forward transition.
-     * @param transition A pointer to the constant NetworkFlowTransition.
-     */
-    bool isValidForward_nft(NetworkFlowTransition const* const transition);
 
     /**
      * @brief Checks if a vertex of a NetworkFlowGraph is valid.
@@ -214,10 +206,10 @@
     bool isValidVertex_nfg(void const* const graphPtr, uint32_t const vertexId);
 
     /**
-     * @brief Optimizes individual flows to minimize the total flow of a NetworkFlowGraph.
-     * @param nfg A pointer to the NetworkFlowGraph.
+     * @brief Minimizes the total flow of a NetworkFlowGraph.
+     * @param flowGraph A pointer to the constant SimpleGraph representation of the NetworkFlowGraph.
      */
-    void minimizeTotalFlow_nfg(NetworkFlowGraph* const nfg);
+    void minimizeTotalFlow_nfg(SimpleGraph const* const flowGraph);
 
     /**
      * @brief Iterates a NeighborIterator for a NetworkFlowGraph.
@@ -254,4 +246,13 @@
      * @param itr A pointer to the VertexIterator.
      */
     void setFirstNextId_vitr_nfg(VertexIterator* const itr);
+
+    /**
+     * @brief Sets flow from one vertex to another to a given amount.
+     * @param nfg A pointer to the NetworkFlowGraph.
+     * @param from The source vertex index.
+     * @param to The target vertex index.
+     * @param amount The flow amount.
+     */
+    void setFlow_nfg(NetworkFlowGraph* const nfg, uint32_t const from, uint32_t const to, uint32_t const amount);
 #endif

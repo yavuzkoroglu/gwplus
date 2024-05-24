@@ -1,7 +1,7 @@
 /**
  * @file coverage.h
  * @brief Defines supported coverage criteria.
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #ifndef COVERAGE_H
     #define COVERAGE_H

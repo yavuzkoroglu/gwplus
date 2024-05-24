@@ -7,7 +7,7 @@
  * These vertices are connected via directed edges also with string indices
  * and names.
  *
- * @author Anonymized for ICSE2025
+ * @author Yavuz Koroglu
  */
 #ifndef GWMODEL_H
     #define GWMODEL_H
@@ -450,12 +450,13 @@
     /**
      * @brief Constructs a SimpleGraph from a GWModelArray. Note that the SimpleGraph unifies all models in the GWModelArray.
      * @param graph A pointer to the SimpleGraph.
-     * @param gwma A pointer to the constant GWModelArray.
+     * @param gwma A pointer to the GWModelArray.
      */
-    void construct_sgi_gwma(SimpleGraph* const graph, GWModelArray const* const gwma);
+    void construct_sgi_gwma(SimpleGraph* const graph, GWModelArray* const gwma);
 
     /**
      * @brief Constructs an empty GWModelArray.
+     * @param graph A pointer to the SimpleGraph of the GWModelArray.
      * @param gwma A pointer to the GWModelArray.
      * @param useLineGraph Vertex Coverage must be handled differently.
      * @param initial_cap_edges The initial edge capacity.
@@ -466,7 +467,7 @@
      * @param guess_name_len An estimation of name length.
      */
     void constructEmpty_gwma(
-        GWModelArray* const gwma, bool const useLineGraph,
+        SimpleGraph* const graph, GWModelArray* const gwma, bool const useLineGraph,
         uint32_t const initial_cap_edges, uint32_t const initial_cap_models,
         uint32_t const initial_cap_shared_vertices, uint32_t const initial_cap_vertices,
         size_t const guess_id_str_len, size_t const guess_name_len
@@ -520,16 +521,22 @@
     uint32_t findVertexId_gwma(GWModelArray const* const gwma, char const* const v_id_str, size_t const v_id_str_len);
 
     /**
-     * @brief Frees a GWModelArray.
-     * @param gwma A pointer to the GWModelArray.
+     * @brief (SGI-compatible) Frees a GWModelArray.
+     * @param graphPtr A pointer to the GWModelArray.
      */
-    void free_gwma(GWModelArray* const gwma);
+    void free_gwma(void* const graphPtr);
 
     /**
      * @brief Frees the adjacency lists of a GWModelArray.
      * @param gwma A pointer to the GWModelArray.
      */
     void freeAdjLists_gwma(GWModelArray* const gwma);
+
+    /**
+     * @brief Returns the highest vertex index in a GWModelArray.
+     * @param graphPtr A pointer to the constant GWModelArray.
+     */
+    uint32_t highestVertexId_gwma(void const* const graphPtr);
 
     /**
      * @brief (SGI-compatible) Checks if a GWModelArray is valid.
