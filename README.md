@@ -63,15 +63,15 @@ COVERAGE OPTIONS:
   TXT-FILE                     Custom test requirements from a TXT file
 
 EXAMPLE USES:
-  bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t tModel.json -v
+  bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t t.json -v
   bin/gwplus -i exps/001/m.json -m exps/001/generated/t2.txt
-  bin/gwplus -i exps/001/m.json -c vertex -m exps/001/generated/t1.txt exps/001/generated/t2.txt
+  bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generated/t2.txt
 ```
 
 ### Example #1
 
 ```
-bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t tModel.json -v
+bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t t.json -v
 ```
 
 The first option in this example is `-i exps/001/m.json`. This option sets the input GraphWalker model to a toy graph whose meta information is in `exps/001/info.json`. When opened in GraphWalker studio, this toy graph appears as follows:
@@ -126,10 +126,10 @@ The fifth option `-f f.dot` saves the final test plan. A visualization of the te
 
 ![The Final Test Plan of the Toy Graph](exps/001/generated/f.svg)
 
-The sixth option `-t tModel.json` saves the model + a list of predefinedEdgeIds denoting a test path that satisfies the *prime3* coverage criterion. For this example, `gwplus` produces two test models. You can give the second test model to GraphWalker CLI using the following command:
+The sixth option `-t t.json` saves the model + a list of predefinedEdgeIds denoting a test path that satisfies the *prime3* coverage criterion. For this example, `gwplus` produces two test models. You can give the second test model to GraphWalker CLI using the following command:
 
 ```
-java -jar graphwalker-cli-4.3.2.jar offline -m tModel_2.json "predefined_path(predefined_path)"
+java -jar graphwalker-cli-4.3.2.jar offline -m t_2.json "predefined_path(predefined_path)"
 ```
 
 The GraphWalker CLI output should look like as follows:
@@ -175,7 +175,7 @@ The final option `-v` enables verbose messages in output. A correct execution sh
 [2024-05-23 23:35:52] - Simple Graph Name = s.dot
 [2024-05-23 23:35:52] - Path Graph File = p.dot
 [2024-05-23 23:35:52] - Final Test Plan File = f.dot
-[2024-05-23 23:35:52] - Output Model File with Predefined Edges = tModel.json
+[2024-05-23 23:35:52] - Output Model File with Predefined Edges = t.json
 [2024-05-23 23:35:52] - Coverage Percent = 100%
 [2024-05-23 23:35:52] - Creating Empty GraphWalker Model...
 [2024-05-23 23:35:52] - Filling the GraphWalker Model using 'exps/001/m.json'
@@ -198,9 +198,9 @@ The final option `-v` enables verbose messages in output. A correct execution sh
 [2024-05-23 23:35:52] - Generating the Final Test Plan...
 [2024-05-23 23:35:52] - Saving the final test plan to 'f.dot'
 [2024-05-23 23:35:52] - LengthOf(Test #1) = 14
-[2024-05-23 23:35:52] - Saving to 'tModel_1.json'
+[2024-05-23 23:35:52] - Saving to 't_1.json'
 [2024-05-23 23:35:52] - LengthOf(Test #2) = 14
-[2024-05-23 23:35:52] - Saving to 'tModel_2.json'
+[2024-05-23 23:35:52] - Saving to 't_2.json'
 [2024-05-23 23:35:52] - # Tests = 2
 [2024-05-23 23:35:52] - Total Test Length = 28
 [2024-05-23 23:35:52] - Finished.
@@ -221,7 +221,7 @@ The above command measures the edge coverage of the test located in `t2.txt` and
 ### Example #3
 
 ```
-bin/gwplus -i exps/001/m.json -c vertex -m exps/001/generated/t1.txt exps/001/generated/t2.txt
+bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generated/t2.txt
 ```
 
 The above command measures the collective vertex coverage of the tests located in `t1.txt` and `t2.txt`, producing the following result:

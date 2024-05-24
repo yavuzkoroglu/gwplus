@@ -1005,9 +1005,9 @@ static void showUsage(void) {
         "  TXT-FILE                     Custom test requirements from a TXT file\n"
         "\n"
         "EXAMPLE USES:\n"
-        "  bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t tModel.json -v\n"
+        "  bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t t.json -v\n"
         "  bin/gwplus -i exps/001/m.json -m exps/001/generated/t2.txt\n"
-        "  bin/gwplus -i exps/001/m.json -m exps/001/generated/t1.txt exps/001/generated/t2.txt\n"
+        "  bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generated/t2.txt\n"
         "\n",
         stderr
     );
