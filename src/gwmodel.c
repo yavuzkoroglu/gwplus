@@ -2188,6 +2188,7 @@ void dump_gwma(void const* const graphPtr, FILE* const output) {
         );
     }
 
+    bool const tmp = gwma->useLineGraph;
     gwma->useLineGraph = 0;
     for (uint32_t v_id = 0; v_id < gwma->size_vertices; v_id++) {
         if (!isValidVertex_gwma(gwma, v_id)) continue;
@@ -2207,6 +2208,7 @@ void dump_gwma(void const* const graphPtr, FILE* const output) {
     }
 
     fputs("]", output);
+    gwma->useLineGraph = tmp;
 
     if (gwma->s_type == GWMA_START_ELEMENT_TYPE_VERTEX) {
         GWVertex const* const s = gwma->vertices + gwma->s_id;
@@ -2982,6 +2984,8 @@ void setPredefinedPath_gwma(GWModelArray* const gwma, uint32_t const* const path
 void setStartingElement_gwma(GWModelArray* const gwma, char const* const s_id_str, size_t const s_id_len) {
     DEBUG_ASSERT(isValid_gwma(gwma))
     DEBUG_ERROR_IF(s_id_str == NULL)
+
+    if (s_id_len == 0) return;
 
     Chunk const* const chunk_vertex_ids         = gwma->chunks + GWMA_CHUNK_VERTEX_IDS;
     Chunk const* const chunk_edge_ids           = gwma->chunks + GWMA_CHUNK_EDGE_IDS;
