@@ -1867,6 +1867,8 @@ int main(int argc, char* argv[]) {
                 if (isConnected_gmtx(coverMtx, 0, requirementId) || !isSubPath_vpath(requirement, testPath))
                     continue;
 
+                printf("Covered p%"PRIu32"\n", requirementId);
+
                 nCovered += 100;
                 DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, requirementId))
             }

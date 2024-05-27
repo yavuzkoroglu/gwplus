@@ -215,6 +215,14 @@ bin/gwplus -i exps/001/m.json -m exps/001/generated/t2.txt
 The above command measures the edge coverage of the test located in `t2.txt` and produces the following result:
 
 ```
+Covered p0
+Covered p1
+Covered p2
+Covered p7
+Covered p8
+Covered p9
+Covered p10
+
 63%
 ```
 
@@ -227,5 +235,15 @@ bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generat
 The above command measures the collective vertex coverage of the tests located in `t1.txt` and `t2.txt`, producing the following result:
 
 ```
+Covered p0
+Covered p1
+Covered p2
+Covered p3
+Covered p6
+Covered p7
+Covered p8
+Covered p4
+Covered p5
+
 100%
 ```
