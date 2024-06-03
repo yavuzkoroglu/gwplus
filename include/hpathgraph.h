@@ -34,10 +34,18 @@
      */
     #define NOT_A_HPATH_GRAPH ((HyperPathGraph){    \
         NULL,                                       \
-        {NOT_A_VPATH_ARRAY},                        \
-        {NOT_A_GRAPH_MATRIX},                       \
-        {NOT_A_GRAPH_MATRIX}                        \
+        { NOT_A_VPATH_ARRAY },                      \
+        { NOT_A_GRAPH_MATRIX },                     \
+        { NOT_A_GRAPH_MATRIX }                      \
      })
+
+    /**
+     * @brief Checks if two vertices of an HyperPathGraph has a connection.
+     * @param hyperPathGraph A pointer to the constant SGI of the HyperPathGraph.
+     * @param v0 The first vertex index.
+     * @param v1 The second vertex index.
+     */
+    bool areConnected_hpg(SimpleGraph const* const hyperPathGraph, uint32_t const v0, uint32_t const v1);
 
     /**
      * @brief Constructs a HyperPathGraph from a VertexPathGraph.

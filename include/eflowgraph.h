@@ -53,10 +53,24 @@
     #define EFG_PLUS(efg, v)    (v + (efg->size << 1))
 
     /**
-     * @brief Computes an arbitrary feasible flow (not necessarily minimum) for an ExpandedFlowGraph.
+     * @brief Activates all the backwards edges in an ExpandedFlowGraph.
      * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
      */
-    void computeFeasibleFlow_efg(SimpleGraph* const expandedFlowGraph);
+    void activateBackwardsEdges_efg(SimpleGraph* const expandedFlowGraph);
+
+    /**
+     * @brief Computes an arbitrary feasible flow (not necessarily minimum) for an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     * @param verbose Prints verbose messages when this variable is true.
+     */
+    void computeFeasibleFlow_efg(SimpleGraph* const expandedFlowGraph, bool const verbose);
+
+    /**
+     * @brief Computes the total outgoing flow from a vertex in an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the constant SGI of the ExpandedFlowGraph.
+     * @param vertexId The vertex index.
+     */
+    uint32_t computeOutgoingFlow_efg(SimpleGraph const* const expandedFlowGraph, uint32_t const vertexId);
 
     /**
      * @brief Constructs an ExpandedFlowGraph from a NetworkFlowGraph of a HyperPathGraph.
@@ -71,12 +85,11 @@
     );
 
     /**
-     * @brief Generates and consumes one path trace from a test plan.
-     * @param pathTrace A pointer to the path trace.
+     * @brief Generates and consumes one s-t path from a test plan.
+     * @param stPath A pointer to the s-t path.
      * @param testPlan A pointer to the SGI of the test plan.
-     * @param pathGraph A pointer to the constant SGI of the pathGraph.
      */
-    bool consumePathTrace_efg(VertexPath* const pathTrace, SimpleGraph* const testPlan, SimpleGraph const* const pathGraph);
+    bool consumeSTPath_efg(VertexPath* const stPath, SimpleGraph* const testPlan);
 
     /**
      * @brief (SGI-compatible) Counts the number of active edges in an ExpandedFlowGraph.
@@ -95,6 +108,18 @@
      * @param graphPtr A pointer to the constant ExpandedFlowGraph.
      */
     uint32_t countVertices_efg(void const* const graphPtr);
+
+    /**
+     * @brief Deactivates all the backwards edges in an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     */
+    void deactivateBackwardsEdges_efg(SimpleGraph* const expandedFlowGraph);
+
+    /**
+     * @brief Deactivates all vertices with zero outgoing flow in an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     */
+    void deactivateDeadVertices_efg(SimpleGraph* const expandedFlowGraph);
 
     /**
      * @brief (SGI-compatible) Dumps an ExpandedFlowGraph to an output FILE.
@@ -122,6 +147,14 @@
      * @param vertexId The vertex index.
      */
     void dumpVertex_efg(void const* const graphPtr, FILE* const output, uint32_t const vertexId);
+
+    /**
+     * @brief Expands one hyperpath on an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     * @param hyperPathGraph A pointer to the constant SGI of the HyperPathGraph.
+     * @param h The hyperpath index.
+     */
+    void expand_efg(SimpleGraph* const expandedFlowGraph, SimpleGraph const* const hyperPathGraph, uint32_t const h);
 
     /**
      * @brief (SGI-compatible) Frees an ExpandedFlowGraph.
@@ -189,8 +222,9 @@
     /**
      * @brief Minimizes a feasible s-t flow in an ExpandedFlowGraph.
      * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     * @param verbose Prints verbose messages when this variable is true.
      */
-    void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph);
+    void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph, bool const verbose);
 
     /**
      * @brief Iterates a NeighborIterator for an ExpandedFlowGraph.
@@ -209,6 +243,12 @@
      * @param itr A pointer to the VertexIterator.
      */
     uint32_t nextVertexId_vitr_efg(VertexIterator* const itr);
+
+    /**
+     * @brief Removes all zero-flowing edges from an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     */
+    void removeZeroFlows_efg(SimpleGraph* const expandedFlowGraph);
 
     /**
      * @brief Initializes a NeighborIterator for an ExpandedFlowGraph.

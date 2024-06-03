@@ -84,11 +84,47 @@
     bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* const graph, uint32_t const from, uint32_t const to);
 
     /**
+     * @brief Computes the shortest path between two vertices, while avoiding another vertex.
+     * @param shortestPath A pointer to the shortestPath.
+     * @param graph A pointer to the constant SimpleGraph.
+     * @param from The vertex index of the source vertex.
+     * @param to The vertex index of the target vertex.
+     * @param n The number of vertices to avoid.
+     */
+    bool computeShortestAvoidVertices_vpath(
+        VertexPath* const shortestPath, SimpleGraph const* const graph,
+        uint32_t const from, uint32_t const to,
+        size_t const n, ...
+    );
+
+    /**
+     * @brief Computes the shortest path between two vertices, while avoiding all the vertices of another path.
+     * @param shortestPath A pointer to the shortestPath.
+     * @param graph A pointer to the constant SimpleGraph.
+     * @param from The vertex index of the source vertex.
+     * @param to The vertex index of the target vertex.
+     * @param avoid A pointer to the constant VertexPath to avoid.
+     */
+    bool computeShortestAvoidPath_vpath(
+        VertexPath* const shortestPath, SimpleGraph const* const graph,
+        uint32_t const from, uint32_t const to,
+        VertexPath const* const avoid
+    );
+
+    /**
      * @brief Computes a shortest cycle in a SimpleGraph (but does NOT complete the cycle).
      * @param cycle A pointer to the cycle.
      * @param graph A pointer to the SimpleGraph.
      */
     bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* const graph);
+
+    /**
+     * @brief Computes a shortest cycle in a SimpleGraph starting from a given vertex.
+     * @param cycle A pointer to the cycle.
+     * @param graph A pointer to the SimpleGraph.
+     * @param pivot The vertex index of the first vertex in the cycle.
+     */
+    bool computeShortestCyclePivot_vpath(VertexPath* const cycle, SimpleGraph const* const graph, uint32_t const pivot);
 
     /**
      * @brief Computes the shortest path from any start vertex to target. If target is a start vertex, the initializer is empty.
@@ -126,6 +162,13 @@
      * @param vertexId The vertex index.
      */
     bool contains_vpath(VertexPath const* const vpath, uint32_t const vertexId);
+
+    /**
+     * @brief Checks if a VertexPath contains a vertex twice.
+     * @param vpath A pointer to the VertexPath.
+     * @param vertexId The vertex index.
+     */
+    bool containsTwice_vpath(VertexPath const* const vpath, uint32_t const vertexId);
 
     /**
      * @brief Dumps a VertexPath.

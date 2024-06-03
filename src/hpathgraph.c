@@ -8,6 +8,39 @@
 #include "hpathgraph.h"
 #include "padkit/debug.h"
 
+bool areConnected_hpg(SimpleGraph const* const hyperPathGraph, uint32_t const v0, uint32_t const v1) {
+    DEBUG_ASSERT(isValid_sg(hyperPathGraph))
+
+    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)hyperPathGraph->graphPtr;
+
+    StartVertexIterator svitr[1];
+    construct_svitr_sg(svitr, hpgraph->pathGraph);
+    uint32_t const s = hpgraph->pathGraph->nextVertexId_svitr(svitr);
+
+    if (isConnected_gmtx(hpgraph->edgeMtx, v0, v1)) {
+        return 1;
+    } else if (v0 > s && v1 > s) {
+        VertexPath const* const hpath0 = hpgraph->hpaths->array + v0;
+        VertexPath const* const hpath1 = hpgraph->hpaths->array + v1;
+        for (uint32_t i = 0; i < hpath0->len; i++)
+            for (uint32_t j = 0; j < hpath1->len; j++)
+                if (areConnected_hpg(hyperPathGraph, hpath0->array[i], hpath1->array[j]))
+                    return 1;
+    } else if (v0 > s) {
+        VertexPath const* const hpath0 = hpgraph->hpaths->array + v0;
+        for (uint32_t i = 0; i < hpath0->len; i++)
+            if (areConnected_hpg(hyperPathGraph, hpath0->array[i], v1))
+                return 1;
+    } else if (v1 > s) {
+        VertexPath const* const hpath1 = hpgraph->hpaths->array + v1;
+        for (uint32_t i = 0; i < hpath1->len; i++)
+            if (areConnected_hpg(hyperPathGraph, v0, hpath1->array[i]))
+                return 1;
+    }
+
+    return 0;
+}
+
 void construct_hpg(
     SimpleGraph* const hyperPathGraph, HyperPathGraph* const hpgraph,
     SimpleGraph const* const pathGraph
@@ -103,10 +136,12 @@ void constructAcyclic_hpg(
                 isValidVertex_hpg(hpgraph, (pathId = nextVertexId_vitr_hpg(itr)));
             ) {
                 if (pathId == parentId || contains_vpath(hpath, pathId)) continue;
-                if (isConnected_gmtx(hpgraph->edgeMtx, childId, pathId))
+                if (isConnected_gmtx(hpgraph->edgeMtx, childId, pathId)) {
                     DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(hpgraph->edgeMtx, parentId, pathId))
-                if (isConnected_gmtx(hpgraph->edgeMtx, pathId, childId))
+                }
+                if (isConnected_gmtx(hpgraph->edgeMtx, pathId, childId)) {
                     DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(hpgraph->edgeMtx, pathId, parentId))
+                }
             }
         }
     }

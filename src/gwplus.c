@@ -40,7 +40,6 @@ static uint64_t constructTestPath(
         DEBUG_ASSERT(i < pathTrace->len)
     }
 
-    constructEmpty_vpath(testPath, graph);
     DEBUG_ASSERT_NDEBUG_EXECUTE(computeShortestInitializer_vpath(testPath, graph, requirements->array[pathTrace->array[i]].array[0]))
 
     while (i < pathTrace->len && currentCoverage < maxCoverage) {
@@ -61,6 +60,34 @@ static uint64_t constructTestPath(
     return currentCoverage;
 }
 
+static void convertSTPathToPathTrace(VertexPath* const pathTrace, SimpleGraph const* const pathGraph, VertexPath const* const stPath) {
+    DEBUG_ERROR_IF(pathTrace == NULL)
+    DEBUG_ASSERT(isValid_sg(pathGraph))
+    DEBUG_ASSERT(isValid_vpath(stPath))
+
+    if (pathTrace->isAllocated) {
+        flush_vpath(pathTrace);
+        pathTrace->graph = pathGraph;
+    } else {
+        constructEmpty_vpath(pathTrace, pathGraph);
+    }
+
+    VertexPath tmp[1] = { NOT_A_VPATH };
+    constructEmptyCapped_vpath(tmp, pathGraph, 1);
+
+    DEBUG_ASSERT(stPath->len > 0)
+    for (uint32_t i = 1; i < stPath->len - 1; i++) {
+        uint32_t const v = stPath->array[i];
+
+        if (!pathGraph->isValidVertex(pathGraph->graphPtr, v)) continue;
+
+        flush_vpath(tmp);
+        extend_vpath(tmp, v, 0);
+        splice_vpath(pathTrace, tmp);
+    }
+
+    free_vpath(tmp);
+}
 
 static void convertToEdgePaths(
     VertexPathArray* const newRequirements,
@@ -348,6 +375,7 @@ static void generateDotOfRawFlowGraph(FILE* const output, SimpleGraph const* con
 }
 */
 
+/*
 static void generateDotOfHyperPathGraph(FILE* const output, SimpleGraph const* const hyperPathGraph) {
     DEBUG_ERROR_IF(output == NULL)
     DEBUG_ASSERT(isValid_sg(hyperPathGraph))
@@ -418,6 +446,7 @@ static void generateDotOfHyperPathGraph(FILE* const output, SimpleGraph const* c
 
     fputs("}", output);
 }
+*/
 
 static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const pathGraph, GWModelArray const* const gwma) {
     DEBUG_ERROR_IF(output == NULL)
@@ -685,7 +714,6 @@ static void generateTestRequirements(
     }
 }
 
-/*
 static void saveHyperpaths(FILE* const output, SimpleGraph const* const hyperPathGraph) {
     DEBUG_ERROR_IF(output == NULL)
     DEBUG_ASSERT(isValid_sg(hyperPathGraph))
@@ -709,7 +737,6 @@ static void saveHyperpaths(FILE* const output, SimpleGraph const* const hyperPat
         fputs("\n", output);
     }
 }
-*/
 
 static void saveTestRequirements(FILE* const requirementsFile, VertexPathArray const* const requirements, GWModelArray const* const gwma) {
     DEBUG_ERROR_IF(requirementsFile == NULL)
@@ -979,9 +1006,9 @@ static void showUsage(void) {
         "GENERAL OPTIONS:\n"
         "  -c,--coverage COVERAGE       Set the coverage criterion\n"
         "  -C,--copyright               Output the copyright message and exit\n"
-        "  -f,--finalgraph DOT-FILE     Outputs the finel test plan to a DOT file\n"
+        "  -f,--finalgraph DOT-FILE     Outputs the final test plan to a DOT file\n"
         "  -H,--help                    Output this help message and exit\n"
-        "  -h,--hyperpathgraph DOT-FILE Output the hyperpath graph to a DOT file\n"
+        "  -h,--hyperpaths TXT-FILE     Output the hyperpaths to a TXT file\n"
         "  -i,--input JSON-FILE         (Mandatory) An input GraphWalker model in JSON format\n"
         "  -m,--measure TXT-FILE(s)     Output coverage of custom test(s)\n"
         "  -n,--netflow DOT-FILE        Output the minimum flow graph to a DOT file\n"
@@ -1292,7 +1319,7 @@ int main(int argc, char* argv[]) {
                 free(isArgProcessed);
                 return EXIT_FAILURE;
             }
-            VERBOSE_MSG("Hyperpath Graph File = %s", hyperPathsName)
+            VERBOSE_MSG("Hyperpaths File = %s", hyperPathsName)
             isArgProcessed[i]       = 1;
             isArgProcessed[i + 1]   = 1;
             break;
@@ -1603,12 +1630,12 @@ int main(int argc, char* argv[]) {
         hyperPathsName != NULL  || testPlanName != NULL  ||
         netFlowName != NULL     || testOutputFileName != NULL
     ) {
-        VERBOSE_MSG("Generating Hyperpath Graph...")
+        VERBOSE_MSG("Generating Hyperpaths...")
 
         constructAcyclic_hpg(hyperPathGraph, hpgraph, pathGraph);
 
         if (hyperPathsName != NULL) {
-            VERBOSE_MSG("Saving hyperpath graph to '%s'", hyperPathsName)
+            VERBOSE_MSG("Saving hyperpaths to '%s'", hyperPathsName)
 
             FILE* const hyperPathsFile = fopen(hyperPathsName, "w");
             if (hyperPathsFile == NULL) {
@@ -1622,8 +1649,8 @@ int main(int argc, char* argv[]) {
                 return EXIT_FAILURE;
             }
 
-            generateDotOfHyperPathGraph(hyperPathsFile, hyperPathGraph);
-            /* saveHyperpaths(hyperPathsFile, hyperPathGraph); */
+            /* generateDotOfHyperPathGraph(hyperPathsFile, hyperPathGraph); */
+            saveHyperpaths(hyperPathsFile, hyperPathGraph);
 
             DEBUG_ASSERT(fclose(hyperPathsFile) == 0)
             NDEBUG_EXECUTE(fclose(hyperPathsFile))
@@ -1671,17 +1698,36 @@ int main(int argc, char* argv[]) {
         VERBOSE_MSG("Expanding the Network Flow Graph...")
         construct_efg(expandedFlowGraph, efg, flowGraph, hyperPathGraph);
 
-        VERBOSE_MSG("Initializing a new flow with test requirement constraints...")
-        initializeFlow_efg(expandedFlowGraph);
+        for (uint32_t h = hpgraph->hpaths->size - 1; h > requirements->size; h--) {
+            if (verbose) {
+                printf("[%s] - Expanding h%"PRIu32"\n", get_timestamp(), h - requirements->size - 1);
+            }
+            expand_efg(expandedFlowGraph, hyperPathGraph, h);
 
-        VERBOSE_MSG("Computing a feasible flow...")
-        computeFeasibleFlow_efg(expandedFlowGraph);
+            VERBOSE_MSG("Initializing flow with test requirement constraints...")
+            initializeFlow_efg(expandedFlowGraph);
 
-        VERBOSE_MSG("Minimizing the flow...")
-        minimizeFlow_efg(expandedFlowGraph);
+            VERBOSE_MSG("Computing a feasible flow...")
+            computeFeasibleFlow_efg(expandedFlowGraph, verbose);
 
-        VERBOSE_MSG("Generating the Final Test Plan...")
-        generateTestPlan_efg(expandedFlowGraph);
+            VERBOSE_MSG("Activating backwards edges...")
+            activateBackwardsEdges_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Minimizing the flow...")
+            minimizeFlow_efg(expandedFlowGraph, verbose);
+
+            VERBOSE_MSG("Deactivating backwards edges...")
+            deactivateBackwardsEdges_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Generating the Final Test Plan...")
+            generateTestPlan_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Removing zero flows...")
+            removeZeroFlows_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Deactivating dead vertices...")
+            deactivateDeadVertices_efg(expandedFlowGraph);
+        }
 
         if (testPlanName != NULL) {
             VERBOSE_MSG("Saving the final test plan to '%s'", testPlanName)
@@ -1706,11 +1752,14 @@ int main(int argc, char* argv[]) {
     }
 
     if (testOutputFileName != NULL) {
+        VERBOSE_MSG("Creating Tests...")
+
         uint32_t const nTests = countTests_efg(expandedFlowGraph);
 
         uint32_t const nDigits  = countDigits(nTests);
         size_t const fileNameLn = strlen(testOutputFileName) + (size_t)nDigits + (size_t)(1);
 
+        VertexPath stPath[1]    = { NOT_A_VPATH };
         VertexPath pathTrace[1] = { NOT_A_VPATH };
         VertexPath testPath[1]  = { NOT_A_VPATH };
         GraphMatrix coverMtx[1] = { NOT_A_GRAPH_MATRIX };
@@ -1737,11 +1786,22 @@ int main(int argc, char* argv[]) {
         uint64_t maxCoverage        = (uint64_t)requirements->size * percent;
         sprintf(fileName, "%s", testOutputFileName);
         for (uint32_t testId = 1; testId <= nTests && currentCoverage < maxCoverage; testId++) {
-            consumePathTrace_efg(pathTrace, expandedFlowGraph, pathGraph);
+            VERBOSE_MSG("Consuming s-t path #%.*"PRIu32, nDigits, testId)
+            DEBUG_ASSERT_NDEBUG_EXECUTE(consumeSTPath_efg(stPath, expandedFlowGraph))
+
+            VERBOSE_MSG("Converting to path trace #%.*"PRIu32, nDigits, testId)
+            convertSTPathToPathTrace(pathTrace, pathGraph, stPath);
+
+            VERBOSE_MSG("Removing new zero flows")
+            removeZeroFlows_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Constructing test path #%.*"PRIu32, nDigits, testId)
             currentCoverage = constructTestPath(testPath, pathTrace, graph, requirements, coverMtx, currentCoverage, maxCoverage);
 
             totalTestLength += testPath->len;
-            VERBOSE_MSG("LengthOf(Test #%.*"PRIu32") = %"PRIu32, nDigits, testId, testPath->len)
+            if (nTests > 1) {
+                VERBOSE_MSG("LengthOf(Test #%.*"PRIu32") = %"PRIu32, nDigits, testId, testPath->len)
+            }
 
             setPredefinedPath_gwma(gwma, testPath->array, testPath->len);
 
@@ -1756,6 +1816,7 @@ int main(int argc, char* argv[]) {
 
                 free(fileName);
                 free_sg(expandedFlowGraph);
+                free_vpath(stPath);
                 free_vpath(pathTrace);
                 free_vpath(testPath);
                 DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
@@ -1784,6 +1845,7 @@ int main(int argc, char* argv[]) {
         VERBOSE_MSG("Total Test Length = %"PRIu32, totalTestLength)
 
         free(fileName);
+        free_vpath(stPath);
         free_vpath(pathTrace);
         free_vpath(testPath);
         DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))

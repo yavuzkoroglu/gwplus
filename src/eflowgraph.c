@@ -9,12 +9,34 @@
 #include "hpathgraph.h"
 #include "nflowgraph.h"
 #include "padkit/reallocate.h"
+#include "padkit/repeat.h"
+#include "padkit/timestamp.h"
 
 static void activateVertex_efg(ExpandedFlowGraph* const efg, uint32_t const v);
 static void construct_sgi_efg(SimpleGraph* const expandedFlowGraph, ExpandedFlowGraph* const efg);
 static void deactivateVertex_efg(ExpandedFlowGraph* const efg, uint32_t const v);
 static bool hasPlusVertices_efg(ExpandedFlowGraph const* const efg);
 static bool isEdgeBackwards_efg(ExpandedFlowGraph const* const efg, uint32_t const v0, uint32_t const v1);
+
+void activateBackwardsEdges_efg(SimpleGraph* const expandedFlowGraph) {
+    DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+
+    ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)expandedFlowGraph->graphPtr;
+
+    for (uint32_t i = 0; i < efg->size_activeVertices - 1; i++) {
+        uint32_t const v0 = efg->activeVertices[i];
+
+        for (uint32_t j = i + 1; j < efg->size_activeVertices; j++) {
+            uint32_t const v1 = efg->activeVertices[j];
+
+            if (isValidEdge_efg(efg, v0, v1)) {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1, v0))
+            } else if (isValidEdge_efg(efg, v1, v0)) {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0, v1))
+            }
+        }
+    }
+}
 
 static void activateVertex_efg(ExpandedFlowGraph* const efg, uint32_t const v) {
     DEBUG_ERROR_IF(efg == NULL)
@@ -42,72 +64,106 @@ static void activateVertex_efg(ExpandedFlowGraph* const efg, uint32_t const v) {
     }
 }
 
-void computeFeasibleFlow_efg(SimpleGraph* const expandedFlowGraph) {
+#define VERBOSE_MSG(...) printf("[%s] - ", get_timestamp()); printf(__VA_ARGS__); puts("");
+void computeFeasibleFlow_efg(SimpleGraph* const expandedFlowGraph, bool const verbose) {
     DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+
+    VertexPath paths[3] = { NOT_A_VPATH, NOT_A_VPATH, NOT_A_VPATH };
+    VertexPath* const svPath = paths;
+    VertexPath* const vtPath = paths + 1;
+    VertexPath* const stPath = paths + 2;
 
     ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)expandedFlowGraph->graphPtr;
 
     uint32_t const s = efg->s_id;
     uint32_t const t = EFG_PRIME(efg, s);
 
-    VertexPathArray stacks[2] = { NOT_A_VPATH_ARRAY, NOT_A_VPATH_ARRAY };
-    VertexPathArray* stack_A = stacks;
-    VertexPathArray* stack_B = stack_A + 1;
+    uint32_t prevPercentCompleted   = 0;
+    uint32_t percentCompleted       = 0;
+    for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
+        uint32_t const v = efg->activeVertices[i];
+        if (v >= EFG_PLUS(efg, 0))
+            break;
 
-    uint32_t const trueSize = EFG_PRIME(efg, EFG_PLUS(efg, efg->size));
-    DEBUG_ASSERT(trueSize > efg->size)
+        if (v == s)
+            continue;
 
-    constructEmpty_vpa(stack_A, trueSize);
-    constructEmpty_vpa(stack_B, trueSize);
+        uint32_t const v_plus = EFG_PLUS(efg, v);
+        if (efg->flowMtx[v][v_plus] != 0xFFFFFFFF)
+            continue;
 
-    VertexPath* const firstPath = pushEmpty_vpa(stack_A, expandedFlowGraph);
-    DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(firstPath, s, 1))
-
-    while (stack_A->size > 0) {
-        if (stack_A < stack_B) {
-            stack_A++;
-            stack_B--;
-        } else {
-            stack_A--;
-            stack_B++;
+        if (verbose) {
+            percentCompleted = i * 100 / efg->size_activeVertices;
+            if (percentCompleted > prevPercentCompleted) {
+                VERBOSE_MSG("%"PRIu32"%%", percentCompleted)
+                prevPercentCompleted = percentCompleted;
+            }
         }
 
-        while (stack_B->size > 0) {
-            VertexPath* const path = pop_vpa(stack_B);
-            DEBUG_ASSERT(isValid_vpath(path))
-            DEBUG_ASSERT(path->len > 0)
+        if (!computeShortestAvoidVertices_vpath(svPath, expandedFlowGraph, s, v, 2, t, v_plus))
+            continue;
 
-            uint32_t const v0 = path->array[path->len - 1];
+        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(svPath, v, 1))
+        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(svPath, v_plus, 1))
 
-            if (v0 == t) {
-                for (uint32_t i = 0; i < path->len - 1; i++) {
-                    if (efg->flowMtx[path->array[i]][path->array[i + 1]] != 0xFFFFFFFF)
-                        continue;
+        if (!computeShortestAvoidPath_vpath(vtPath, expandedFlowGraph, v_plus, t, svPath))
+            continue;
 
-                    for (uint32_t j = 0; j < path->len - 1; j++) {
-                        efg->flowMtx[path->array[j]][path->array[j + 1]]++;
-                        efg->flowMtx[path->array[j + 1]][path->array[j]]--;
-                    }
-                    break;
-                }
-            } else {
-                /*for (uint32_t i = efg->size_activeVertices - 1; i != 0xFFFFFFFF; i--) {*/
-                for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
-                    uint32_t const v1 = efg->activeVertices[i];
-                    if (v0 == v1)                       continue;
-                    if (!isValidEdge_efg(efg, v0, v1))  continue;
+        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(vtPath, t, 1))
 
-                    VertexPath* const path_to_extend = pushClone_vpa(stack_A, path);
+        if (stPath->isAllocated) {
+            flush_vpath(stPath);
+        } else {
+            constructEmpty_vpath(stPath, expandedFlowGraph);
+        }
+        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(stPath, s, 1))
+        concat_vpath(stPath, svPath);
+        concat_vpath(stPath, vtPath);
 
-                    if (!extend_vpath(path_to_extend, v1, 1))
-                        pop_vpa(stack_A);
-                }
-            }
+        for (uint32_t j = 0; j < stPath->len - 1; j++) {
+            #ifndef NDEBUG
+                uint32_t const capacity =
+                    efg->flowMtx[stPath->array[j]][stPath->array[j + 1]] +
+                    efg->flowMtx[stPath->array[j + 1]][stPath->array[j]];
+            #endif
+
+            efg->flowMtx[stPath->array[j]][stPath->array[j + 1]]++;
+            efg->flowMtx[stPath->array[j + 1]][stPath->array[j]]--;
+
+            DEBUG_ASSERT(efg->flowMtx[stPath->array[j]][stPath->array[j + 1]] <= capacity)
+            DEBUG_ASSERT(efg->flowMtx[stPath->array[j + 1]][stPath->array[j]] <= capacity)
         }
     }
 
-    free_vpa(stack_A);
-    free_vpa(stack_B);
+    if (svPath->isAllocated)
+        free_vpath(svPath);
+
+    if (vtPath->isAllocated)
+        free_vpath(vtPath);
+
+    if (stPath->isAllocated)
+        free_vpath(stPath);
+}
+#undef VERBOSE_MSG
+
+uint32_t computeOutgoingFlow_efg(SimpleGraph const* const expandedFlowGraph, uint32_t const vertexId) {
+    DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+
+    ExpandedFlowGraph const* const efg = (ExpandedFlowGraph const*)expandedFlowGraph->graphPtr;
+
+    DEBUG_ASSERT(isValidVertex_efg(efg, vertexId))
+
+    uint32_t totalFlow = 0;
+    for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
+        uint32_t const nextVertexId = efg->activeVertices[i];
+
+        if (vertexId == nextVertexId)                       continue;
+        if (!isValidEdge_efg(efg, vertexId, nextVertexId))  continue;
+
+        totalFlow += efg->flowMtx[vertexId][nextVertexId];
+    }
+
+    return totalFlow;
 }
 
 void construct_efg(
@@ -169,74 +225,6 @@ void construct_efg(
         }
     }
 
-    for (uint32_t h = efg->size - 1; h > s; h--) {
-        VertexPath const* const hpath = hpgraph->hpaths->array + h;
-        DEBUG_ASSERT(isValid_vpath(hpath))
-
-        deactivateVertex_efg(efg, h);
-
-        for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
-            uint32_t const v0 = efg->activeVertices[i];
-
-            for (uint32_t j = 0; j < hpath->len; j++) {
-                uint32_t const v1       = hpath->array[j];
-                uint32_t const v1_prime = EFG_PRIME(efg, v1);
-
-                if (
-                    isConnected_gmtx(efg->adjMtx, v0, h) &&
-                    isConnected_gmtx(hpgraph->edgeMtx, v0, v1)
-                ) {
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0, v1))
-                } else if (
-                    isConnected_gmtx(efg->adjMtx, h, v0) &&
-                    (v0 == t || isConnected_gmtx(hpgraph->edgeMtx, v1, v0))
-                ) {
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1, v0))
-                    if (v0 < EFG_PRIME(efg, 0))
-                        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1_prime, v0))
-                }
-            }
-        }
-
-        uint32_t first_id = 0;
-        while (first_id < hpath->len) {
-            uint32_t const p    = hpath->array[first_id];
-            bool validFirst     = 0;
-            for (uint32_t i = 0; i < efg->size_activeVertices && !validFirst; i++) {
-                uint32_t const v = efg->activeVertices[i];
-                validFirst |= isConnected_gmtx(efg->adjMtx, v, p);
-            }
-            if (validFirst) break;
-
-            first_id++;
-        }
-
-        for (uint32_t i = 0; i < hpath->len - 1; i++) {
-            uint32_t const id0      = (first_id + i) % hpath->len;
-            uint32_t const id1      = (first_id + i + 1) % hpath->len;
-            uint32_t const p0       = hpath->array[id0];
-            uint32_t const p0_prime = EFG_PRIME(efg, p0);
-            uint32_t const p1       = hpath->array[id1];
-            uint32_t const p1_prime = EFG_PRIME(efg, p1);
-            DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, p0, p1))
-            DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, p0_prime, p1_prime))
-        }
-        uint32_t p_last         = hpath->array[(first_id + hpath->len - 1) % hpath->len];
-        uint32_t p_first_prime  = EFG_PRIME(efg, hpath->array[first_id % hpath->len]);
-        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, p_last, p_first_prime))
-
-        for (uint32_t i = 0; i < hpath->len; i++) {
-            uint32_t const p        = hpath->array[i];
-            uint32_t const p_prime  = EFG_PRIME(efg, p);
-            activateVertex_efg(efg, p);
-            activateVertex_efg(efg, p_prime);
-        }
-        /*
-        dump_efg(efg, stdout);
-        puts("");
-        */
-    }
-
     construct_sgi_efg(expandedFlowGraph, efg);
 }
 
@@ -267,17 +255,14 @@ static void construct_sgi_efg(SimpleGraph* const expandedFlowGraph, ExpandedFlow
     };
 }
 
-bool consumePathTrace_efg(VertexPath* const pathTrace, SimpleGraph* const testPlan, SimpleGraph const* const pathGraph) {
-    DEBUG_ERROR_IF(pathTrace == NULL)
+bool consumeSTPath_efg(VertexPath* const stPath, SimpleGraph* const testPlan) {
+    DEBUG_ERROR_IF(stPath == NULL)
     DEBUG_ASSERT(isValid_sg(testPlan))
-    DEBUG_ASSERT(isValid_sg(pathGraph))
 
     ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)testPlan->graphPtr;
 
     uint32_t const s = efg->s_id;
     uint32_t const t = EFG_PRIME(efg, s);
-
-    VertexPath connector[1] = { NOT_A_VPATH };
 
     VertexPathArray stacks[2] = { NOT_A_VPATH_ARRAY, NOT_A_VPATH_ARRAY };
     VertexPathArray* stack_A = stacks;
@@ -291,6 +276,8 @@ bool consumePathTrace_efg(VertexPath* const pathTrace, SimpleGraph* const testPl
 
     VertexPath* firstPath = pushEmpty_vpa(stack_A, testPlan);
     DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(firstPath, s, 1))
+
+    VertexPath connector[1] = { NOT_A_VPATH };
 
     while (stack_A->size > 0) {
         if (stack_A < stack_B) {
@@ -309,60 +296,42 @@ bool consumePathTrace_efg(VertexPath* const pathTrace, SimpleGraph* const testPl
             uint32_t const v0 = path->array[path->len - 1];
 
             if (v0 == t) {
-                if (pathTrace->isAllocated) {
-                    flush_vpath(pathTrace);
-                    pathTrace->graph = pathGraph;
-                } else {
-                    constructEmpty_vpath(pathTrace, pathGraph);
-                }
-                for (uint32_t i = 1; i < path->len - 1; i++) {
-                    efg->flowMtx[path->array[i - 1]][path->array[i]]--;
-                    if (path->array[i] < EFG_PRIME(efg, 0)) {
-                        DEBUG_ERROR_IF(path->array[i] > s)
-                        extend_vpath(pathTrace, path->array[i], 0);
-                    } else if (path->array[i] > EFG_PRIME(efg, s)) {
-                        DEBUG_ASSERT(pathTrace->len > 0)
-                        DEBUG_ASSERT(i < path->len - 2)
-                        uint32_t const from = pathTrace->array[pathTrace->len - 1];
-                        while (path->array[i] > EFG_PRIME(efg, s)) {
-                            DEBUG_ASSERT(i < path->len - 2)
-                            i++;
-                        }
-                        uint32_t const to = (path->array[i] < EFG_PRIME(efg, 0))
-                            ? path->array[i]
-                            : path->array[i] - EFG_PRIME(efg, 0);
-                        i--;
-                        cacheComputeShortest_vpath(connector, pathGraph, from, to);
-                        splice_vpath(pathTrace, connector);
-                    } else {
-                        extend_vpath(pathTrace, path->array[i] - EFG_PRIME(efg, 0), 0);
-                    }
-                }
-                efg->flowMtx[path->array[path->len - 2]][t]--;
-                if (connector->isAllocated)
+                clone_vpath(stPath, path);
+                for (uint32_t i = 0; i < stPath->len - 1; i++)
+                    efg->flowMtx[stPath->array[i]][stPath->array[i + 1]]--;
+                if (isValid_vpath(connector))
                     free_vpath(connector);
                 free_vpa(stack_A);
                 free_vpa(stack_B);
                 return 1;
             } else {
+                uint32_t const prevFlow = computeOutgoingFlow_efg(testPlan, v0);
+
                 for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
                     uint32_t const v1 = efg->activeVertices[i];
                     if (v0 == v1)                       continue;
                     if (!isValidEdge_efg(efg, v0, v1))  continue;
                     if (efg->flowMtx[v0][v1] == 0)      continue;
 
-                    VertexPath* const path_to_extend = pushClone_vpa(stack_A, path);
+                    uint32_t const nextFlow = computeOutgoingFlow_efg(testPlan, v1);
+                    if (nextFlow > prevFlow) {
+                        REPEAT(nextFlow - prevFlow) {
+                            DEBUG_ASSERT_NDEBUG_EXECUTE(computeShortestCyclePivot_vpath(connector, testPlan, v1))
+                            concat_vpath(path, connector);
+                        }
+                    }
 
-                    if (!extend_vpath(path_to_extend, v1, 1))
-                        pop_vpa(stack_A);
+                    VertexPath* const path_to_extend = pushClone_vpa(stack_A, path);
+                    extend_vpath(path_to_extend, v1, 0);
                 }
             }
         }
     }
 
-    DEBUG_ASSERT(!connector->isAllocated)
-    if (isValid_vpath(pathTrace))
-        invalidate_vpath(pathTrace);
+    if (isValid_vpath(stPath))
+        invalidate_vpath(stPath);
+    if (isValid_vpath(connector))
+        free_vpath(connector);
     free_vpa(stack_A);
     free_vpa(stack_B);
     return 0;
@@ -411,6 +380,64 @@ uint32_t countVertices_efg(void const* const graphPtr) {
     DEBUG_ASSERT(isValid_efg(graphPtr))
     ExpandedFlowGraph const* const efg = (ExpandedFlowGraph const*)graphPtr;
     return efg->size_activeVertices;
+}
+
+void deactivateBackwardsEdges_efg(SimpleGraph* const expandedFlowGraph) {
+    DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+
+    ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)expandedFlowGraph->graphPtr;
+
+    for (uint32_t i = 0; i < efg->size_activeVertices - 1; i++) {
+        uint32_t const v0 = efg->activeVertices[i];
+
+        for (uint32_t j = i + 1; j < efg->size_activeVertices; j++) {
+            uint32_t const v1 = efg->activeVertices[j];
+
+            if (!isValidEdge_efg(efg, v0, v1)) continue;
+
+            if (isEdgeBackwards_efg(efg, v0, v1)) {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(efg->adjMtx, v0, v1))
+            } else {
+                DEBUG_ASSERT(isValidEdge_efg(efg, v1, v0))
+                DEBUG_ASSERT(isEdgeBackwards_efg(efg, v1, v0))
+
+                DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(efg->adjMtx, v1, v0))
+            }
+        }
+    }
+}
+
+void deactivateDeadVertices_efg(SimpleGraph* const expandedFlowGraph) {
+    DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+
+    ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)expandedFlowGraph->graphPtr;
+
+    uint32_t const s = efg->s_id;
+    uint32_t const t = EFG_PRIME(efg, s);
+
+    size_t nDeactivated;
+    do {
+        nDeactivated = 0;
+        for (uint32_t j = 0; j < efg->size_activeVertices - 1; j++) {
+            uint32_t const v1 = efg->activeVertices[j];
+
+            if (v1 == s || v1 == t) continue;
+
+            uint32_t const flow = computeOutgoingFlow_efg(expandedFlowGraph, v1);
+
+            if (flow > 0) continue;
+
+            for (uint32_t i = 0; i < efg->size_activeVertices - 1; i++) {
+                uint32_t const v0 = efg->activeVertices[i];
+
+                if (v0 == v1) continue;
+
+                DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(efg->adjMtx, v0, v1))
+            }
+            deactivateVertex_efg(efg, v1);
+            nDeactivated++;
+        }
+    } while (nDeactivated > 0);
 }
 
 static void deactivateVertex_efg(ExpandedFlowGraph* const efg, uint32_t const v) {
@@ -531,6 +558,88 @@ void dumpVertex_efg(void const* const graphPtr, FILE* const output, uint32_t con
     }
 }
 
+void expand_efg(SimpleGraph* const expandedFlowGraph, SimpleGraph const* const hyperPathGraph, uint32_t const h) {
+    DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+    DEBUG_ASSERT(isValid_sg(hyperPathGraph))
+    DEBUG_ERROR_IF(h == 0xFFFFFFFF)
+
+    ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)expandedFlowGraph->graphPtr;
+
+    uint32_t const s = efg->s_id;
+    uint32_t const t = EFG_PRIME(efg, s);
+
+    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)hyperPathGraph->graphPtr;
+
+    VertexPath const* const hpath = hpgraph->hpaths->array + h;
+    DEBUG_ASSERT(isValid_vpath(hpath))
+
+    deactivateVertex_efg(efg, h);
+
+    if (isConnected_gmtx(efg->adjMtx, h, t)) {
+        for (uint32_t i = 0; i < hpath->len; i++) {
+            uint32_t const v = hpath->array[i];
+            DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v, t))
+        }
+    }
+
+    for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
+        uint32_t const v0           = efg->activeVertices[i];
+        uint32_t const v0_original  = v0 < EFG_PRIME(efg, 0) ? v0 : v0 - EFG_PRIME(efg, 0);
+
+        bool const isIncoming = isConnected_gmtx(efg->adjMtx, v0, h);
+        bool const isOutgoing = isConnected_gmtx(efg->adjMtx, h, v0);
+
+        for (uint32_t j = 0; j < hpath->len; j++) {
+            uint32_t const v1       = hpath->array[j];
+            uint32_t const v1_prime = EFG_PRIME(efg, v1);
+
+            if (isIncoming && areConnected_hpg(hyperPathGraph, v0_original, v1)) {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0, v1))
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0, v1_prime))
+            }
+
+            if (isOutgoing && areConnected_hpg(hyperPathGraph, v1, v0_original)) {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1, v0))
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1_prime, v0))
+            }
+        }
+    }
+
+    uint32_t first_id = 0;
+    while (first_id < hpath->len) {
+        uint32_t const p    = hpath->array[first_id];
+        bool validFirst     = 0;
+        for (uint32_t i = 0; i < efg->size_activeVertices && !validFirst; i++) {
+            uint32_t const v = efg->activeVertices[i];
+            validFirst |= isConnected_gmtx(efg->adjMtx, v, p);
+        }
+        if (validFirst) break;
+
+        first_id++;
+    }
+
+    for (uint32_t i = 0; i < hpath->len - 1; i++) {
+        uint32_t const id0      = (first_id + i) % hpath->len;
+        uint32_t const id1      = (first_id + i + 1) % hpath->len;
+        uint32_t const p0       = hpath->array[id0];
+        uint32_t const p0_prime = EFG_PRIME(efg, p0);
+        uint32_t const p1       = hpath->array[id1];
+        uint32_t const p1_prime = EFG_PRIME(efg, p1);
+        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, p0, p1))
+        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, p0_prime, p1_prime))
+    }
+    uint32_t p_last         = hpath->array[(first_id + hpath->len - 1) % hpath->len];
+    uint32_t p_first_prime  = EFG_PRIME(efg, hpath->array[first_id % hpath->len]);
+    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, p_last, p_first_prime))
+
+    for (uint32_t i = 0; i < hpath->len; i++) {
+        uint32_t const p        = hpath->array[i];
+        uint32_t const p_prime  = EFG_PRIME(efg, p);
+        activateVertex_efg(efg, p);
+        activateVertex_efg(efg, p_prime);
+    }
+}
+
 void free_efg(void* const graphPtr) {
     DEBUG_ASSERT(isValid_efg(graphPtr))
 
@@ -557,25 +666,6 @@ void generateTestPlan_efg(SimpleGraph* const expandedFlowGraph) {
     uint32_t const s = efg->s_id;
     uint32_t const t = EFG_PRIME(efg, s);
 
-    for (uint32_t i = 0; i < efg->size_activeVertices - 1; i++) {
-        uint32_t const v0 = efg->activeVertices[i];
-
-        for (uint32_t j = i + 1; j < efg->size_activeVertices; j++) {
-            uint32_t const v1 = efg->activeVertices[j];
-
-            if (!isValidEdge_efg(efg, v0, v1)) continue;
-
-            if (isEdgeBackwards_efg(efg, v0, v1)) {
-                DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(efg->adjMtx, v0, v1))
-            } else {
-                DEBUG_ASSERT(isValidEdge_efg(efg, v1, v0))
-                DEBUG_ASSERT(isEdgeBackwards_efg(efg, v1, v0))
-
-                DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(efg->adjMtx, v1, v0))
-            }
-        }
-    }
-
     for (uint32_t i = 0; efg->activeVertices[i] < EFG_PLUS(efg, 0); i++) {
         uint32_t const v0 = efg->activeVertices[i];
 
@@ -599,21 +689,6 @@ void generateTestPlan_efg(SimpleGraph* const expandedFlowGraph) {
         }
 
         deactivateVertex_efg(efg, v0_plus);
-    }
-
-    for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
-        uint32_t const v0 = efg->activeVertices[i];
-
-        for (uint32_t j = 0; j < efg->size_activeVertices; j++) {
-            if (i == j) continue;
-
-            uint32_t const v1 = efg->activeVertices[j];
-
-            if (!isValidEdge_efg(efg, v0, v1))  continue;
-            if (efg->flowMtx[v0][v1] > 0)       continue;
-
-            DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(efg->adjMtx, v0, v1))
-        }
     }
 }
 
@@ -647,7 +722,6 @@ void initializeFlow_efg(SimpleGraph* const expandedFlowGraph) {
         uint32_t const v0_plus  = EFG_PLUS(efg, v0);
 
         DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0, v0_plus))
-        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0_plus, v0))
 
         if (v0 < EFG_PRIME(efg, 0)) {
             efg->flowMtx[v0][v0_plus] = 0xFFFFFFFF;
@@ -665,14 +739,11 @@ void initializeFlow_efg(SimpleGraph* const expandedFlowGraph) {
             if (!isValidEdge_efg(efg, v0, v1))  continue;
 
             if (v0 == s) {
-                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1, s))
-
                 efg->flowMtx[s][v1] = 0;
                 efg->flowMtx[v1][s] = flowCapacity;
             } else {
                 DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(efg->adjMtx, v0, v1))
                 DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0_plus, v1))
-                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1, v0_plus))
 
                 efg->flowMtx[v0_plus][v1] = 0;
                 efg->flowMtx[v1][v0_plus] = flowCapacity;
@@ -770,7 +841,8 @@ bool isValidVertex_efg(void const* const graphPtr, uint32_t const vertexId) {
     return 1;
 }
 
-void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph) {
+#define VERBOSE_MSG(...) if (verbose) { printf("[%s] - ", get_timestamp()); printf(__VA_ARGS__); puts(""); }
+void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph, bool const verbose) {
     DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
 
     ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)expandedFlowGraph->graphPtr;
@@ -791,6 +863,8 @@ void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph) {
     VertexPath* firstPath = pushEmpty_vpa(stack_A, expandedFlowGraph);
     DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(firstPath, s, 1))
 
+    uint32_t const k_upper = computeOutgoingFlow_efg(expandedFlowGraph, s);
+    uint32_t k = 0;
     while (stack_A->size > 0) {
         if (stack_A < stack_B) {
             stack_A++;
@@ -808,7 +882,12 @@ void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph) {
             uint32_t const v0 = path->array[path->len - 1];
 
             if (v0 == t) {
-                uint32_t minFlow = 0xFFFFFFFF;
+                k++;
+                uint32_t const percent = (k * 100) / k_upper;
+                VERBOSE_MSG("%"PRIu32"%%", percent)
+                DEBUG_ASSERT(k < k_upper)
+                DEBUG_ASSERT(path->len > 1)
+                uint32_t minFlow = efg->flowMtx[path->array[0]][path->array[1]];
                 for (uint32_t i = 0; i < path->len - 1; i++) {
                     uint32_t candidateFlow = efg->flowMtx[path->array[i]][path->array[i + 1]];
                     if (candidateFlow < minFlow)
@@ -817,17 +896,28 @@ void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph) {
 
                 DEBUG_ASSERT(minFlow > 0)
                 for (uint32_t i = 0; i < path->len - 1; i++) {
-                    efg->flowMtx[path->array[i]][path->array[i + 1]] += minFlow;
-                    efg->flowMtx[path->array[i + 1]][path->array[i]] -= minFlow;
+                    #ifndef NDEBUG
+                        uint32_t const capacity =
+                            efg->flowMtx[path->array[i]][path->array[i + 1]] +
+                            efg->flowMtx[path->array[i + 1]][path->array[i]];
+                    #endif
+
+                    DEBUG_ASSERT(efg->flowMtx[path->array[i]][path->array[i + 1]] <= capacity)
+                    DEBUG_ASSERT(efg->flowMtx[path->array[i + 1]][path->array[i]] <= capacity)
+
+                    efg->flowMtx[path->array[i]][path->array[i + 1]] -= minFlow;
+                    efg->flowMtx[path->array[i + 1]][path->array[i]] += minFlow;
+
+                    DEBUG_ASSERT(efg->flowMtx[path->array[i]][path->array[i + 1]] <= capacity)
+                    DEBUG_ASSERT(efg->flowMtx[path->array[i + 1]][path->array[i]] <= capacity)
                 }
 
                 flush_vpa(stack_A);
                 flush_vpa(stack_B);
 
                 firstPath = pushEmpty_vpa(stack_A, expandedFlowGraph);
-                DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(firstPath, s, 1))
+                extend_vpath(firstPath, s, 0);
             } else {
-                /* for (uint32_t i = efg->size_activeVertices - 1; i != 0xFFFFFFFF; i--) { */
                 for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
                     uint32_t const v1 = efg->activeVertices[i];
                     if (v0 == v1)                       continue;
@@ -836,8 +926,33 @@ void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph) {
 
                     VertexPath* const path_to_extend = pushClone_vpa(stack_A, path);
 
-                    if (!extend_vpath(path_to_extend, v1, 1))
+                    if (v1 < EFG_PRIME(efg, 0)) {
+                        if (contains_vpath(path_to_extend, v1)) {
+                            pop_vpa(stack_A);
+                        } else {
+                            extend_vpath(path_to_extend, v1, 0);
+                        }
+                    } else if (v1 < EFG_PLUS(efg, 0)) {
+                        if (containsTwice_vpath(path_to_extend, v1)) {
+                            pop_vpa(stack_A);
+                        } else if (contains_vpath(path_to_extend, v1)) {
+                            pop_vpa(stack_A);
+                        } else {
+                            extend_vpath(path_to_extend, v1, 0);
+                        }
+                    } else if (v1 < EFG_PLUS(efg, EFG_PRIME(efg, 0))) {
+                        if (contains_vpath(path_to_extend, v1)) {
+                            pop_vpa(stack_A);
+                        } else {
+                            extend_vpath(path_to_extend, v1, 0);
+                        }
+                    } else if (containsTwice_vpath(path_to_extend, v1)) {
                         pop_vpa(stack_A);
+                    } else if (contains_vpath(path_to_extend, v1)) {
+                        pop_vpa(stack_A);
+                    } else {
+                        extend_vpath(path_to_extend, v1, 0);
+                    }
                 }
             }
         }
@@ -846,6 +961,7 @@ void minimizeFlow_efg(SimpleGraph* const expandedFlowGraph) {
     free_vpa(stack_A);
     free_vpa(stack_B);
 }
+#undef VERBOSE_MSG
 
 uint32_t nextVertexId_nitr_efg(NeighborIterator* const itr) {
     DEBUG_ASSERT(isValid_nitr_efg(itr))
@@ -853,8 +969,11 @@ uint32_t nextVertexId_nitr_efg(NeighborIterator* const itr) {
     ExpandedFlowGraph const* const efg = (ExpandedFlowGraph const*)itr->graphPtr;
 
     while (
-        itr->nextNeighborId < efg->size_activeVertices                                  &&
-        !isValidEdge_efg(efg, itr->vertexId, efg->activeVertices[itr->nextNeighborId])
+        itr->nextNeighborId < efg->size_activeVertices &&
+        (
+            efg->activeVertices[itr->nextNeighborId] == itr->vertexId ||
+            !isValidEdge_efg(efg, itr->vertexId, efg->activeVertices[itr->nextNeighborId])
+        )
     ) itr->nextNeighborId++;
 
     if (itr->nextNeighborId >= efg->size_activeVertices)
@@ -885,6 +1004,27 @@ uint32_t nextVertexId_vitr_efg(VertexIterator* const itr) {
         return efg->activeVertices[itr->nextVertexId++];
     } else {
         return 0xFFFFFFFF;
+    }
+}
+
+void removeZeroFlows_efg(SimpleGraph* const expandedFlowGraph) {
+    DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+
+    ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)expandedFlowGraph->graphPtr;
+
+    for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
+        uint32_t const v0 = efg->activeVertices[i];
+
+        for (uint32_t j = 0; j < efg->size_activeVertices; j++) {
+            if (i == j) continue;
+
+            uint32_t const v1 = efg->activeVertices[j];
+
+            if (!isValidEdge_efg(efg, v0, v1))  continue;
+            if (efg->flowMtx[v0][v1] > 0)       continue;
+
+            DEBUG_ASSERT_NDEBUG_EXECUTE(disconnect_gmtx(efg->adjMtx, v0, v1))
+        }
     }
 }
 

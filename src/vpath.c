@@ -4,6 +4,7 @@
  * @author Yavuz Koroglu
  */
 #include <inttypes.h>
+#include <stdarg.h>
 #include <string.h>
 #include <time.h>
 #include "padkit/graphmatrix.h"
@@ -171,6 +172,8 @@ bool cacheComputeShortest_vpath(VertexPath* const shortestPath, SimpleGraph cons
                 uint32_t neighborId;
                 graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
             ) {
+                if (neighborId == from) continue;
+
                 if (neighborId == to) {
                     clone_vpath(shortestPath, vpath);
                     for (uint32_t i = 0; i < stack_A_cap; i++) {
@@ -235,6 +238,168 @@ bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* co
     DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, from))
     DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, to))
 
+    return computeShortestAvoidVertices_vpath(shortestPath, graph, from, to, 0);
+}
+
+bool computeShortestAvoidVertices_vpath(
+    VertexPath* const shortestPath, SimpleGraph const* const graph,
+    uint32_t const from, uint32_t const to,
+    size_t const n, ...
+) {
+    va_list args;
+
+    DEBUG_ERROR_IF(shortestPath == NULL)
+    DEBUG_ASSERT(isValid_sg(graph))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, from))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, to))
+
+    if (shortestPath->isAllocated) {
+        shortestPath->graph = graph;
+        flush_vpath(shortestPath);
+    } else {
+        constructEmpty_vpath(shortestPath, graph);
+    }
+    if (from == to) return 1;
+
+    VertexPath* vpath;
+
+    uint32_t* avoidList = (n == 0) ? NULL : malloc(n * sizeof(uint32_t));
+    DEBUG_ERROR_IF(n > 0 && avoidList == NULL)
+
+    va_start(args, n);
+    for (size_t i = 0; i < n; i++) {
+        avoidList[i] = va_arg(args, uint32_t);
+        DEBUG_ERROR_IF(avoidList[i] == to)
+    }
+    va_end(args);
+
+    uint32_t    stack_A_cap     = graph->countVertices(graph->graphPtr);
+    uint32_t    stack_A_size    = 0;
+    VertexPath* stack_A         = calloc((size_t)stack_A_cap, sizeof(VertexPath));
+    DEBUG_ERROR_IF(stack_A == NULL)
+
+    uint32_t    stack_B_cap     = stack_A_cap;
+    uint32_t    stack_B_size    = 0;
+    VertexPath* stack_B         = calloc((size_t)stack_B_cap, sizeof(VertexPath));
+    DEBUG_ERROR_IF(stack_B == NULL)
+
+    NeighborIterator itr[1];
+    construct_nitr_sg(itr, graph, from);
+    for (
+        uint32_t neighborId;
+        graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
+    ) {
+        bool shouldAvoid = 0;
+        for (size_t i = 0; i < n && !shouldAvoid; i++)
+            shouldAvoid = (avoidList[i] == neighborId);
+        if (shouldAvoid) continue;
+        if (neighborId == to) {
+            free(avoidList);
+            for (uint32_t i = 0; i < stack_A_cap; i++) {
+                vpath = stack_A + i;
+                if (vpath->isAllocated) free_vpath(vpath);
+            }
+            free(stack_A);
+            for (uint32_t i = 0; i < stack_B_cap; i++) {
+                vpath = stack_B + i;
+                if (vpath->isAllocated) free_vpath(vpath);
+            }
+            free(stack_B);
+            return 1;
+        }
+        vpath = stack_A + stack_A_size++;
+        constructEmpty_vpath(vpath, graph);
+        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(vpath, neighborId, 1))
+    }
+
+    while (stack_A_size > 0) {
+        VertexPath* const   tmp_ptr = stack_B;
+        stack_B                     = stack_A;
+        stack_A                     = tmp_ptr;
+
+        uint32_t const      tmp_cap = stack_B_cap;
+        stack_B_cap                 = stack_A_cap;
+        stack_A_cap                 = tmp_cap;
+
+        stack_B_size                = stack_A_size;
+        stack_A_size                = 0;
+
+        while (stack_B_size > 0) {
+            vpath = stack_B + --stack_B_size;
+            DEBUG_ASSERT(isValid_vpath(vpath))
+            DEBUG_ASSERT(vpath->len > 0)
+
+            construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
+            for (
+                uint32_t neighborId;
+                graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
+            ) {
+                if (neighborId == from) continue;
+                bool shouldAvoid = 0;
+                for (size_t i = 0; i < n && !shouldAvoid; i++)
+                    shouldAvoid = (avoidList[i] == neighborId);
+                if (shouldAvoid) continue;
+
+                if (neighborId == to) {
+                    clone_vpath(shortestPath, vpath);
+                    free(avoidList);
+                    for (uint32_t i = 0; i < stack_A_cap; i++) {
+                        vpath = stack_A + i;
+                        if (vpath->isAllocated) free_vpath(vpath);
+                    }
+                    free(stack_A);
+                    for (uint32_t i = 0; i < stack_B_cap; i++) {
+                        vpath = stack_B + i;
+                        if (vpath->isAllocated) free_vpath(vpath);
+                    }
+                    free(stack_B);
+                    return 1;
+                }
+
+                RECALLOC_IF_NECESSARY(
+                    VertexPath, stack_A,
+                    uint32_t, stack_A_cap, stack_A_size,
+                    RECALLOC_ERROR
+                )
+                VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
+                clone_vpath(vpath_to_extend, vpath);
+
+                if (!extend_vpath(vpath_to_extend, neighborId, 1)) {
+                    stack_A_size--;
+                } else {
+                    stack_A_size -= vpath_to_extend->isCycle;
+                }
+            }
+        }
+    }
+
+    invalidate_vpath(shortestPath);
+    free(avoidList);
+    for (uint32_t i = 0; i < stack_A_cap; i++) {
+        vpath = stack_A + i;
+        if (vpath->isAllocated) free_vpath(vpath);
+    }
+    free(stack_A);
+    for (uint32_t i = 0; i < stack_B_cap; i++) {
+        vpath = stack_B + i;
+        if (vpath->isAllocated) free_vpath(vpath);
+    }
+    free(stack_B);
+    return 0;
+}
+
+bool computeShortestAvoidPath_vpath(
+    VertexPath* const shortestPath, SimpleGraph const* const graph,
+    uint32_t const from, uint32_t const to,
+    VertexPath const* const avoid
+) {
+    DEBUG_ERROR_IF(shortestPath == NULL)
+    DEBUG_ASSERT(isValid_sg(graph))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, from))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, to))
+    DEBUG_ASSERT(isValid_vpath(avoid))
+    DEBUG_ERROR_IF(contains_vpath(avoid, to))
+
     if (shortestPath->isAllocated) {
         shortestPath->graph = graph;
         flush_vpath(shortestPath);
@@ -261,6 +426,7 @@ bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* co
         uint32_t neighborId;
         graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
     ) {
+        if (contains_vpath(avoid, neighborId)) continue;
         if (neighborId == to) {
             for (uint32_t i = 0; i < stack_A_cap; i++) {
                 vpath = stack_A + i;
@@ -301,6 +467,9 @@ bool computeShortest_vpath(VertexPath* const shortestPath, SimpleGraph const* co
                 uint32_t neighborId;
                 graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
             ) {
+                if (neighborId == from) continue;
+                if (contains_vpath(avoid, neighborId)) continue;
+
                 if (neighborId == to) {
                     clone_vpath(shortestPath, vpath);
                     for (uint32_t i = 0; i < stack_A_cap; i++) {
@@ -398,6 +567,90 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
                 graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
             ) {
                 if (neighborId == vpath->array[0]) {
+                    clone_vpath(cycle, vpath);
+                    for (uint32_t i = 0; i < stack_A_cap; i++) {
+                        vpath = stack_A + i;
+                        if (vpath->isAllocated) free_vpath(vpath);
+                    }
+                    free(stack_A);
+                    for (uint32_t i = 0; i < stack_B_cap; i++) {
+                        vpath = stack_B + i;
+                        if (vpath->isAllocated) free_vpath(vpath);
+                    }
+                    free(stack_B);
+                    return 1;
+                }
+
+                RECALLOC_IF_NECESSARY(
+                    VertexPath, stack_A,
+                    uint32_t, stack_A_cap, stack_A_size,
+                    RECALLOC_ERROR
+                )
+                VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
+                clone_vpath(vpath_to_extend, vpath);
+
+                stack_A_size -= !extend_vpath(vpath_to_extend, neighborId, 1);
+            }
+        }
+    }
+
+    invalidate_vpath(cycle);
+    for (uint32_t i = 0; i < stack_A_cap; i++) {
+        vpath = stack_A + i;
+        if (vpath->isAllocated) free_vpath(vpath);
+    }
+    free(stack_A);
+    for (uint32_t i = 0; i < stack_B_cap; i++) {
+        vpath = stack_B + i;
+        if (vpath->isAllocated) free_vpath(vpath);
+    }
+    free(stack_B);
+    return 0;
+}
+
+bool computeShortestCyclePivot_vpath(VertexPath* const cycle, SimpleGraph const* const graph, uint32_t const pivot) {
+    DEBUG_ERROR_IF(cycle == NULL)
+    DEBUG_ASSERT(isValid_sg(graph))
+    DEBUG_ASSERT(graph->isValidVertex(graph->graphPtr, pivot))
+
+    uint32_t    stack_A_cap     = graph->countVertices(graph->graphPtr);
+    uint32_t    stack_A_size    = 0;
+    VertexPath* stack_A         = calloc((size_t)stack_A_cap, sizeof(VertexPath));
+    DEBUG_ERROR_IF(stack_A == NULL)
+
+    uint32_t    stack_B_cap     = stack_A_cap;
+    uint32_t    stack_B_size    = 0;
+    VertexPath* stack_B         = calloc((size_t)stack_B_cap, sizeof(VertexPath));
+    DEBUG_ERROR_IF(stack_B == NULL)
+
+    VertexPath* vpath = stack_A + stack_A_size++;
+    constructEmpty_vpath(vpath, graph);
+    DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(vpath, pivot, 1))
+
+    while (stack_A_size > 0) {
+        VertexPath* const   tmp_ptr = stack_B;
+        stack_B                     = stack_A;
+        stack_A                     = tmp_ptr;
+
+        uint32_t const      tmp_cap = stack_B_cap;
+        stack_B_cap                 = stack_A_cap;
+        stack_A_cap                 = tmp_cap;
+
+        stack_B_size                = stack_A_size;
+        stack_A_size                = 0;
+
+        while (stack_B_size > 0) {
+            vpath = stack_B + --stack_B_size;
+            DEBUG_ASSERT(isValid_vpath(vpath))
+            DEBUG_ASSERT(vpath->len > 0)
+
+            NeighborIterator itr[1];
+            construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
+            for (
+                uint32_t neighborId;
+                graph->isValidVertex(graph->graphPtr, (neighborId = graph->nextVertexId_nitr(itr)));
+            ) {
+                if (neighborId == pivot) {
                     clone_vpath(cycle, vpath);
                     for (uint32_t i = 0; i < stack_A_cap; i++) {
                         vpath = stack_A + i;
@@ -638,12 +891,23 @@ bool contains_vpath(VertexPath const* const vpath, uint32_t const vertexId) {
     return position != 0 && vpath->sorted[position - 1] == vertexId;
 }
 
+bool containsTwice_vpath(VertexPath const* const vpath, uint32_t const vertexId) {
+    DEBUG_ASSERT(isValid_vpath(vpath))
+    DEBUG_ASSERT(vpath->graph->isValidVertex(vpath->graph->graphPtr, vertexId))
+
+    uint32_t const position = search_vpath(vpath, vertexId);
+
+    return position > 1 && vpath->sorted[position - 1] == vertexId && vpath->sorted[position - 2] == vertexId;
+}
+
 void dump_vpath(VertexPath const* const vpath, FILE* const output) {
     DEBUG_ASSERT(isValid_vpath(vpath))
     DEBUG_ERROR_IF(output == NULL)
 
-    for (uint32_t i = 0; i < vpath->len; i++)
-        fprintf(output, " %"PRIu32, vpath->array[i]);
+    for (uint32_t i = 0; i < vpath->len; i++) {
+        vpath->graph->dumpVertex(vpath->graph->graphPtr, output, vpath->array[i]);
+        /* fprintf(output, " %"PRIu32, vpath->array[i]); */
+    }
 
     fputs("\n", output);
 }
@@ -889,14 +1153,15 @@ bool splice_vpath(VertexPath* const head, VertexPath const* const tail) {
         return 1;
     }
 
-    VertexPath connector[1] = {NOT_A_VPATH};
+    VertexPath connector[1] = { NOT_A_VPATH };
     uint32_t const overlapLen = findLargestOverlap_vpath(head, tail);
     if (overlapLen > 0) {
-        for (uint32_t i = overlapLen; i < tail->len; i++)
+        for (uint32_t i = overlapLen; i < tail->len; i++) {
             extend_vpath(head, tail->array[i], 0);
+        }
         return 1;
     } else if (
-        cacheComputeShortest_vpath(
+        computeShortest_vpath(
             connector, head->graph,
             head->array[head->len - 1], tail->array[0]
         )
