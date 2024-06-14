@@ -2,16 +2,16 @@ digraph Model {
     rankdir=LR;
     reset [shape="none",label="",width=0,height=0];
     node [shape="circle"];
-    reset->A;
-    A -> B [label="AB"];
-    B -> C [label="BC"];
-    B -> H [label="BH"];
-    C -> D [label="CD"];
-    D -> A [label="DA"];
-    D -> E [label="DE"];
-    E -> F [label="EF"];
-    F -> G [label="FG"];
-    G -> E [label="GE"];
-    H -> I [label="HI"];
-    I -> H [label="IH"];
+    reset->a;
+    a -> b [label="ab"];
+    b -> c [label="bc"];
+    b -> h [label="bh"];
+    c -> d [label="cd"];
+    d -> a [label="da"];
+    d -> e [label="de"];
+    e -> f [label="ef"];
+    f -> g [label="fg"];
+    g -> e [label="ge"];
+    h -> i [label="hi"];
+    i -> h [label="ih"];
 }

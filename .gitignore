@@ -100,5 +100,6 @@ t.json
 
 # Large results
 exps/005/generated/**
+exps/005/coverages/**
 
 MARS/**

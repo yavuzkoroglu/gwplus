@@ -6,30 +6,30 @@
             "generator":"random(edge_coverage(100))",
             "actions":[],
             "vertices":[
-                {"id":"A","name":"A","actions":[],"requirements":[],"properties":{"x":181,"y":399}},
-                {"id":"B","name":"B","actions":[],"requirements":[],"properties":{"x":293,"y":314}},
-                {"id":"C","name":"C","actions":[],"requirements":[],"properties":{"x":445,"y":321}},
-                {"id":"H","name":"H","actions":[],"requirements":[],"properties":{"x":539,"y":221}},
-                {"id":"I","name":"I","actions":[],"requirements":[],"properties":{"x":676,"y":220}},
-                {"id":"D","name":"D","actions":[],"requirements":[],"properties":{"x":539,"y":403}},
-                {"id":"E","name":"E","actions":[],"requirements":[],"properties":{"x":736,"y":407}},
-                {"id":"F","name":"F","actions":[],"requirements":[],"properties":{"x":881,"y":308}},
-                {"id":"G","name":"G","actions":[],"requirements":[],"properties":{"x":976,"y":447}}
+                {"id":"a","name":"a","actions":[],"requirements":[],"properties":{"x":181,"y":399}},
+                {"id":"b","name":"b","actions":[],"requirements":[],"properties":{"x":293,"y":314}},
+                {"id":"c","name":"c","actions":[],"requirements":[],"properties":{"x":445,"y":321}},
+                {"id":"h","name":"h","actions":[],"requirements":[],"properties":{"x":539,"y":221}},
+                {"id":"i","name":"i","actions":[],"requirements":[],"properties":{"x":676,"y":220}},
+                {"id":"d","name":"d","actions":[],"requirements":[],"properties":{"x":539,"y":403}},
+                {"id":"e","name":"e","actions":[],"requirements":[],"properties":{"x":736,"y":407}},
+                {"id":"f","name":"f","actions":[],"requirements":[],"properties":{"x":881,"y":308}},
+                {"id":"g","name":"g","actions":[],"requirements":[],"properties":{"x":976,"y":447}}
             ],
             "edges":[
-                {"id":"AB","name":"AB","actions":[],"requirements":[],"properties":[],"sourceVertexId":"A","targetVertexId":"B"},
-                {"id":"BC","name":"BC","actions":[],"requirements":[],"properties":[],"sourceVertexId":"B","targetVertexId":"C"},
-                {"id":"CD","name":"CD","actions":[],"requirements":[],"properties":[],"sourceVertexId":"C","targetVertexId":"D"},
-                {"id":"DA","name":"DA","actions":[],"requirements":[],"properties":[],"sourceVertexId":"D","targetVertexId":"A"},
-                {"id":"DE","name":"DE","actions":[],"requirements":[],"properties":[],"sourceVertexId":"D","targetVertexId":"E"},
-                {"id":"EF","name":"EF","actions":[],"requirements":[],"properties":[],"sourceVertexId":"E","targetVertexId":"F"},
-                {"id":"FG","name":"FG","actions":[],"requirements":[],"properties":[],"sourceVertexId":"F","targetVertexId":"G"},
-                {"id":"GE","name":"GE","actions":[],"requirements":[],"properties":[],"sourceVertexId":"G","targetVertexId":"E"},
-                {"id":"BH","name":"BH","actions":[],"requirements":[],"properties":[],"sourceVertexId":"B","targetVertexId":"H"},
-                {"id":"HI","name":"HI","actions":[],"requirements":[],"properties":[],"sourceVertexId":"H","targetVertexId":"I"},
-                {"id":"IH","name":"IH","actions":[],"requirements":[],"properties":[],"sourceVertexId":"I","targetVertexId":"H"}
+                {"id":"ab","name":"ab","actions":[],"requirements":[],"properties":[],"sourceVertexId":"a","targetVertexId":"b"},
+                {"id":"bc","name":"bc","actions":[],"requirements":[],"properties":[],"sourceVertexId":"b","targetVertexId":"c"},
+                {"id":"cd","name":"cd","actions":[],"requirements":[],"properties":[],"sourceVertexId":"c","targetVertexId":"d"},
+                {"id":"da","name":"da","actions":[],"requirements":[],"properties":[],"sourceVertexId":"d","targetVertexId":"a"},
+                {"id":"de","name":"de","actions":[],"requirements":[],"properties":[],"sourceVertexId":"d","targetVertexId":"e"},
+                {"id":"ef","name":"ef","actions":[],"requirements":[],"properties":[],"sourceVertexId":"e","targetVertexId":"f"},
+                {"id":"fg","name":"fg","actions":[],"requirements":[],"properties":[],"sourceVertexId":"f","targetVertexId":"g"},
+                {"id":"ge","name":"ge","actions":[],"requirements":[],"properties":[],"sourceVertexId":"g","targetVertexId":"e"},
+                {"id":"bh","name":"bh","actions":[],"requirements":[],"properties":[],"sourceVertexId":"b","targetVertexId":"h"},
+                {"id":"hi","name":"hi","actions":[],"requirements":[],"properties":[],"sourceVertexId":"h","targetVertexId":"i"},
+                {"id":"ih","name":"ih","actions":[],"requirements":[],"properties":[],"sourceVertexId":"i","targetVertexId":"h"}
             ],
-            "startElementId":"A"
+            "startElementId":"a"
         }
     ]
 }

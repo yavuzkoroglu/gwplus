@@ -1549,6 +1549,7 @@ int main(int argc, char* argv[]) {
 
     VERBOSE_MSG("Generating/Loading Test Requirements...")
     generateTestRequirements(requirements, coverageCriterion, graph, gwma, requirementsChunk);
+    VERBOSE_MSG("# Test Requirements = %"PRIu32, requirements->size)
 
     if (requirementsName != NULL) {
         VERBOSE_MSG("Saving test requirements to '%s'", requirementsName)
@@ -1926,10 +1927,12 @@ int main(int argc, char* argv[]) {
                 DEBUG_ASSERT(isValid_vpath(requirement))
                 DEBUG_ASSERT(requirement->len > 0)
 
+                uint32_t const k = countCoverTimes_vpath(requirement, testPath);
+
+                printf("Covered p%"PRIu32" %"PRIu32" times\n", requirementId, k);
+
                 if (isConnected_gmtx(coverMtx, 0, requirementId) || !isSubPath_vpath(requirement, testPath))
                     continue;
-
-                printf("Covered p%"PRIu32"\n", requirementId);
 
                 nCovered += 100;
                 DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, requirementId))

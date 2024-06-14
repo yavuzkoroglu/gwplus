@@ -171,6 +171,13 @@
     bool containsTwice_vpath(VertexPath const* const vpath, uint32_t const vertexId);
 
     /**
+     * @brief Counts the number of times a path is covered by another.
+     * @param covered The covered path.
+     * @param cover The cover path.
+     */
+    uint32_t countCoverTimes_vpath(VertexPath const* const covered, VertexPath const* const cover);
+
+    /**
      * @brief Dumps a VertexPath.
      * @param vpath A pointer to the VertexPath.
      * @param output A pointer to the output FILE.

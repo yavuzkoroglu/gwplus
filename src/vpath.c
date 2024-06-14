@@ -900,6 +900,24 @@ bool containsTwice_vpath(VertexPath const* const vpath, uint32_t const vertexId)
     return position > 1 && vpath->sorted[position - 1] == vertexId && vpath->sorted[position - 2] == vertexId;
 }
 
+uint32_t countCoverTimes_vpath(VertexPath const* const covered, VertexPath const* const cover) {
+    DEBUG_ASSERT(isValid_vpath(covered))
+    DEBUG_ASSERT(isValid_vpath(cover))
+    DEBUG_ASSERT(covered->graph->graphPtr == cover->graph->graphPtr)
+
+    if (covered->len > cover->len) return 0;
+
+    size_t const covered_size_in_bytes  = (size_t)covered->len * sizeof(uint32_t);
+    uint32_t* const cover_end           = cover->array + cover->len - covered->len;
+
+    uint32_t count = 0;
+    for (uint32_t* ptr = cover_end; ptr >= cover->array; ptr--)
+        if (!memcmp((char const*)ptr, (char const*)covered->array, covered_size_in_bytes))
+            count++;
+
+    return count;
+}
+
 void dump_vpath(VertexPath const* const vpath, FILE* const output) {
     DEBUG_ASSERT(isValid_vpath(vpath))
     DEBUG_ERROR_IF(output == NULL)
