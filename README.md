@@ -135,118 +135,119 @@ java -jar graphwalker-cli-4.3.2.jar offline -m t_2.json "predefined_path(predefi
 The GraphWalker CLI output should look like as follows:
 
 ```
-{"currentElementName":"A"}
-{"currentElementName":"AB"}
-{"currentElementName":"B"}
-{"currentElementName":"BC"}
-{"currentElementName":"C"}
-{"currentElementName":"CD"}
-{"currentElementName":"D"}
-{"currentElementName":"DA"}
-{"currentElementName":"A"}
-{"currentElementName":"AB"}
-{"currentElementName":"B"}
-{"currentElementName":"BC"}
-{"currentElementName":"C"}
-{"currentElementName":"CD"}
-{"currentElementName":"D"}
-{"currentElementName":"DA"}
-{"currentElementName":"A"}
-{"currentElementName":"AB"}
-{"currentElementName":"B"}
-{"currentElementName":"BH"}
-{"currentElementName":"H"}
-{"currentElementName":"HI"}
-{"currentElementName":"I"}
-{"currentElementName":"IH"}
-{"currentElementName":"H"}
-{"currentElementName":"HI"}
-{"currentElementName":"I"}
-{"currentElementName":"IH"}
-{"currentElementName":"H"}
+{"currentElementName":"a"}
+{"currentElementName":"ab"}
+{"currentElementName":"b"}
+{"currentElementName":"bc"}
+{"currentElementName":"c"}
+{"currentElementName":"cd"}
+{"currentElementName":"d"}
+{"currentElementName":"da"}
+{"currentElementName":"a"}
+{"currentElementName":"ab"}
+{"currentElementName":"b"}
+{"currentElementName":"bc"}
+{"currentElementName":"c"}
+{"currentElementName":"cd"}
+{"currentElementName":"d"}
+{"currentElementName":"da"}
+{"currentElementName":"a"}
+{"currentElementName":"ab"}
+{"currentElementName":"b"}
+{"currentElementName":"bh"}
+{"currentElementName":"h"}
+{"currentElementName":"hi"}
+{"currentElementName":"i"}
+{"currentElementName":"ih"}
+{"currentElementName":"h"}
+{"currentElementName":"hi"}
+{"currentElementName":"i"}
+{"currentElementName":"ih"}
+{"currentElementName":"h"}
 ```
 
 The final option `-v` enables verbose messages in output. A correct execution should produce something similar to the following timestamped output:
 
 ```
-[2024-06-03 22:36:47] - Verbose enabled.
-[2024-06-03 22:36:47] - Input Model File = exps/001/m.json
-[2024-06-03 22:36:47] - Coverage Criterion = Prime Edge Path Coverage
-[2024-06-03 22:36:47] - Simple Graph Name = s.dot
-[2024-06-03 22:36:47] - Path Graph File = p.dot
-[2024-06-03 22:36:47] - Final Test Plan File = f.dot
-[2024-06-03 22:36:47] - Output Model File with Predefined Edges = t.json
-[2024-06-03 22:36:47] - Coverage Percent = 100%
-[2024-06-03 22:36:47] - Creating Empty GraphWalker Model...
-[2024-06-03 22:36:47] - Filling the GraphWalker Model using 'exps/001/m.json'
-[2024-06-03 22:36:47] - Filling adjacency lists to optimize path generation...
-[2024-06-03 22:36:47] - Starting Element is a VERTEX
-[2024-06-03 22:36:47] - # Vertices = 9
-[2024-06-03 22:36:47] - # Edges = 11
-[2024-06-03 22:36:47] - Saving the simple graph to 's.dot'...
-[2024-06-03 22:36:47] - Generating/Loading Test Requirements...
-[2024-06-03 22:36:47] - Generating Path Graph...
-[2024-06-03 22:36:47] - Optimization Level = 0
-[2024-06-03 22:36:47] - Saving path graph to 'p.dot'
-[2024-06-03 22:36:47] - Generating Hyperpaths...
-[2024-06-03 22:36:47] - Generating Network Flow Graph with Hyperpaths...
-[2024-06-03 22:36:47] - Minimizing Total Flow...
-[2024-06-03 22:36:47] - Expanding the Network Flow Graph...
-[2024-06-03 22:36:47] - Expanding h2
-[2024-06-03 22:36:47] - Initializing flow with test requirement constraints...
-[2024-06-03 22:36:47] - Computing a feasible flow...
-[2024-06-03 22:36:47] - 3%
-[2024-06-03 22:36:47] - 15%
-[2024-06-03 22:36:47] - Activating backwards edges...
-[2024-06-03 22:36:47] - Minimizing the flow...
-[2024-06-03 22:36:47] - 33%
-[2024-06-03 22:36:47] - Deactivating backwards edges...
-[2024-06-03 22:36:47] - Generating the Final Test Plan...
-[2024-06-03 22:36:47] - Removing zero flows...
-[2024-06-03 22:36:47] - Deactivating dead vertices...
-[2024-06-03 22:36:47] - Expanding h1
-[2024-06-03 22:36:47] - Initializing flow with test requirement constraints...
-[2024-06-03 22:36:47] - Computing a feasible flow...
-[2024-06-03 22:36:47] - 6%
-[2024-06-03 22:36:47] - 23%
-[2024-06-03 22:36:47] - 26%
-[2024-06-03 22:36:47] - Activating backwards edges...
-[2024-06-03 22:36:47] - Minimizing the flow...
-[2024-06-03 22:36:47] - 25%
-[2024-06-03 22:36:47] - 50%
-[2024-06-03 22:36:47] - Deactivating backwards edges...
-[2024-06-03 22:36:47] - Generating the Final Test Plan...
-[2024-06-03 22:36:47] - Removing zero flows...
-[2024-06-03 22:36:47] - Deactivating dead vertices...
-[2024-06-03 22:36:47] - Expanding h0
-[2024-06-03 22:36:47] - Initializing flow with test requirement constraints...
-[2024-06-03 22:36:47] - Computing a feasible flow...
-[2024-06-03 22:36:47] - 16%
-[2024-06-03 22:36:47] - 33%
-[2024-06-03 22:36:47] - Activating backwards edges...
-[2024-06-03 22:36:47] - Minimizing the flow...
-[2024-06-03 22:36:47] - 33%
-[2024-06-03 22:36:47] - Deactivating backwards edges...
-[2024-06-03 22:36:47] - Generating the Final Test Plan...
-[2024-06-03 22:36:47] - Removing zero flows...
-[2024-06-03 22:36:47] - Deactivating dead vertices...
-[2024-06-03 22:36:47] - Saving the final test plan to 'f.dot'
-[2024-06-03 22:36:47] - Creating Tests...
-[2024-06-03 22:36:47] - Consuming s-t path #1
-[2024-06-03 22:36:47] - Converting to path trace #1
-[2024-06-03 22:36:47] - Removing new zero flows
-[2024-06-03 22:36:47] - Constructing test path #1
-[2024-06-03 22:36:47] - LengthOf(Test #1) = 14
-[2024-06-03 22:36:47] - Saving to 't_1.json'
-[2024-06-03 22:36:47] - Consuming s-t path #2
-[2024-06-03 22:36:47] - Converting to path trace #2
-[2024-06-03 22:36:47] - Removing new zero flows
-[2024-06-03 22:36:47] - Constructing test path #2
-[2024-06-03 22:36:47] - LengthOf(Test #2) = 14
-[2024-06-03 22:36:47] - Saving to 't_2.json'
-[2024-06-03 22:36:47] - # Tests = 2
-[2024-06-03 22:36:47] - Total Test Length = 28
-[2024-06-03 22:36:47] - Finished.
+[2024-06-15 06:42:42] - Verbose enabled.
+[2024-06-15 06:42:42] - Input Model File = exps/001/m.json
+[2024-06-15 06:42:42] - Coverage Criterion = Prime Edge Path Coverage
+[2024-06-15 06:42:42] - Simple Graph Name = s.dot
+[2024-06-15 06:42:42] - Path Graph File = p.dot
+[2024-06-15 06:42:42] - Final Test Plan File = f.dot
+[2024-06-15 06:42:42] - Output Model File with Predefined Edges = t.json
+[2024-06-15 06:42:42] - Coverage Percent = 100%
+[2024-06-15 06:42:42] - Creating Empty GraphWalker Model...
+[2024-06-15 06:42:42] - Filling the GraphWalker Model using 'exps/001/m.json'
+[2024-06-15 06:42:42] - Filling adjacency lists to optimize path generation...
+[2024-06-15 06:42:42] - Starting Element is a VERTEX
+[2024-06-15 06:42:42] - # Vertices = 9
+[2024-06-15 06:42:42] - # Edges = 11
+[2024-06-15 06:42:42] - Saving the simple graph to 's.dot'...
+[2024-06-15 06:42:42] - Generating/Loading Test Requirements...
+[2024-06-15 06:42:42] - # Test Requirements = 11
+[2024-06-15 06:42:42] - Generating Path Graph...
+[2024-06-15 06:42:42] - Optimization Level = 0
+[2024-06-15 06:42:42] - Saving path graph to 'p.dot'
+[2024-06-15 06:42:42] - Generating Hyperpaths...
+[2024-06-15 06:42:42] - Generating Network Flow Graph with Hyperpaths...
+[2024-06-15 06:42:42] - Minimizing Total Flow...
+[2024-06-15 06:42:42] - Expanding the Network Flow Graph...
+[2024-06-15 06:42:42] - Expanding h2
+[2024-06-15 06:42:42] - Initializing flow with test requirement constraints...
+[2024-06-15 06:42:42] - Computing a feasible flow...
+[2024-06-15 06:42:42] - 3%
+[2024-06-15 06:42:42] - 15%
+[2024-06-15 06:42:42] - Activating backwards edges...
+[2024-06-15 06:42:42] - Minimizing the flow...
+[2024-06-15 06:42:42] - 33%
+[2024-06-15 06:42:42] - Deactivating backwards edges...
+[2024-06-15 06:42:42] - Generating the Final Test Plan...
+[2024-06-15 06:42:42] - Removing zero flows...
+[2024-06-15 06:42:42] - Deactivating dead vertices...
+[2024-06-15 06:42:42] - Expanding h1
+[2024-06-15 06:42:42] - Initializing flow with test requirement constraints...
+[2024-06-15 06:42:42] - Computing a feasible flow...
+[2024-06-15 06:42:42] - 6%
+[2024-06-15 06:42:42] - 23%
+[2024-06-15 06:42:42] - 26%
+[2024-06-15 06:42:42] - Activating backwards edges...
+[2024-06-15 06:42:42] - Minimizing the flow...
+[2024-06-15 06:42:42] - 25%
+[2024-06-15 06:42:42] - 50%
+[2024-06-15 06:42:42] - Deactivating backwards edges...
+[2024-06-15 06:42:42] - Generating the Final Test Plan...
+[2024-06-15 06:42:42] - Removing zero flows...
+[2024-06-15 06:42:42] - Deactivating dead vertices...
+[2024-06-15 06:42:42] - Expanding h0
+[2024-06-15 06:42:42] - Initializing flow with test requirement constraints...
+[2024-06-15 06:42:42] - Computing a feasible flow...
+[2024-06-15 06:42:42] - 16%
+[2024-06-15 06:42:42] - 33%
+[2024-06-15 06:42:42] - Activating backwards edges...
+[2024-06-15 06:42:42] - Minimizing the flow...
+[2024-06-15 06:42:42] - 33%
+[2024-06-15 06:42:42] - Deactivating backwards edges...
+[2024-06-15 06:42:42] - Generating the Final Test Plan...
+[2024-06-15 06:42:42] - Removing zero flows...
+[2024-06-15 06:42:42] - Deactivating dead vertices...
+[2024-06-15 06:42:42] - Saving the final test plan to 'f.dot'
+[2024-06-15 06:42:42] - Creating Tests...
+[2024-06-15 06:42:42] - Consuming s-t path #1
+[2024-06-15 06:42:42] - Converting to path trace #1
+[2024-06-15 06:42:42] - Removing new zero flows
+[2024-06-15 06:42:42] - Constructing test path #1
+[2024-06-15 06:42:42] - LengthOf(Test #1) = 14
+[2024-06-15 06:42:42] - Saving to 't_1.json'
+[2024-06-15 06:42:42] - Consuming s-t path #2
+[2024-06-15 06:42:42] - Converting to path trace #2
+[2024-06-15 06:42:42] - Removing new zero flows
+[2024-06-15 06:42:42] - Constructing test path #2
+[2024-06-15 06:42:42] - LengthOf(Test #2) = 14
+[2024-06-15 06:42:42] - Saving to 't_2.json'
+[2024-06-15 06:42:42] - # Tests = 2
+[2024-06-15 06:42:42] - Total Test Length = 28
+[2024-06-15 06:42:42] - Finished.
 ```
 
 ### Example #2
@@ -258,13 +259,17 @@ bin/gwplus -i exps/001/m.json -m exps/001/generated/t2.txt
 The above command measures the edge coverage of the test located in `t2.txt` and produces the following result:
 
 ```
-Covered p0
-Covered p1
-Covered p2
-Covered p7
-Covered p8
-Covered p9
-Covered p10
+Covered p0 2 times
+Covered p1 2 times
+Covered p2 1 times
+Covered p3 0 times
+Covered p4 0 times
+Covered p5 0 times
+Covered p6 0 times
+Covered p7 2 times
+Covered p8 2 times
+Covered p9 2 times
+Covered p10 3 times
 
 63%
 ```
@@ -278,15 +283,17 @@ bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generat
 The above command measures the collective vertex coverage of the tests located in `t1.txt` and `t2.txt`, producing the following result:
 
 ```
-Covered p0
-Covered p1
-Covered p2
-Covered p3
-Covered p6
-Covered p7
-Covered p8
-Covered p4
-Covered p5
+Covered p0 2 times
+Covered p1 2 times
+Covered p2 1 times
+Covered p3 2 times
+Covered p4 2 times
+Covered p5 2 times
+Covered p6 1 times
+Covered p7 3 times
+Covered p8 4 times
+Covered p9 4 times
+Covered p10 5 times
 
 100%
 ```

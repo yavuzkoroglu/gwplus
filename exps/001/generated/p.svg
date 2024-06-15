@@ -20,11 +20,11 @@
 <title>0</title>
 <polygon fill="none" stroke="black" points="126,-262.17 72,-262.17 72,-155.17 126,-155.17 126,-262.17"/>
 <text text-anchor="start" x="80" y="-244.87" font-family="Times,serif" font-size="14.00">p0:</text>
-<text text-anchor="start" x="80" y="-228.37" font-family="Times,serif" font-size="14.00">AB</text>
-<text text-anchor="start" x="80" y="-211.87" font-family="Times,serif" font-size="14.00">BC</text>
-<text text-anchor="start" x="80" y="-195.37" font-family="Times,serif" font-size="14.00">CD</text>
-<text text-anchor="start" x="80" y="-178.87" font-family="Times,serif" font-size="14.00">DA</text>
-<text text-anchor="start" x="80" y="-162.37" font-family="Times,serif" font-size="14.00">AB</text>
+<text text-anchor="start" x="80" y="-228.37" font-family="Times,serif" font-size="14.00">ab</text>
+<text text-anchor="start" x="80" y="-211.87" font-family="Times,serif" font-size="14.00">bc</text>
+<text text-anchor="start" x="80" y="-195.37" font-family="Times,serif" font-size="14.00">cd</text>
+<text text-anchor="start" x="80" y="-178.87" font-family="Times,serif" font-size="14.00">da</text>
+<text text-anchor="start" x="80" y="-162.37" font-family="Times,serif" font-size="14.00">ab</text>
 </g>
 <!-- s&#45;&gt;0 -->
 <g id="edge3" class="edge">
@@ -37,10 +37,10 @@
 <title>6</title>
 <polygon fill="none" stroke="black" points="486,-151.92 432,-151.92 432,-61.42 486,-61.42 486,-151.92"/>
 <text text-anchor="start" x="440" y="-134.62" font-family="Times,serif" font-size="14.00">p6:</text>
-<text text-anchor="start" x="440" y="-118.12" font-family="Times,serif" font-size="14.00">EF</text>
-<text text-anchor="start" x="440" y="-101.62" font-family="Times,serif" font-size="14.00">FG</text>
-<text text-anchor="start" x="440" y="-85.12" font-family="Times,serif" font-size="14.00">GE</text>
-<text text-anchor="start" x="440" y="-68.62" font-family="Times,serif" font-size="14.00">EF</text>
+<text text-anchor="start" x="440" y="-118.12" font-family="Times,serif" font-size="14.00">ef</text>
+<text text-anchor="start" x="440" y="-101.62" font-family="Times,serif" font-size="14.00">fg</text>
+<text text-anchor="start" x="440" y="-85.12" font-family="Times,serif" font-size="14.00">ge</text>
+<text text-anchor="start" x="440" y="-68.62" font-family="Times,serif" font-size="14.00">ef</text>
 </g>
 <!-- s&#45;&gt;6 -->
 <g id="edge2" class="edge">
@@ -53,9 +53,9 @@
 <title>9</title>
 <polygon fill="none" stroke="black" points="306,-105.67 252,-105.67 252,-31.67 306,-31.67 306,-105.67"/>
 <text text-anchor="start" x="260" y="-88.37" font-family="Times,serif" font-size="14.00">p9:</text>
-<text text-anchor="start" x="260" y="-71.87" font-family="Times,serif" font-size="14.00">HI</text>
-<text text-anchor="start" x="260" y="-55.37" font-family="Times,serif" font-size="14.00">IH</text>
-<text text-anchor="start" x="260" y="-38.87" font-family="Times,serif" font-size="14.00">HI</text>
+<text text-anchor="start" x="260" y="-71.87" font-family="Times,serif" font-size="14.00">hi</text>
+<text text-anchor="start" x="260" y="-55.37" font-family="Times,serif" font-size="14.00">ih</text>
+<text text-anchor="start" x="260" y="-38.87" font-family="Times,serif" font-size="14.00">hi</text>
 </g>
 <!-- s&#45;&gt;9 -->
 <g id="edge1" class="edge">
@@ -68,11 +68,11 @@
 <title>1</title>
 <polygon fill="none" stroke="black" points="216,-333.17 162,-333.17 162,-226.17 216,-226.17 216,-333.17"/>
 <text text-anchor="start" x="170" y="-315.87" font-family="Times,serif" font-size="14.00">p1:</text>
-<text text-anchor="start" x="170" y="-299.37" font-family="Times,serif" font-size="14.00">BC</text>
-<text text-anchor="start" x="170" y="-282.87" font-family="Times,serif" font-size="14.00">CD</text>
-<text text-anchor="start" x="170" y="-266.37" font-family="Times,serif" font-size="14.00">DA</text>
-<text text-anchor="start" x="170" y="-249.87" font-family="Times,serif" font-size="14.00">AB</text>
-<text text-anchor="start" x="170" y="-233.37" font-family="Times,serif" font-size="14.00">BC</text>
+<text text-anchor="start" x="170" y="-299.37" font-family="Times,serif" font-size="14.00">bc</text>
+<text text-anchor="start" x="170" y="-282.87" font-family="Times,serif" font-size="14.00">cd</text>
+<text text-anchor="start" x="170" y="-266.37" font-family="Times,serif" font-size="14.00">da</text>
+<text text-anchor="start" x="170" y="-249.87" font-family="Times,serif" font-size="14.00">ab</text>
+<text text-anchor="start" x="170" y="-233.37" font-family="Times,serif" font-size="14.00">bc</text>
 </g>
 <!-- 0&#45;&gt;1 -->
 <g id="edge5" class="edge">
@@ -85,13 +85,13 @@
 <title>2</title>
 <polygon fill="none" stroke="black" points="216,-207.67 162,-207.67 162,-67.67 216,-67.67 216,-207.67"/>
 <text text-anchor="start" x="170" y="-190.37" font-family="Times,serif" font-size="14.00">p2:</text>
-<text text-anchor="start" x="170" y="-173.87" font-family="Times,serif" font-size="14.00">BC</text>
-<text text-anchor="start" x="170" y="-157.37" font-family="Times,serif" font-size="14.00">CD</text>
-<text text-anchor="start" x="170" y="-140.87" font-family="Times,serif" font-size="14.00">DA</text>
-<text text-anchor="start" x="170" y="-124.37" font-family="Times,serif" font-size="14.00">AB</text>
-<text text-anchor="start" x="170" y="-107.87" font-family="Times,serif" font-size="14.00">BH</text>
-<text text-anchor="start" x="170" y="-91.37" font-family="Times,serif" font-size="14.00">HI</text>
-<text text-anchor="start" x="170" y="-74.87" font-family="Times,serif" font-size="14.00">IH</text>
+<text text-anchor="start" x="170" y="-173.87" font-family="Times,serif" font-size="14.00">bc</text>
+<text text-anchor="start" x="170" y="-157.37" font-family="Times,serif" font-size="14.00">cd</text>
+<text text-anchor="start" x="170" y="-140.87" font-family="Times,serif" font-size="14.00">da</text>
+<text text-anchor="start" x="170" y="-124.37" font-family="Times,serif" font-size="14.00">ab</text>
+<text text-anchor="start" x="170" y="-107.87" font-family="Times,serif" font-size="14.00">bh</text>
+<text text-anchor="start" x="170" y="-91.37" font-family="Times,serif" font-size="14.00">hi</text>
+<text text-anchor="start" x="170" y="-74.87" font-family="Times,serif" font-size="14.00">ih</text>
 </g>
 <!-- 0&#45;&gt;2 -->
 <g id="edge4" class="edge">
@@ -104,11 +104,11 @@
 <title>3</title>
 <polygon fill="none" stroke="black" points="306,-333.17 252,-333.17 252,-226.17 306,-226.17 306,-333.17"/>
 <text text-anchor="start" x="260" y="-315.87" font-family="Times,serif" font-size="14.00">p3:</text>
-<text text-anchor="start" x="260" y="-299.37" font-family="Times,serif" font-size="14.00">CD</text>
-<text text-anchor="start" x="260" y="-282.87" font-family="Times,serif" font-size="14.00">DA</text>
-<text text-anchor="start" x="260" y="-266.37" font-family="Times,serif" font-size="14.00">AB</text>
-<text text-anchor="start" x="260" y="-249.87" font-family="Times,serif" font-size="14.00">BC</text>
-<text text-anchor="start" x="260" y="-233.37" font-family="Times,serif" font-size="14.00">CD</text>
+<text text-anchor="start" x="260" y="-299.37" font-family="Times,serif" font-size="14.00">cd</text>
+<text text-anchor="start" x="260" y="-282.87" font-family="Times,serif" font-size="14.00">da</text>
+<text text-anchor="start" x="260" y="-266.37" font-family="Times,serif" font-size="14.00">ab</text>
+<text text-anchor="start" x="260" y="-249.87" font-family="Times,serif" font-size="14.00">bc</text>
+<text text-anchor="start" x="260" y="-233.37" font-family="Times,serif" font-size="14.00">cd</text>
 </g>
 <!-- 1&#45;&gt;3 -->
 <g id="edge6" class="edge">
@@ -127,11 +127,11 @@
 <title>4</title>
 <polygon fill="none" stroke="black" points="396,-414.17 342,-414.17 342,-307.17 396,-307.17 396,-414.17"/>
 <text text-anchor="start" x="350" y="-396.87" font-family="Times,serif" font-size="14.00">p4:</text>
-<text text-anchor="start" x="350" y="-380.37" font-family="Times,serif" font-size="14.00">DA</text>
-<text text-anchor="start" x="350" y="-363.87" font-family="Times,serif" font-size="14.00">AB</text>
-<text text-anchor="start" x="350" y="-347.37" font-family="Times,serif" font-size="14.00">BC</text>
-<text text-anchor="start" x="350" y="-330.87" font-family="Times,serif" font-size="14.00">CD</text>
-<text text-anchor="start" x="350" y="-314.37" font-family="Times,serif" font-size="14.00">DA</text>
+<text text-anchor="start" x="350" y="-380.37" font-family="Times,serif" font-size="14.00">da</text>
+<text text-anchor="start" x="350" y="-363.87" font-family="Times,serif" font-size="14.00">ab</text>
+<text text-anchor="start" x="350" y="-347.37" font-family="Times,serif" font-size="14.00">bc</text>
+<text text-anchor="start" x="350" y="-330.87" font-family="Times,serif" font-size="14.00">cd</text>
+<text text-anchor="start" x="350" y="-314.37" font-family="Times,serif" font-size="14.00">da</text>
 </g>
 <!-- 3&#45;&gt;4 -->
 <g id="edge9" class="edge">
@@ -144,14 +144,14 @@
 <title>5</title>
 <polygon fill="none" stroke="black" points="396,-285.92 342,-285.92 342,-129.42 396,-129.42 396,-285.92"/>
 <text text-anchor="start" x="350" y="-268.62" font-family="Times,serif" font-size="14.00">p5:</text>
-<text text-anchor="start" x="350" y="-252.12" font-family="Times,serif" font-size="14.00">DA</text>
-<text text-anchor="start" x="350" y="-235.62" font-family="Times,serif" font-size="14.00">AB</text>
-<text text-anchor="start" x="350" y="-219.12" font-family="Times,serif" font-size="14.00">BC</text>
-<text text-anchor="start" x="350" y="-202.62" font-family="Times,serif" font-size="14.00">CD</text>
-<text text-anchor="start" x="350" y="-186.12" font-family="Times,serif" font-size="14.00">DE</text>
-<text text-anchor="start" x="350" y="-169.62" font-family="Times,serif" font-size="14.00">EF</text>
-<text text-anchor="start" x="350" y="-153.12" font-family="Times,serif" font-size="14.00">FG</text>
-<text text-anchor="start" x="350" y="-136.62" font-family="Times,serif" font-size="14.00">GE</text>
+<text text-anchor="start" x="350" y="-252.12" font-family="Times,serif" font-size="14.00">da</text>
+<text text-anchor="start" x="350" y="-235.62" font-family="Times,serif" font-size="14.00">ab</text>
+<text text-anchor="start" x="350" y="-219.12" font-family="Times,serif" font-size="14.00">bc</text>
+<text text-anchor="start" x="350" y="-202.62" font-family="Times,serif" font-size="14.00">cd</text>
+<text text-anchor="start" x="350" y="-186.12" font-family="Times,serif" font-size="14.00">de</text>
+<text text-anchor="start" x="350" y="-169.62" font-family="Times,serif" font-size="14.00">ef</text>
+<text text-anchor="start" x="350" y="-153.12" font-family="Times,serif" font-size="14.00">fg</text>
+<text text-anchor="start" x="350" y="-136.62" font-family="Times,serif" font-size="14.00">ge</text>
 </g>
 <!-- 3&#45;&gt;5 -->
 <g id="edge8" class="edge">
@@ -176,10 +176,10 @@
 <title>7</title>
 <polygon fill="none" stroke="black" points="576,-188.92 522,-188.92 522,-98.42 576,-98.42 576,-188.92"/>
 <text text-anchor="start" x="530" y="-171.62" font-family="Times,serif" font-size="14.00">p7:</text>
-<text text-anchor="start" x="530" y="-155.12" font-family="Times,serif" font-size="14.00">FG</text>
-<text text-anchor="start" x="530" y="-138.62" font-family="Times,serif" font-size="14.00">GE</text>
-<text text-anchor="start" x="530" y="-122.12" font-family="Times,serif" font-size="14.00">EF</text>
-<text text-anchor="start" x="530" y="-105.62" font-family="Times,serif" font-size="14.00">FG</text>
+<text text-anchor="start" x="530" y="-155.12" font-family="Times,serif" font-size="14.00">fg</text>
+<text text-anchor="start" x="530" y="-138.62" font-family="Times,serif" font-size="14.00">ge</text>
+<text text-anchor="start" x="530" y="-122.12" font-family="Times,serif" font-size="14.00">ef</text>
+<text text-anchor="start" x="530" y="-105.62" font-family="Times,serif" font-size="14.00">fg</text>
 </g>
 <!-- 6&#45;&gt;7 -->
 <g id="edge12" class="edge">
@@ -192,10 +192,10 @@
 <title>8</title>
 <polygon fill="none" stroke="black" points="666,-151.92 612,-151.92 612,-61.42 666,-61.42 666,-151.92"/>
 <text text-anchor="start" x="620" y="-134.62" font-family="Times,serif" font-size="14.00">p8:</text>
-<text text-anchor="start" x="620" y="-118.12" font-family="Times,serif" font-size="14.00">GE</text>
-<text text-anchor="start" x="620" y="-101.62" font-family="Times,serif" font-size="14.00">EF</text>
-<text text-anchor="start" x="620" y="-85.12" font-family="Times,serif" font-size="14.00">FG</text>
-<text text-anchor="start" x="620" y="-68.62" font-family="Times,serif" font-size="14.00">GE</text>
+<text text-anchor="start" x="620" y="-118.12" font-family="Times,serif" font-size="14.00">ge</text>
+<text text-anchor="start" x="620" y="-101.62" font-family="Times,serif" font-size="14.00">ef</text>
+<text text-anchor="start" x="620" y="-85.12" font-family="Times,serif" font-size="14.00">fg</text>
+<text text-anchor="start" x="620" y="-68.62" font-family="Times,serif" font-size="14.00">ge</text>
 </g>
 <!-- 7&#45;&gt;8 -->
 <g id="edge13" class="edge">
@@ -214,9 +214,9 @@
 <title>10</title>
 <polygon fill="none" stroke="black" points="396,-105.67 342,-105.67 342,-31.67 396,-31.67 396,-105.67"/>
 <text text-anchor="start" x="350" y="-88.37" font-family="Times,serif" font-size="14.00">p10:</text>
-<text text-anchor="start" x="350" y="-71.87" font-family="Times,serif" font-size="14.00">IH</text>
-<text text-anchor="start" x="350" y="-55.37" font-family="Times,serif" font-size="14.00">HI</text>
-<text text-anchor="start" x="350" y="-38.87" font-family="Times,serif" font-size="14.00">IH</text>
+<text text-anchor="start" x="350" y="-71.87" font-family="Times,serif" font-size="14.00">ih</text>
+<text text-anchor="start" x="350" y="-55.37" font-family="Times,serif" font-size="14.00">hi</text>
+<text text-anchor="start" x="350" y="-38.87" font-family="Times,serif" font-size="14.00">ih</text>
 </g>
 <!-- 9&#45;&gt;10 -->
 <g id="edge15" class="edge">

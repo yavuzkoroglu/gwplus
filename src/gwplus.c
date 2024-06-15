@@ -1886,6 +1886,8 @@ int main(int argc, char* argv[]) {
 
         uint64_t nCovered = 0;
 
+        uint32_t* const k = calloc(requirements->size, sizeof(uint32_t));
+        DEBUG_ERROR_IF(k == NULL)
         for (int i = firstTestFileId; i <= lastTestFileId; i++) {
             char const* const testFileName = argv[i];
             DEBUG_ERROR_IF(testFileName == NULL)
@@ -1927,9 +1929,7 @@ int main(int argc, char* argv[]) {
                 DEBUG_ASSERT(isValid_vpath(requirement))
                 DEBUG_ASSERT(requirement->len > 0)
 
-                uint32_t const k = countCoverTimes_vpath(requirement, testPath);
-
-                printf("Covered p%"PRIu32" %"PRIu32" times\n", requirementId, k);
+                k[requirementId] += countCoverTimes_vpath(requirement, testPath);
 
                 if (isConnected_gmtx(coverMtx, 0, requirementId) || !isSubPath_vpath(requirement, testPath))
                     continue;
@@ -1941,6 +1941,11 @@ int main(int argc, char* argv[]) {
             flush_vpath(testPath);
             DEBUG_ASSERT_NDEBUG_EXECUTE(flush_chunk(testFileChunk))
         }
+
+        for (uint32_t requirementId = 0; requirementId < requirements->size; requirementId++) {
+            printf("Covered p%"PRIu32" %"PRIu32" times\n", requirementId, k[requirementId]);
+        }
+        free(k);
 
         free_vpath(testPath);
         DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(testFileChunk))
