@@ -84,33 +84,34 @@ The third option `-s s.dot` saves the simple graph of the toy graph. For coverag
 
 ```
 digraph SimpleGraph {
+    rankdir=LR;
     node [shape="rectangle"];
     reset [shape="none", label="", width=0, height=0];
-    10 [label="IH"];
-    9 [label="HI"];
-    8 [label="BH"];
-    7 [label="GE"];
-    6 [label="FG"];
-    5 [label="EF"];
-    4 [label="DE"];
-    3 [label="DA"];
-    2 [label="CD"];
-    1 [label="BC"];
-    0 [label="AB"];
-    reset -> 0 [label="A"];
-    10 -> 9 [label="H"];
-    9 -> 10 [label="I"];
-    8 -> 9 [label="H"];
-    7 -> 5 [label="E"];
-    6 -> 7 [label="G"];
-    5 -> 6 [label="F"];
-    4 -> 5 [label="E"];
-    3 -> 0 [label="A"];
-    2 -> 4 [label="D"];
-    2 -> 3 [label="D"];
-    1 -> 2 [label="C"];
-    0 -> 8 [label="B"];
-    0 -> 1 [label="B"];
+    10 [label="ih"];
+    9 [label="hi"];
+    8 [label="bh"];
+    7 [label="ge"];
+    6 [label="fg"];
+    5 [label="ef"];
+    4 [label="de"];
+    3 [label="da"];
+    2 [label="cd"];
+    1 [label="bc"];
+    0 [label="ab"];
+    reset -> 0 [label="a"];
+    10 -> 9 [label="h"];
+    9 -> 10 [label="i"];
+    8 -> 9 [label="h"];
+    7 -> 5 [label="e"];
+    6 -> 7 [label="g"];
+    5 -> 6 [label="f"];
+    4 -> 5 [label="e"];
+    3 -> 0 [label="a"];
+    2 -> 4 [label="d"];
+    2 -> 3 [label="d"];
+    1 -> 2 [label="c"];
+    0 -> 8 [label="b"];
+    0 -> 1 [label="b"];
 }
 ```
 
