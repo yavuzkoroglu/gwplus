@@ -1,9 +1,9 @@
 {
-    "Model Name":"toygraph",
-    "Subgraphs":1,
-    "Vertices":9,
-    "Shared Vertices":0,
-    "Edges":11,
-    "Duplicate Edges":0,
-    "Start Element":"VERTEX"
+    "Model Index":"001",
+    "Model File":"m.json",
+    "System Under Test (SUT)":"toygraph",
+    "# Vertices":"9",
+    "# Edges":"11",
+    "# Prime Vertex Paths":"11",
+    "# Prime Edge Paths":"11"
 }

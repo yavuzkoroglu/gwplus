@@ -99,6 +99,12 @@ testpath.json
 t.json
 
 # Large results
+exps/002/generated/**
+exps/002/coverages/**
+exps/003/generated/**
+exps/003/coverages/**
+exps/004/generated/**
+exps/004/coverages/**
 exps/005/generated/**
 exps/005/coverages/**
 

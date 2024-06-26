@@ -1,0 +1,9 @@
+{
+    "Model Index":"003",
+    "Model File":"m.json",
+    "System Under Test (SUT)":"Parabank",
+    "# Vertices":"75",
+    "# Edges":"59",
+    "# Prime Vertex Paths":"11193",
+    "# Prime Edge Paths":"N/A"
+}

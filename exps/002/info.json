@@ -1,0 +1,9 @@
+{
+    "Model Index":"002",
+    "Model File":"m.json",
+    "System Under Test (SUT)":"TLC",
+    "# Vertices":"10",
+    "# Edges":"18",
+    "# Prime Vertex Paths":"60",
+    "# Prime Edge Paths":"134"
+}

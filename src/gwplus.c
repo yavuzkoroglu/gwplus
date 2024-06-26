@@ -1085,6 +1085,8 @@ int main(int argc, char* argv[]) {
         if (str_eq(argv[i], "-v") || str_eq(argv[i], "--verbose")) {
             verbose = 1;
             VERBOSE_MSG("Verbose enabled.")
+            DEBUG_EXECUTE(VERBOSE_MSG("MODE = debug"))
+            NDEBUG_EXECUTE(VERBOSE_MSG("MODE = release"))
             isArgProcessed[i] = 1;
             break;
         }
