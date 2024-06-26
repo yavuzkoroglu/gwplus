@@ -1,6 +1,6 @@
 # Gwplus: GraphWalker Plus
 
-Computes the shortest test path that satisfies a coverage criterion for a GraphWalker model.
+Computes the short test case(s) that satisfies a coverage criterion for a GraphWalker model.
 
 ## Table of Contents
 
@@ -171,6 +171,7 @@ The final option `-v` enables verbose messages in output. A correct execution sh
 
 ```
 [2024-06-15 06:42:42] - Verbose enabled.
+[2024-06-15 06:42:42] - MODE = release
 [2024-06-15 06:42:42] - Input Model File = exps/001/m.json
 [2024-06-15 06:42:42] - Coverage Criterion = Prime Edge Path Coverage
 [2024-06-15 06:42:42] - Simple Graph Name = s.dot
