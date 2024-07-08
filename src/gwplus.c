@@ -24,7 +24,8 @@ static uint64_t constructTestPath(
     VertexPathArray const* const    requirements,
     GraphMatrix* const              coverMtx,
     uint64_t                        currentCoverage,
-    uint64_t const                  maxCoverage
+    uint64_t const                  maxCoverage,
+    bool const                      dj
 ) {
     DEBUG_ERROR_IF(testPath == NULL)
     DEBUG_ASSERT(isValid_vpath(pathTrace))
@@ -45,16 +46,17 @@ static uint64_t constructTestPath(
     while (i < pathTrace->len && currentCoverage < maxCoverage) {
         uint32_t const pathId = pathTrace->array[i++];
 
-        if (isConnected_gmtx(coverMtx, 0, pathId)) continue;
+        if (!dj && isConnected_gmtx(coverMtx, 0, pathId)) continue;
 
         VertexPath const* const path = requirements->array + pathId;
         DEBUG_ASSERT(isValid_vpath(path))
 
         splice_vpath(testPath, path);
 
-        connect_gmtx(coverMtx, 0, pathId);
-
-        currentCoverage += 100;
+        if (!isConnected_gmtx(coverMtx, 0, pathId)) {
+            connect_gmtx(coverMtx, 0, pathId);
+            currentCoverage += 100;
+        }
     }
 
     return currentCoverage;
@@ -83,10 +85,115 @@ static void convertSTPathToPathTrace(VertexPath* const pathTrace, SimpleGraph co
 
         flush_vpath(tmp);
         extend_vpath(tmp, v, 0);
-        splice_vpath(pathTrace, tmp);
+        DEBUG_ASSERT_NDEBUG_EXECUTE(splice_vpath(pathTrace, tmp))
     }
 
     free_vpath(tmp);
+}
+
+static void convertSTPathToPathTraceExpand(
+    VertexPath* const pathTrace, SimpleGraph const* const pathGraph, VertexPath const* const stPath,
+    SimpleGraph const* const flowGraph, SimpleGraph const* const hyperPathGraph
+) {
+    DEBUG_ERROR_IF(pathTrace == NULL)
+    DEBUG_ASSERT(isValid_sg(pathGraph))
+    DEBUG_ASSERT(isValid_vpath(stPath))
+    DEBUG_ASSERT(isValid_sg(flowGraph))
+    DEBUG_ASSERT(isValid_sg(hyperPathGraph))
+
+    NetworkFlowGraph const* const nfg   = (NetworkFlowGraph const*)flowGraph->graphPtr;
+    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)hyperPathGraph->graphPtr;
+
+    StartVertexIterator svitr[1];
+    construct_svitr_sg(svitr, hyperPathGraph);
+
+    uint32_t const s_id = hyperPathGraph->nextVertexId_svitr(svitr);
+    DEBUG_ASSERT(hyperPathGraph->isValidVertex(hpgraph, s_id))
+
+    if (pathTrace->isAllocated) {
+        flush_vpath(pathTrace);
+        pathTrace->graph = pathGraph;
+    } else {
+        constructEmpty_vpath(pathTrace, pathGraph);
+    }
+
+    GraphMatrix coverMtx[1] = { NOT_A_GRAPH_MATRIX };
+    VertexPath tmp[2]       = { NOT_A_VPATH, NOT_A_VPATH };
+    VertexPath* pathA       = tmp;
+    VertexPath* pathB       = pathA + 1;
+    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, hpgraph->hpaths->size))
+    constructEmpty_vpath(pathA, hyperPathGraph);
+    constructEmpty_vpath(pathB, hyperPathGraph);
+
+    DEBUG_ASSERT(stPath->len > 1)
+    for (uint32_t i = 1; i < stPath->len - 1; i++) {
+        DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(pathA, nfg->originalVertexIds[stPath->array[i]], 1))
+    }
+    DEBUG_ASSERT(pathA->len > 0)
+
+    for (
+        uint32_t h_id = pathA->sorted[pathA->len - 1];
+        h_id > s_id;
+        h_id = pathA->sorted[pathA->len - 1]
+    ) {
+        if (pathA < pathB) {
+            pathA++;
+            pathB--;
+        } else {
+            pathA--;
+            pathB++;
+        }
+
+        flush_vpath(pathA);
+
+        for (uint32_t i = 0; i < pathB->len; i++) {
+            uint32_t const p_id = pathB->array[i];
+
+            if (p_id == h_id) {
+                VertexPath const* const hpath = hpgraph->hpaths->array + p_id;
+                DEBUG_ASSERT(isValid_vpath(hpath))
+
+                uint32_t first = 0;
+                while (
+                    !isConnected_gmtx(hpgraph->edgeMtx, i == 0 ? s_id : pathB->array[i - 1], hpath->array[first]) &&
+                    first < hpath->len
+                ) first++;
+
+                if (!isConnected_gmtx(coverMtx, 0, h_id)) {
+                    for (uint32_t j = 0; j < hpath->len; j++) {
+                        extend_vpath(pathA, hpath->array[(j + first) % hpath->len], 0);
+                    }
+
+                    connect_gmtx(coverMtx, 0, h_id);
+                }
+
+                if (i < pathB->len - 1) {
+                    uint32_t last = 0;
+                    while (!isConnected_gmtx(hpgraph->edgeMtx, hpath->array[last], pathB->array[i + 1]) && last < hpath->len)
+                        last++;
+
+                    if (hpath->array[last] != pathA->array[pathA->len - 1]) {
+                        for (uint32_t j = first; j != last; j = (j + 1) % hpath->len) {
+                            extend_vpath(pathA, hpath->array[j], 0);
+                        }
+                        extend_vpath(pathA, hpath->array[last], 0);
+                    }
+                }
+            } else {
+                extend_vpath(pathA, p_id, 0);
+            }
+        }
+    }
+
+    for (uint32_t i = 0; i < pathA->len; i++) {
+        extend_vpath(pathTrace, pathA->array[i], 0);
+    }
+
+    eliminateMultiCycles_vpath(pathTrace);
+
+    free_gmtx(coverMtx);
+    free_vpath(pathA);
+    free_vpath(pathB);
 }
 
 static void convertToEdgePaths(
@@ -1006,7 +1113,9 @@ static void showUsage(void) {
         "GENERAL OPTIONS:\n"
         "  -c,--coverage COVERAGE       Set the coverage criterion\n"
         "  -C,--copyright               Output the copyright message and exit\n"
+        "  -d,--dj                      Use the Dwarakanath-Jankiti algorithm\n"
         "  -f,--finalgraph DOT-FILE     Outputs the final test plan to a DOT file\n"
+        "  -g,--gwplus                  (Default) Use the GWPlus algorithm\n"
         "  -H,--help                    Output this help message and exit\n"
         "  -h,--hyperpaths TXT-FILE     Output the hyperpaths to a TXT file\n"
         "  -i,--input JSON-FILE         (Mandatory) An input GraphWalker model in JSON format\n"
@@ -1409,6 +1518,23 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    bool dj = 0;
+    for (int i = argc - 1; i > 0; i--) {
+        if (isArgProcessed[i]) continue;
+
+        if (str_eq(argv[i], "-d") || str_eq(argv[i], "--dj")) {
+            dj                  = 1;
+            isArgProcessed[i]   = 1;
+            VERBOSE_MSG("METHOD = Dwarakanath-Jankiti")
+        }
+
+        if (str_eq(argv[i], "-g") || str_eq(argv[i], "--gwplus")) {
+            dj                  = 0;
+            isArgProcessed[i]   = 1;
+            VERBOSE_MSG("METHOD = GWPlus")
+        }
+    }
+
     for (int i = 1; i < argc; i++)
         if (!isArgProcessed[i])
             showIgnoringArgument(argv[i]);
@@ -1666,8 +1792,6 @@ int main(int argc, char* argv[]) {
         VERBOSE_MSG("Generating Network Flow Graph with Hyperpaths...")
         construct_nfg(flowGraph, nfg, hyperPathGraph);
 
-        /*generateDotOfRawFlowGraph(stdout, flowGraph);*/
-
         VERBOSE_MSG("Minimizing Total Flow...")
         minimizeTotalFlow_nfg(flowGraph);
 
@@ -1697,7 +1821,7 @@ int main(int argc, char* argv[]) {
 
     ExpandedFlowGraph efg[1]            = { NOT_AN_EFG };
     SimpleGraph expandedFlowGraph[1]    = { NOT_AN_SG };
-    if (testPlanName != NULL || testOutputFileName != NULL) {
+    if (testPlanName != NULL || (testOutputFileName != NULL && !dj)) {
         VERBOSE_MSG("Expanding the Network Flow Graph...")
         construct_efg(expandedFlowGraph, efg, flowGraph, hyperPathGraph);
 
@@ -1757,23 +1881,15 @@ int main(int argc, char* argv[]) {
     if (testOutputFileName != NULL) {
         VERBOSE_MSG("Creating Tests...")
 
-        uint32_t const nTests = countTests_efg(expandedFlowGraph);
-
+        uint32_t const nTests   = dj ? computeTotalFlow_nfg(flowGraph, 0) : countTests_efg(expandedFlowGraph);
         uint32_t const nDigits  = countDigits(nTests);
         size_t const fileNameLn = strlen(testOutputFileName) + (size_t)nDigits + (size_t)(1);
-
-        VertexPath stPath[1]    = { NOT_A_VPATH };
-        VertexPath pathTrace[1] = { NOT_A_VPATH };
-        VertexPath testPath[1]  = { NOT_A_VPATH };
-        GraphMatrix coverMtx[1] = { NOT_A_GRAPH_MATRIX };
-        char* fileName          = malloc(fileNameLn);
-        DEBUG_ERROR_IF(fileName == NULL)
 
         if (nTests == 0) {
             showErrorInfeasibleTestRequirements();
 
-            free(fileName);
-            free_sg(expandedFlowGraph);
+            if (isValid_sg(expandedFlowGraph))
+                free_sg(expandedFlowGraph);
             free_sg(flowGraph);
             free_sg(hyperPathGraph);
             free_sg(pathGraph);
@@ -1783,23 +1899,43 @@ int main(int argc, char* argv[]) {
             return EXIT_FAILURE;
         }
 
+        VertexPath stPath[1]    = { NOT_A_VPATH };
+        VertexPath pathTrace[1] = { NOT_A_VPATH };
+        VertexPath testPath[1]  = { NOT_A_VPATH };
+        GraphMatrix coverMtx[1] = { NOT_A_GRAPH_MATRIX };
+        char* fileName          = malloc(fileNameLn);
+        DEBUG_ERROR_IF(fileName == NULL)
+
         DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, requirements->size))
         uint32_t totalTestLength    = 0;
         uint64_t currentCoverage    = 0;
         uint64_t maxCoverage        = (uint64_t)requirements->size * percent;
         sprintf(fileName, "%s", testOutputFileName);
+
+        if (dj) {
+            disconnectAll_gmtx(hpgraph->subsumptionMtx);
+        }
+
         for (uint32_t testId = 1; testId <= nTests && currentCoverage < maxCoverage; testId++) {
             VERBOSE_MSG("Consuming s-t path #%.*"PRIu32, nDigits, testId)
-            DEBUG_ASSERT_NDEBUG_EXECUTE(consumeSTPath_efg(stPath, expandedFlowGraph))
+            if (dj) {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(consumeSTPath_nfg(stPath, flowGraph))
+            } else {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(consumeSTPath_efg(stPath, expandedFlowGraph))
+            }
 
             VERBOSE_MSG("Converting to path trace #%.*"PRIu32, nDigits, testId)
-            convertSTPathToPathTrace(pathTrace, pathGraph, stPath);
+            if (dj) {
+                convertSTPathToPathTraceExpand(pathTrace, pathGraph, stPath, flowGraph, hyperPathGraph);
+            } else {
+                convertSTPathToPathTrace(pathTrace, pathGraph, stPath);
 
-            VERBOSE_MSG("Removing new zero flows")
-            removeZeroFlows_efg(expandedFlowGraph);
+                VERBOSE_MSG("Removing new zero flows")
+                removeZeroFlows_efg(expandedFlowGraph);
+            }
 
             VERBOSE_MSG("Constructing test path #%.*"PRIu32, nDigits, testId)
-            currentCoverage = constructTestPath(testPath, pathTrace, graph, requirements, coverMtx, currentCoverage, maxCoverage);
+            currentCoverage = constructTestPath(testPath, pathTrace, graph, requirements, coverMtx, currentCoverage, maxCoverage, dj);
 
             totalTestLength += testPath->len;
             if (nTests > 1) {
@@ -1818,7 +1954,8 @@ int main(int argc, char* argv[]) {
                 showErrorCannotOpenFile(fileName);
 
                 free(fileName);
-                free_sg(expandedFlowGraph);
+                if (isValid_sg(expandedFlowGraph))
+                    free_sg(expandedFlowGraph);
                 free_vpath(stPath);
                 free_vpath(pathTrace);
                 free_vpath(testPath);
@@ -1841,6 +1978,7 @@ int main(int argc, char* argv[]) {
                 VERBOSE_MSG("# Tests = %"PRIu32, testId)
             }
         }
+
         if (currentCoverage < maxCoverage) {
             VERBOSE_MSG("# Tests = %"PRIu32, nTests)
         }

@@ -900,6 +900,19 @@ bool containsTwice_vpath(VertexPath const* const vpath, uint32_t const vertexId)
     return position > 1 && vpath->sorted[position - 1] == vertexId && vpath->sorted[position - 2] == vertexId;
 }
 
+bool containsThrice_vpath(VertexPath const* const vpath, uint32_t const vertexId) {
+    DEBUG_ASSERT(isValid_vpath(vpath))
+    DEBUG_ASSERT(vpath->graph->isValidVertex(vpath->graph->graphPtr, vertexId))
+
+    uint32_t const position = search_vpath(vpath, vertexId);
+
+    return
+        position > 2                            &&
+        vpath->sorted[position - 1] == vertexId &&
+        vpath->sorted[position - 2] == vertexId &&
+        vpath->sorted[position - 3] == vertexId;
+}
+
 uint32_t countCoverTimes_vpath(VertexPath const* const covered, VertexPath const* const cover) {
     DEBUG_ASSERT(isValid_vpath(covered))
     DEBUG_ASSERT(isValid_vpath(cover))
@@ -928,6 +941,49 @@ void dump_vpath(VertexPath const* const vpath, FILE* const output) {
     }
 
     fputs("\n", output);
+}
+
+void eliminateMultiCycles_vpath(VertexPath* const vpath) {
+    DEBUG_ASSERT(isValid_vpath(vpath))
+
+    VertexPath tmp[1] = { NOT_A_VPATH };
+    constructEmpty_vpath(tmp, vpath->graph);
+
+    bool foundMultiCycle    = 1;
+    uint32_t i              = 0;
+    while (foundMultiCycle) {
+        foundMultiCycle = 0;
+        for (; i < vpath->len; i++) {
+            if (!containsThrice_vpath(vpath, vpath->array[i])) continue;
+
+            uint32_t j = i + 1;
+            while (vpath->array[i] != vpath->array[j] && j < vpath->len)
+                j++;
+
+            if (j == vpath->len) continue;
+
+            flush_vpath(tmp);
+            for (uint32_t k = i; k <= j; k++) {
+                extend_vpath(tmp, vpath->array[k], 0);
+            }
+
+            if (countCoverTimes_vpath(vpath, tmp) <= 1) continue;
+
+            foundMultiCycle = 1;
+
+            flush_vpath(tmp);
+            for (uint32_t k = 0; k < i; k++) {
+                extend_vpath(tmp, vpath->array[k], 0);
+            }
+            for (uint32_t k = j; k < vpath->len; k++) {
+                extend_vpath(tmp, vpath->array[k], 0);
+            }
+
+            clone_vpath(vpath, tmp);
+        }
+    }
+
+    free_vpath(tmp);
 }
 
 bool extend_vpath(VertexPath* const vpath, uint32_t const vertexId, bool const preserveSimplicity) {

@@ -171,6 +171,13 @@
     bool containsTwice_vpath(VertexPath const* const vpath, uint32_t const vertexId);
 
     /**
+     * @brief Checks if a VertexPath contains a vertex thrice.
+     * @param vpath A pointer to the VertexPath.
+     * @param vertexId The vertex index.
+     */
+    bool containsThrice_vpath(VertexPath const* const vpath, uint32_t const vertexId);
+
+    /**
      * @brief Counts the number of times a path is covered by another.
      * @param covered The covered path.
      * @param cover The cover path.
@@ -183,6 +190,8 @@
      * @param output A pointer to the output FILE.
      */
     void dump_vpath(VertexPath const* const vpath, FILE* const output);
+
+    void eliminateMultiCycles_vpath(VertexPath* const vpath);
 
     /**
      * @brief Attempts to extend a VertexPath with a vertex.

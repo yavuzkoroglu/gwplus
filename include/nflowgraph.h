@@ -110,6 +110,13 @@
     void constructClone_nfg(SimpleGraph* const cloneGraph, NetworkFlowGraph* const clone, SimpleGraph const* const flowGraph);
 
     /**
+     * @brief Generates and consumes one s-t path from a NetworkFlowGraph.
+     * @param stPath A pointer to the s-t path.
+     * @param flowGraph A pointer to the SGI of the NetworkFlowGraph.
+     */
+    bool consumeSTPath_nfg(VertexPath* const stPath, SimpleGraph* const flowGraph);
+
+    /**
      * @brief (SGI-compatible) Counts the edges of a NetworkFlowGraph.
      * @param graphPtr A pointer to the constant NetworkFlowGraph.
      */

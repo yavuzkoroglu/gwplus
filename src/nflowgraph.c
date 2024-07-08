@@ -258,6 +258,68 @@ void constructClone_nfg(SimpleGraph* const cloneGraph, NetworkFlowGraph* const c
     construct_sgi_nfg(cloneGraph, clone);
 }
 
+bool consumeSTPath_nfg(VertexPath* const stPath, SimpleGraph* const flowGraph) {
+    DEBUG_ERROR_IF(stPath == NULL)
+    DEBUG_ASSERT(isValid_sg(flowGraph))
+
+    NetworkFlowGraph* const nfg = (NetworkFlowGraph*)flowGraph->graphPtr;
+
+    uint32_t const s = NFG_START_VERTEX(nfg);
+    uint32_t const t = NFG_TERMINAL_VERTEX(nfg);
+
+    VertexPathArray stacks[2] = { NOT_A_VPATH_ARRAY, NOT_A_VPATH_ARRAY };
+    VertexPathArray* stack_A = stacks;
+    VertexPathArray* stack_B = stack_A + 1;
+
+    constructEmpty_vpa(stack_A, nfg->size);
+    constructEmpty_vpa(stack_B, nfg->size);
+
+    VertexPath* firstPath = pushEmpty_vpa(stack_A, flowGraph);
+    DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(firstPath, s, 1))
+
+    while (stack_A->size > 0) {
+        if (stack_A < stack_B) {
+            stack_A++;
+            stack_B--;
+        } else {
+            stack_A--;
+            stack_B++;
+        }
+
+        while (stack_B->size > 0) {
+            VertexPath* const path = pop_vpa(stack_B);
+            DEBUG_ASSERT(isValid_vpath(path))
+            DEBUG_ASSERT(path->len > 0)
+
+            uint32_t const v0 = path->array[path->len - 1];
+
+            if (v0 == t) {
+                clone_vpath(stPath, path);
+                for (uint32_t i = 0; i < stPath->len - 1; i++)
+                    nfg->flowMtx[stPath->array[i]][stPath->array[i + 1]]--;
+                free_vpa(stack_A);
+                free_vpa(stack_B);
+                return 1;
+            } else {
+                for (uint32_t v1 = 0; v1 < nfg->size; v1++) {
+                    if (v0 == v1)                       continue;
+                    if (!isValidEdge_nfg(nfg, v0, v1))  continue;
+                    if (nfg->flowMtx[v0][v1] == 0)      continue;
+
+                    VertexPath* const path_to_extend = pushClone_vpa(stack_A, path);
+                    extend_vpath(path_to_extend, v1, 0);
+                }
+            }
+        }
+    }
+
+    if (isValid_vpath(stPath))
+        invalidate_vpath(stPath);
+    free_vpa(stack_A);
+    free_vpa(stack_B);
+    return 0;
+}
+
 uint32_t countEdges_nfg(void const* const graphPtr) {
     static uint32_t cachedCount         = 0xFFFFFFFF;
     static void const* cachedGraphPtr   = NULL;
