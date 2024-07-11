@@ -168,9 +168,12 @@ static void convertSTPathToPathTraceExpand(
                 }
 
                 if (i < pathB->len - 1) {
-                    uint32_t last = 0;
-                    while (!isConnected_gmtx(hpgraph->edgeMtx, hpath->array[last], pathB->array[i + 1]) && last < hpath->len)
-                        last++;
+                    uint32_t last   = (first + hpath->len - 1) % hpath->len;
+                    uint32_t k      = 0;
+                    while (!isConnected_gmtx(hpgraph->edgeMtx, hpath->array[last], pathB->array[i + 1]) && k < hpath->len) {
+                        last = (last + 1) % hpath->len;
+                        k++;
+                    }
 
                     if (hpath->array[last] != pathA->array[pathA->len - 1]) {
                         for (uint32_t j = first; j != last; j = (j + 1) % hpath->len) {
@@ -1826,16 +1829,32 @@ int main(int argc, char* argv[]) {
         construct_efg(expandedFlowGraph, efg, flowGraph, hyperPathGraph);
 
         for (uint32_t h = hpgraph->hpaths->size - 1; h > requirements->size; h--) {
-            if (verbose) {
-                printf("[%s] - Expanding h%"PRIu32"\n", get_timestamp(), h - requirements->size - 1);
+            DEBUG_ASSERT(isValidVertex_efg(efg, h))
+
+            uint32_t const hprime = EFG_PRIME(efg, h);
+            if (isValidVertex_efg(efg, hprime)) {
+                VERBOSE_MSG("Swapping h%"PRIu32" and h%"PRIu32"'", h - requirements->size - 1, h - requirements->size - 1)
+                swapVertices_efg(expandedFlowGraph, h, hprime);
             }
+
+            VERBOSE_MSG("Expanding h%"PRIu32, h - requirements->size - 1)
             expand_efg(expandedFlowGraph, hyperPathGraph, h);
 
             VERBOSE_MSG("Initializing flow with test requirement constraints...")
             initializeFlow_efg(expandedFlowGraph);
 
             VERBOSE_MSG("Computing a feasible flow...")
-            computeFeasibleFlow_efg(expandedFlowGraph, verbose);
+            if (!computeFeasibleFlow_efg(expandedFlowGraph, verbose)) {
+                VERBOSE_MSG("Feasible Flow Failure")
+
+                free_sg(expandedFlowGraph);
+                free_sg(flowGraph);
+                free_sg(hyperPathGraph);
+                free_sg(pathGraph);
+                free_vpa(requirements);
+                free_sg(graph);
+                return EXIT_FAILURE;
+            }
 
             VERBOSE_MSG("Activating backwards edges...")
             activateBackwardsEdges_efg(expandedFlowGraph);
@@ -1846,7 +1865,7 @@ int main(int argc, char* argv[]) {
             VERBOSE_MSG("Deactivating backwards edges...")
             deactivateBackwardsEdges_efg(expandedFlowGraph);
 
-            VERBOSE_MSG("Generating the Final Test Plan...")
+            VERBOSE_MSG("Generating Test Plan...")
             generateTestPlan_efg(expandedFlowGraph);
 
             VERBOSE_MSG("Removing zero flows...")

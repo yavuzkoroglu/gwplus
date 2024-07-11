@@ -63,7 +63,7 @@
      * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
      * @param verbose Prints verbose messages when this variable is true.
      */
-    void computeFeasibleFlow_efg(SimpleGraph* const expandedFlowGraph, bool const verbose);
+    bool computeFeasibleFlow_efg(SimpleGraph* const expandedFlowGraph, bool const verbose);
 
     /**
      * @brief Computes the total outgoing flow from a vertex in an ExpandedFlowGraph.
@@ -98,6 +98,13 @@
     uint32_t countEdges_efg(void const* const graphPtr);
 
     /**
+     * @brief Counts the outgoing edges from a vertex in an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the constant SGI of the ExpandedFlowGraph.
+     * @param vertexId The vertex index.
+     */
+    uint32_t countOutgoingEdges_efg(SimpleGraph const* const expandedFlowGraph, uint32_t const vertexId);
+
+    /**
      * @brief Counts the number of tests within a test plan.
      * @param testPlan A pointer to the constant SGI of the testPlan.
      */
@@ -116,7 +123,7 @@
     void deactivateBackwardsEdges_efg(SimpleGraph* const expandedFlowGraph);
 
     /**
-     * @brief Deactivates all vertices with zero outgoing flow in an ExpandedFlowGraph.
+     * @brief Deactivates all vertices with zero outgoing flow with their prime ones in an ExpandedFlowGraph.
      * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
      */
     void deactivateDeadVertices_efg(SimpleGraph* const expandedFlowGraph);
@@ -245,6 +252,12 @@
     uint32_t nextVertexId_vitr_efg(VertexIterator* const itr);
 
     /**
+     * @brief Reconnects all dead vertices to the terminal vertex in an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     */
+    void reconnectDeadVertices_efg(SimpleGraph* const expandedFlowGraph);
+
+    /**
      * @brief Removes all zero-flowing edges from an ExpandedFlowGraph.
      * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
      */
@@ -267,4 +280,15 @@
      * @param itr A pointer to the VertexIterator.
      */
     void setFirstNextId_vitr_efg(VertexIterator* const itr);
+
+    /**
+     * @brief Swaps two vertices of an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     * @param v0 The first vertex index.
+     * @param v1 The second vertex index.
+     */
+    void swapVertices_efg(
+        SimpleGraph* const expandedFlowGraph,
+        uint32_t const v0, uint32_t const v1
+    );
 #endif
