@@ -4,6 +4,7 @@
     "System Under Test (SUT)":"toygraph",
     "# Vertices":"9",
     "# Edges":"11",
+    "# Edge Pairs":"13",
     "# Prime Vertex Paths":"11",
     "# Prime Edge Paths":"11"
 }

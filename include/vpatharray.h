@@ -47,8 +47,9 @@
      * @brief Constructs a VertexPathArray containing all prime paths of a SimpleGraph.
      * @param primePaths A pointer to the VertexPathArray.
      * @param graph A pointer to the constant SimpleGraph.
+     * @param verbose Enables verbose messages.
      */
-    void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph const* const graph);
+    void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph const* const graph, bool const verbose);
 
     /**
      * @brief Constructs all paths of a SimpleGraph up to path length k, inclusive.

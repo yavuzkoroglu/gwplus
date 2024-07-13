@@ -182,6 +182,26 @@ bool computeFeasibleFlow_efg(SimpleGraph* const expandedFlowGraph, bool const ve
 }
 #undef VERBOSE_MSG
 
+uint32_t computeIncomingFlow_efg(SimpleGraph const* const expandedFlowGraph, uint32_t const vertexId) {
+    DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+
+    ExpandedFlowGraph const* const efg = (ExpandedFlowGraph const*)expandedFlowGraph->graphPtr;
+
+    DEBUG_ASSERT(isValidVertex_efg(efg, vertexId))
+
+    uint32_t totalFlow = 0;
+    for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
+        uint32_t const prevVertexId = efg->activeVertices[i];
+
+        if (prevVertexId == vertexId)                       continue;
+        if (!isValidEdge_efg(efg, prevVertexId, vertexId))  continue;
+
+        totalFlow += efg->flowMtx[prevVertexId][vertexId];
+    }
+
+    return totalFlow;
+}
+
 uint32_t computeOutgoingFlow_efg(SimpleGraph const* const expandedFlowGraph, uint32_t const vertexId) {
     DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
 
@@ -339,13 +359,13 @@ bool consumeSTPath_efg(VertexPath* const stPath, SimpleGraph* const testPlan) {
                 free_vpa(stack_B);
                 return 1;
             } else {
-                uint32_t const prevFlow = computeOutgoingFlow_efg(testPlan, path->array[path->len - 1]);
-
                 for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
                     uint32_t const v = efg->activeVertices[i];
                     if (path->array[path->len - 1] == v)                        continue;
                     if (!isValidEdge_efg(efg, path->array[path->len - 1], v))   continue;
                     if (efg->flowMtx[path->array[path->len - 1]][v] == 0)       continue;
+
+                    uint32_t const prevFlow = computeIncomingFlow_efg(testPlan, v);
 
                     for (
                         uint32_t nextFlow = computeOutgoingFlow_efg(testPlan, v);
@@ -737,6 +757,79 @@ void expand_efg(SimpleGraph* const expandedFlowGraph, SimpleGraph const* const h
         uint32_t const p_prime  = EFG_PRIME(efg, p);
         activateVertex_efg(efg, p);
         activateVertex_efg(efg, p_prime);
+    }
+}
+
+void expandPrime_efg(SimpleGraph* const expandedFlowGraph, SimpleGraph const* const hyperPathGraph, uint32_t const h) {
+    DEBUG_ASSERT(isValid_sg(expandedFlowGraph))
+    DEBUG_ASSERT(isValid_sg(hyperPathGraph))
+    DEBUG_ERROR_IF(h == 0xFFFFFFFF)
+
+    ExpandedFlowGraph* const efg = (ExpandedFlowGraph*)expandedFlowGraph->graphPtr;
+
+    HyperPathGraph const* const hpgraph = (HyperPathGraph const*)hyperPathGraph->graphPtr;
+
+    VertexPath const* const hpath = hpgraph->hpaths->array + h;
+    DEBUG_ASSERT(isValid_vpath(hpath))
+
+    uint32_t const hprime = EFG_PRIME(efg, h);
+    DEBUG_ASSERT(isValidVertex_efg(efg, hprime))
+
+    deactivateVertex_efg(efg, hprime);
+
+    for (uint32_t i = 0; i < efg->size_activeVertices; i++) {
+        uint32_t const v0           = efg->activeVertices[i];
+        uint32_t const v0_original  = v0 < EFG_PRIME(efg, 0) ? v0 : v0 - EFG_PRIME(efg, 0);
+
+        bool const isIncoming = isConnected_gmtx(efg->adjMtx, v0, hprime);
+        bool const isOutgoing = isConnected_gmtx(efg->adjMtx, hprime, v0);
+
+        for (uint32_t j = 0; j < hpath->len; j++) {
+            uint32_t const v1       = hpath->array[j];
+            uint32_t const v1_prime = EFG_PRIME(efg, v1);
+
+            if (isIncoming && areConnected_hpg(hyperPathGraph, v0_original, v1)) {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0, v1_prime))
+                /*if (isValidVertex_efg(efg, v1))
+                    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v0, v1))*/
+            }
+
+            if (isOutgoing && areConnected_hpg(hyperPathGraph, v1, v0_original)) {
+                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1_prime, v0))
+                /*if (isValidVertex_efg(efg, v1))
+                    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, v1, v0))*/
+            }
+        }
+    }
+
+    uint32_t first_id = 0;
+    while (first_id < hpath->len) {
+        uint32_t const p    = hpath->array[first_id];
+        bool validFirst     = 0;
+        for (uint32_t i = 0; i < efg->size_activeVertices && !validFirst; i++) {
+            uint32_t const v = efg->activeVertices[i];
+            validFirst |= isConnected_gmtx(efg->adjMtx, v, EFG_PRIME(efg, p));
+        }
+        if (validFirst) break;
+
+        first_id++;
+    }
+
+    for (uint32_t i = 0; i < hpath->len - 1; i++) {
+        uint32_t const id0      = (first_id + i) % hpath->len;
+        uint32_t const id1      = (first_id + i + 1) % hpath->len;
+        uint32_t const p0       = hpath->array[id0];
+        uint32_t const p0_prime = EFG_PRIME(efg, p0);
+        uint32_t const p1       = hpath->array[id1];
+        uint32_t const p1_prime = EFG_PRIME(efg, p1);
+        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(efg->adjMtx, p0_prime, p1_prime))
+    }
+
+    for (uint32_t i = 0; i < hpath->len; i++) {
+        uint32_t const p        = hpath->array[i];
+        uint32_t const p_prime  = EFG_PRIME(efg, p);
+        if (!isConnected_gmtx(efg->adjMtx, p_prime, p_prime))
+            activateVertex_efg(efg, p_prime);
     }
 }
 

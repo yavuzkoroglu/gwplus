@@ -67,6 +67,9 @@ static void convertSTPathToPathTrace(VertexPath* const pathTrace, SimpleGraph co
     DEBUG_ASSERT(isValid_sg(pathGraph))
     DEBUG_ASSERT(isValid_vpath(stPath))
 
+    GraphMatrix coverMtx[1] = { NOT_A_GRAPH_MATRIX };
+    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, pathGraph->countVertices(pathGraph->graphPtr)))
+
     if (pathTrace->isAllocated) {
         flush_vpath(pathTrace);
         pathTrace->graph = pathGraph;
@@ -81,13 +84,22 @@ static void convertSTPathToPathTrace(VertexPath* const pathTrace, SimpleGraph co
     for (uint32_t i = 1; i < stPath->len - 1; i++) {
         uint32_t const v = stPath->array[i];
 
-        if (!pathGraph->isValidVertex(pathGraph->graphPtr, v)) continue;
+        if (!pathGraph->isValidVertex(pathGraph->graphPtr, v))  continue;
+        if (isConnected_gmtx(coverMtx, 0, v))                   continue;
+
+        uint32_t j = pathTrace->len;
 
         flush_vpath(tmp);
         extend_vpath(tmp, v, 0);
         DEBUG_ASSERT_NDEBUG_EXECUTE(splice_vpath(pathTrace, tmp))
+
+        while (j < pathTrace->len)
+            DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathTrace->array[j++]))
     }
 
+    eliminateMultiCycles_vpath(pathTrace);
+
+    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
     free_vpath(tmp);
 }
 
@@ -729,7 +741,7 @@ static void generateDotOfSimpleGraph(FILE* const output, SimpleGraph const* cons
 
 static void generateTestRequirements(
     VertexPathArray* const requirements, coverage_t const coverageCriterion,
-    SimpleGraph* const graph, GWModelArray* const gwma, Chunk const* const requirementsChunk
+    SimpleGraph* const graph, GWModelArray* const gwma, Chunk const* const requirementsChunk, bool const verbose
 ) {
     DEBUG_ERROR_IF(requirements == NULL)
     DEBUG_ASSERT(IS_VALID_COVERAGE(coverageCriterion))
@@ -797,7 +809,7 @@ static void generateTestRequirements(
             constructVerticesAsPaths_vpa(requirements, graph);
             break;
         case PRIME1_COVERAGE:
-            constructAllPrimePaths_vpa(requirements, graph);
+            constructAllPrimePaths_vpa(requirements, graph, verbose);
             {
                 VertexPathArray newRequirements[1];
                 convertToEdgePaths(newRequirements, graph, gwma, requirements);
@@ -806,7 +818,7 @@ static void generateTestRequirements(
             }
             break;
         case PRIME2_COVERAGE:
-            constructAllPrimePaths_vpa(requirements, graph);
+            constructAllPrimePaths_vpa(requirements, graph, verbose);
             {
                 VertexPathArray newRequirements[1];
                 convertToEdgePathsAndIncludeRemainingEdges(newRequirements, graph, gwma, requirements);
@@ -815,7 +827,7 @@ static void generateTestRequirements(
             }
             break;
         case PRIME3_COVERAGE:
-            constructAllPrimePaths_vpa(requirements, graph);
+            constructAllPrimePaths_vpa(requirements, graph, verbose);
             break;
         case EPAIR_COVERAGE:
         default:
@@ -1679,7 +1691,7 @@ int main(int argc, char* argv[]) {
     VertexPathArray requirements[1];
 
     VERBOSE_MSG("Generating/Loading Test Requirements...")
-    generateTestRequirements(requirements, coverageCriterion, graph, gwma, requirementsChunk);
+    generateTestRequirements(requirements, coverageCriterion, graph, gwma, requirementsChunk, verbose);
     VERBOSE_MSG("# Test Requirements = %"PRIu32, requirements->size)
 
     if (requirementsName != NULL) {
@@ -1828,7 +1840,8 @@ int main(int argc, char* argv[]) {
         VERBOSE_MSG("Expanding the Network Flow Graph...")
         construct_efg(expandedFlowGraph, efg, flowGraph, hyperPathGraph);
 
-        for (uint32_t h = hpgraph->hpaths->size - 1; h > requirements->size; h--) {
+        uint32_t const sz = hpgraph->hpaths->size;
+        for (uint32_t h = sz - 1; h > requirements->size; h--) {
             DEBUG_ASSERT(isValidVertex_efg(efg, h))
 
             uint32_t const hprime = EFG_PRIME(efg, h);
@@ -1874,6 +1887,49 @@ int main(int argc, char* argv[]) {
             VERBOSE_MSG("Deactivating dead vertices...")
             deactivateDeadVertices_efg(expandedFlowGraph);
         }
+
+        /*
+        for (uint32_t h = sz - 1; h > requirements->size; h--) {
+            if (!isValidVertex_efg(efg, EFG_PRIME(efg, h))) continue;
+
+            VERBOSE_MSG("Expanding h%"PRIu32"'", h - requirements->size - 1)
+            expandPrime_efg(expandedFlowGraph, hyperPathGraph, h);
+
+            VERBOSE_MSG("Initializing flow with test requirement constraints...")
+            initializeFlow_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Computing a feasible flow...")
+            if (!computeFeasibleFlow_efg(expandedFlowGraph, verbose)) {
+                VERBOSE_MSG("Feasible Flow Failure")
+
+                free_sg(expandedFlowGraph);
+                free_sg(flowGraph);
+                free_sg(hyperPathGraph);
+                free_sg(pathGraph);
+                free_vpa(requirements);
+                free_sg(graph);
+                return EXIT_FAILURE;
+            }
+
+            VERBOSE_MSG("Activating backwards edges...")
+            activateBackwardsEdges_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Minimizing the flow...")
+            minimizeFlow_efg(expandedFlowGraph, verbose);
+
+            VERBOSE_MSG("Deactivating backwards edges...")
+            deactivateBackwardsEdges_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Generating Test Plan...")
+            generateTestPlan_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Removing zero flows...")
+            removeZeroFlows_efg(expandedFlowGraph);
+
+            VERBOSE_MSG("Deactivating dead vertices...")
+            deactivateDeadVertices_efg(expandedFlowGraph);
+        }
+        */
 
         if (testPlanName != NULL) {
             VERBOSE_MSG("Saving the final test plan to '%s'", testPlanName)

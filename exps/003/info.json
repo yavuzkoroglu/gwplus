@@ -4,6 +4,7 @@
     "System Under Test (SUT)":"Parabank",
     "# Vertices":"75",
     "# Edges":"59",
+    "# Edge Pairs":"690",
     "# Prime Vertex Paths":"11193",
-    "# Prime Edge Paths":"N/A"
+    "# Prime Edge Paths":">1M"
 }

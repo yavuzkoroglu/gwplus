@@ -66,6 +66,13 @@
     bool computeFeasibleFlow_efg(SimpleGraph* const expandedFlowGraph, bool const verbose);
 
     /**
+     * @brief Computes the total incoming flow to a vertex in an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the constant SGI of the ExpandedFlowGraph.
+     * @param vertexId The vertex index.
+     */
+    uint32_t computeIncomingFlow_efg(SimpleGraph const* const expandedFlowGraph, uint32_t const vertexId);
+
+    /**
      * @brief Computes the total outgoing flow from a vertex in an ExpandedFlowGraph.
      * @param expandedFlowGraph A pointer to the constant SGI of the ExpandedFlowGraph.
      * @param vertexId The vertex index.
@@ -162,6 +169,14 @@
      * @param h The hyperpath index.
      */
     void expand_efg(SimpleGraph* const expandedFlowGraph, SimpleGraph const* const hyperPathGraph, uint32_t const h);
+
+    /**
+     * @brief Expands one prime-denoted hyperpath on an ExpandedFlowGraph.
+     * @param expandedFlowGraph A pointer to the SGI of the ExpandedFlowGraph.
+     * @param hyperPathGraph A pointer to the constant SGI of the HyperPathGraph.
+     * @param h The hyperpath index.
+     */
+    void expandPrime_efg(SimpleGraph* const expandedFlowGraph, SimpleGraph const* const hyperPathGraph, uint32_t const h);
 
     /**
      * @brief (SGI-compatible) Frees an ExpandedFlowGraph.

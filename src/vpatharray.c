@@ -6,6 +6,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include "padkit/reallocate.h"
+#include "padkit/timestamp.h"
 #include "vpatharray.h"
 
 void constructAllKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph, uint32_t const k) {
@@ -48,7 +49,8 @@ void constructAllKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* co
     if (vpath->isAllocated) free_vpath(vpath);
 }
 
-void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph const* const graph) {
+#define VERBOSE_MSG(...) if (verbose) { printf("[%s] - ", get_timestamp()); printf(__VA_ARGS__); puts(""); }
+void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph const* const graph, bool const verbose) {
     DEBUG_ERROR_IF(primePaths == NULL)
     DEBUG_ASSERT(isValid_sg(graph))
 
@@ -60,9 +62,21 @@ void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph c
     constructVerticesAsPaths_vpa(stack, graph);
 
     VertexPath vpath[1] = {NOT_A_VPATH};
+    uint32_t maxLen     = 0;
+    uint32_t nPrimes    = 0;
     while (stack->size > 0) {
         clone_vpath(vpath, pop_vpa(stack));
         DEBUG_ASSERT(vpath->len > 0)
+
+        if (verbose) {
+            if (maxLen < vpath->len) {
+                VERBOSE_MSG("maxLen(primes) = %"PRIu32, (maxLen = vpath->len))
+            }
+
+            if (nPrimes + 100000 < primePaths->size) {
+                VERBOSE_MSG("# Prime Paths  > %"PRIu32, (nPrimes = primePaths->size - 1))
+            }
+        }
 
         NeighborIterator itr[1];
         construct_nitr_sg(itr, graph, vpath->array[vpath->len - 1]);
@@ -114,6 +128,7 @@ void constructAllPrimePaths_vpa(VertexPathArray* const primePaths, SimpleGraph c
     free_vpa(stack);
     free_vpath(vpath);
 }
+#undef VERBOSE_MSG
 
 void constructAllUpToKPaths_vpa(VertexPathArray* const vpaths, SimpleGraph const* const graph, uint32_t const k) {
     DEBUG_ERROR_IF(vpaths == NULL)

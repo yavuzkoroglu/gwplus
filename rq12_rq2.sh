@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MODELS="002 003"
+MODELS="002 003 004 005"
 
 echo "Model,Tool,Method,Target Coverage,Ratio,Seed,i,minlen,multiplier" > rq2_raw.csv
 
