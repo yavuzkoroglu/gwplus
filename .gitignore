@@ -110,3 +110,12 @@ exps/005/generated/**
 exps/005/coverages/**
 
 MARS/**
+
+# tex files and tex supplement data (.dat)
+*.tex
+*.dat
+
+# tex output
+*.aux
+*.log
+*.pdf

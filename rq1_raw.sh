@@ -6,7 +6,7 @@ GW_RATIOS="100 90 80 70 60 50"
 GW_SEEDS="172062 512956 210987 772120 832513 76219 132921 114702 805553 432487 971148 366466 453649 735972 982676 375208 306259 177328 666177 108218 118894 835003 190598 980472 578073 104881 325629 980737 506544 268475"
 GWPLUS_METHODS="gwplus dj"
 GWPLUS_COVERAGES="vertex edge edgepair"
-MODELS="005"
+MODELS="004 005"
 NREPEATS=1
 
 NSEEDS=0
@@ -19,7 +19,7 @@ echo "# REPEATS = ${NREPEATS}"
 
 for model in ${MODELS}
 do
-    echo "Model,Tool,Method,Target Coverage,Ratio,Seed,i,#symbols,Test Length (#edges),Test Generation Time (milliseconds),Vertex Coverage,Edge Coverage,Edge Pair Coverage,Edge Triple Coverage,Prime Vertex Path Coverage,Prime Edge Path Coverage" > rq12_${model}.csv
+    echo "Model,Tool,Method,Target Coverage,Ratio,Seed,i,#symbols,Test Length (#edges),Test Generation Time (milliseconds),Vertex Coverage,Edge Coverage,Edge Pair Coverage,Edge Triple Coverage,Prime Vertex Path Coverage,Prime Edge Path Coverage" > rq1_${model}.csv
 
     for method in ${GWPLUS_METHODS}
     do
@@ -45,9 +45,12 @@ do
                     vcov=$(bin/gwplus -i ${EXPS}/${model}/m.json -c vertex -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
                     ecov=$(bin/gwplus -i ${EXPS}/${model}/m.json -c edge -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
                     epc=$(bin/gwplus -i ${EXPS}/${model}/m.json -c edgepair -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
-                    etc=$(bin/gwplus -i ${EXPS}/${model}/m.json -c edgetriple -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
-                    pvp=$(bin/gwplus -i ${EXPS}/${model}/m.json -c prime1 -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
-                    pep=$(bin/gwplus -i ${EXPS}/${model}/m.json -c prime2 -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
+                    # etc=$(bin/gwplus -i ${EXPS}/${model}/m.json -c edgetriple -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
+                    # pvp=$(bin/gwplus -i ${EXPS}/${model}/m.json -c prime1 -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
+                    # pep=$(bin/gwplus -i ${EXPS}/${model}/m.json -c prime2 -m ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}_${i}*.txt | grep '%' | tr -d '%')
+                    etc=0
+                    pvp=0
+                    pep=0
 
                     ((symbols=len))
                     ((len=len/2))
@@ -55,7 +58,7 @@ do
                     tm=$((${end}-${start}))
                     ((tm=tm/1000000))
 
-                    echo "${model},GWPlus,${method},${coverage},${ratio},NA,${i},${symbols},${len},${tm},${vcov},${ecov},${epc},${etc},${pvp},${pep}" >> rq12_${model}.csv
+                    echo "${model},GWPlus,${method},${coverage},${ratio},NA,${i},${symbols},${len},${tm},${vcov},${ecov},${epc},${etc},${pvp},${pep}" >> rq1_${model}.csv
                 done
             done
         done
@@ -80,9 +83,12 @@ do
                         vcov=$(bin/gwplus -i ${EXPS}/${model}/m.json -c vertex -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
                         ecov=$(bin/gwplus -i ${EXPS}/${model}/m.json -c edge -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
                         epc=$(bin/gwplus -i ${EXPS}/${model}/m.json -c edgepair -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
-                        etc=$(bin/gwplus -i ${EXPS}/${model}/m.json -c edgetriple -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
-                        pvp=$(bin/gwplus -i ${EXPS}/${model}/m.json -c prime1 -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
-                        pep=$(bin/gwplus -i ${EXPS}/${model}/m.json -c prime2 -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
+                        # etc=$(bin/gwplus -i ${EXPS}/${model}/m.json -c edgetriple -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
+                        # pvp=$(bin/gwplus -i ${EXPS}/${model}/m.json -c prime1 -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
+                        # pep=$(bin/gwplus -i ${EXPS}/${model}/m.json -c prime2 -m ${EXPS}/${model}/generated/graphwalker_${method}_${coverage}_${ratio}_${seed}_${i}.txt | grep '%' | tr -d '%')
+                        etc=0
+                        pvp=0
+                        pep=0
 
                         ((symbols=len))
                         ((len=len/2))
@@ -90,7 +96,7 @@ do
                         tm=$((${end}-${start}))
                         ((tm=tm/1000000))
 
-                        echo "${model},GraphWalker,${method},${coverage},${ratio},${seed},${i},${symbols},${len},${tm},${vcov},${ecov},${epc},${etc},${pvp},${pep}" >> rq12_${model}.csv
+                        echo "${model},GraphWalker,${method},${coverage},${ratio},${seed},${i},${symbols},${len},${tm},${vcov},${ecov},${epc},${etc},${pvp},${pep}" >> rq1_${model}.csv
                     done
                 done
             done
