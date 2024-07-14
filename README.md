@@ -10,11 +10,9 @@ Computes the short test case(s) that satisfies a coverage criterion for a GraphW
 
 ## How to Build
 
-Open a terminal execute the following commands to clone and build `gwplus`:
+Open a terminal execute the following command to build `gwplus`:
 
 ```
-git clone https://github.com/yavuzkoroglu/gwplus.git
-cd gwplus
 make -e MODE=release
 ```
 
