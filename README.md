@@ -7,7 +7,6 @@ Computes the short test case(s) that satisfies a coverage criterion for a GraphW
 * [How to Build](#how-to-build)
 * [Usage](#usage)
 * [Experiments](#experiments)
-* [Side Uses](#side-uses)
 
 ## How to Build
 
@@ -300,3 +299,17 @@ Covered p10 5 times
 100%
 ```
 
+## Experiments
+
+In this part, we discuss how to reproduce the experiments in ...
+
+### RQ1. Test Lengths
+
+```
+bash rq1_raw.sh
+bash rq1_raw2.sh
+bash rq1_tex.sh
+pdflatex -interaction nonstopmode rq1.tex
+```
+
+The above four commands generate `rq1.pdf`, which depicts the relative test case lengths. Note that `rq1_raw.sh` generates all test cases from scratch and may take a few hours to complete.
