@@ -306,10 +306,11 @@ In this part, we discuss how to reproduce the experiments in ...
 ### RQ1. Test Lengths
 
 ```
+make -e MODE=release
 bash rq1_raw.sh
 bash rq1_raw2.sh
 bash rq1_tex.sh
 pdflatex -interaction nonstopmode rq1.tex
 ```
 
-The above four commands generate `rq1.pdf`, which depicts the relative test case lengths. Note that `rq1_raw.sh` generates all test cases from scratch and may take a few hours to complete.
+The above five commands generate `rq1.pdf`, which depicts the relative test case lengths. Note that `rq1_raw.sh` generates all test cases from scratch and may take a few hours to complete.
