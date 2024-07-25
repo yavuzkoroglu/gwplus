@@ -2739,9 +2739,9 @@ echo '        xlabel=Target Coverage Criterion,' >> rq1.tex
 echo '        x label style={at={(axis description cs:0.5,1.45)}},' >> rq1.tex
 echo '        ylabel=TLC,' >> rq1.tex
 echo '        y label style={at={(axis description cs:1.025,0.5)},font=\tiny},' >> rq1.tex
-echo '        height=4cm,' >> rq1.tex
+echo '        height=3.9cm,' >> rq1.tex
 echo '        width=17cm,' >> rq1.tex
-echo '        major tick length=2pt,' >> rq1.tex
+echo '        major tick length=1pt,' >> rq1.tex
 echo '        extra x ticks={2.5,6.5,10.5,14.5,18.5,22.5,26.5,30.5,34.5,38.5,42.5,46.5,49.5,51.5,53.5,55.5,57.5,59.5},' >> rq1.tex
 echo '        extra x tick labels={' >> rq1.tex
 echo '            \tiny$50\%$,\tiny$60\%$,\tiny$70\%$,\tiny$80\%$,\tiny$90\%$,\tiny$100\%$,' >> rq1.tex
@@ -2820,125 +2820,125 @@ echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\TL
 echo '' >> rq1.tex
 IFS=$'\n'
 i=1
-if [[ ${tlcgwplusvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomvertexfifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomvertexfifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomvertexsixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomvertexsixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomvertexseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomvertexseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomvertexeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomvertexeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomvertexninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomvertexninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomvertexhundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomvertexhundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomedgefifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomedgefifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomedgesixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomedgesixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomedgeseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomedgeseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomedgeeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomedgeeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomedgeninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomedgeninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcgwplusedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcgwplusedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwqrandomedgehundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${tlcdjedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${tlcdjedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${tlcgwrandomedgehundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${tlcedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 if [[ ${tlcgwplusedgepairfifty} == "1" ]]; then echo "        \\node[label={[rotate=90]0:{\\tiny{\$${tlcedgepair50min}\$}}},inner sep=0pt,xshift=-.5pt,yshift=-1pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
@@ -2999,7 +2999,7 @@ echo '        ymin=0.625,' >> rq1.tex
 echo '        ymax=16,' >> rq1.tex
 echo '        xmin=0.25,' >> rq1.tex
 echo '        xmax=60.5,' >> rq1.tex
-echo '        height=4cm,' >> rq1.tex
+echo '        height=3.9cm,' >> rq1.tex
 echo '        width=17cm' >> rq1.tex
 echo '    ]' >> rq1.tex
 echo '    \end{axis}' >> rq1.tex
@@ -3047,9 +3047,9 @@ echo '        ytick={1,2,4,8,16,32,64},' >> rq1.tex
 echo '        yticklabels={1x,2x,4x,8x,16x,32x,64x},' >> rq1.tex
 echo '        ylabel=RISC-V,' >> rq1.tex
 echo '        y label style={at={(axis description cs:1.025,0.5)},font=\tiny},' >> rq1.tex
-echo '        height=4cm,' >> rq1.tex
+echo '        height=3.9cm,' >> rq1.tex
 echo '        width=17cm,' >> rq1.tex
-echo '        major tick length=2pt' >> rq1.tex
+echo '        major tick length=1pt' >> rq1.tex
 echo '    ]' >> rq1.tex
 echo '' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\RISCVGWPlusVertexFifty};' >> rq1.tex
@@ -3115,125 +3115,125 @@ echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\RI
 echo '' >> rq1.tex
 IFS=$'\n'
 i=1
-if [[ ${riscvgwplusvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomvertexfifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomvertexfifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomvertexsixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomvertexsixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomvertexseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomvertexseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomvertexeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomvertexeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomvertexninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomvertexninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomvertexhundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomvertexhundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomedgefifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomedgefifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomedgesixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomedgesixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomedgeseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomedgeseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomedgeeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomedgeeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomedgeninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomedgeninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvgwplusedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvgwplusedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwqrandomedgehundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${riscvdjedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${riscvdjedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${riscvgwrandomedgehundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${riscvedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 if [[ ${riscvgwplusedgepairfifty} == "1" ]]; then echo "        \\node[label={[rotate=90]0:{\\tiny{\$${riscvedgepair50min}\$}}},inner sep=0pt,xshift=-.5pt,yshift=-1pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
@@ -3324,9 +3324,9 @@ echo '        ytick={1,2,4,8,16,32,64},' >> rq1.tex
 echo '        yticklabels={1x,2x,4x,8x,16x,32x,64x},' >> rq1.tex
 echo '        ylabel=Parabank,' >> rq1.tex
 echo '        y label style={at={(axis description cs:1.025,0.5)},font=\tiny},' >> rq1.tex
-echo '        height=4cm,' >> rq1.tex
+echo '        height=3.9cm,' >> rq1.tex
 echo '        width=17cm,' >> rq1.tex
-echo '        major tick length=2pt' >> rq1.tex
+echo '        major tick length=1pt' >> rq1.tex
 echo '    ]' >> rq1.tex
 echo '' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\ParabankGWPlusVertexFifty};' >> rq1.tex
@@ -3392,125 +3392,125 @@ echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\Pa
 echo '' >> rq1.tex
 IFS=$'\n'
 i=1
-if [[ ${parabankgwplusvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomvertexfifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomvertexfifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomvertexsixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomvertexsixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomvertexseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomvertexseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomvertexeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomvertexeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomvertexninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomvertexninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomvertexhundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomvertexhundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomedgefifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomedgefifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomedgesixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomedgesixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:32.75,1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:32.75,1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomedgeseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:34.25,1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:34.25,1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomedgeseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomedgeeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomedgeeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomedgeninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomedgeninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankgwplusedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankgwplusedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwqrandomedgehundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${parabankdjedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${parabankdjedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${parabankgwrandomedgehundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${parabankedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 if [[ ${parabankgwplusedgepairfifty} == "1" ]]; then echo "        \\node[label={[rotate=90]0:{\\tiny{\$${parabankedgepair50min}\$}}},inner sep=0pt,xshift=-.5pt,yshift=-1pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
@@ -3620,9 +3620,9 @@ echo '        ytick={1,2,4,8,16,32,64},' >> rq1.tex
 echo '        yticklabels={1x,2x,4x,8x,16x,32x,64x},' >> rq1.tex
 echo '        ylabel=Testinium,' >> rq1.tex
 echo '        y label style={at={(axis description cs:1.025,0.5)},font=\tiny},' >> rq1.tex
-echo '        height=4cm,' >> rq1.tex
+echo '        height=3.9cm,' >> rq1.tex
 echo '        width=17cm,' >> rq1.tex
-echo '        major tick length=2pt' >> rq1.tex
+echo '        major tick length=1pt' >> rq1.tex
 echo '    ]' >> rq1.tex
 echo '' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\TestiniumGWPlusVertexFifty};' >> rq1.tex
@@ -3688,125 +3688,125 @@ echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\Te
 echo '' >> rq1.tex
 IFS=$'\n'
 i=1
-if [[ ${testiniumgwplusvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomvertexfifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjvertexfifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomvertexfifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomvertexsixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjvertexsixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomvertexsixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomvertexseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjvertexseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomvertexseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomvertexeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjvertexeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomvertexeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomvertexninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjvertexninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomvertexninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomvertexhundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjvertexhundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomvertexhundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumvertex100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomedgefifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjedgefifty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomedgefifty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge50min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge50min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomedgesixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjedgesixty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomedgesixty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge60min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge60min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomedgeseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjedgeseventy} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomedgeseventy[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge70min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge70min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomedgeeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjedgeeighty} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomedgeeighty[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge80min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge80min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomedgeninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjedgeninety} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomedgeninety[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge90min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge90min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumgwplusedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumgwplusedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwqrandomedgehundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
-if [[ ${testiniumdjedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${testiniumdjedgehundred} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 sorted=($(sort <<<"${testiniumgwrandomedgehundred[*]}"))
-if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge100min}\$}}},inner sep=0pt,yshift=2pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
+if [[ ${sorted[0]} == "1" ]]; then echo "        \\node[label={270:{\\tiny{\$${testiniumedge100min}\$}}},inner sep=0pt,yshift=2.5pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 if [[ ${testiniumgwplusedgepairfifty} == "1" ]]; then echo "        \\node[label={[rotate=90]0:{\\tiny{\$${testiniumedgepair50min}\$}}},inner sep=0pt,xshift=-.5pt,yshift=-1pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
