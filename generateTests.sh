@@ -23,7 +23,7 @@ do
         do
             for ratio in ${GW_RATIOS}
             do
-                echo "bin/gwplus -i ${EXPS}/${model}/m.json ${method} -c ${coverage} --${method} -t ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}.json ${ratio}"
+                echo "bin/gwplus -i ${EXPS}/${model}/m.json -c ${coverage} --${method} -t ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}.json ${ratio}"
                 bin/gwplus -i ${EXPS}/${model}/m.json -c ${coverage} --${method} -t ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}.json ${ratio}
 
                 for jsn in ${EXPS}/${model}/generated/gwplus_${method}_${coverage}_${ratio}*.json
