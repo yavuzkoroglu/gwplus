@@ -2757,6 +2757,24 @@ echo '            tick label style={rotate=270}' >> rq1.tex
 echo '        }' >> rq1.tex
 echo '    ]' >> rq1.tex
 echo '' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(4.5, 0.634) (4.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(8.5, 0.634) (8.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(12.5, 0.634) (12.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(16.5, 0.634) (16.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(20.5, 0.634) (20.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=black,solid] coordinates {(24.5, 0.634) (24.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(28.5, 0.634) (28.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(32.5, 0.634) (32.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(36.5, 0.634) (36.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(40.5, 0.634) (40.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(44.5, 0.634) (44.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=black,solid] coordinates {(48.5, 0.634) (48.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(50.5, 0.634) (50.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(52.5, 0.634) (52.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(54.5, 0.634) (54.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(56.5, 0.634) (56.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(58.5, 0.634) (58.5, 63.125)};' >> rq1.tex
+echo '' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\TLCGWPlusVertexFifty};' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\TLCGWQRandomVertexFifty};' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\TLCDJVertexFifty};' >> rq1.tex
@@ -2966,24 +2984,6 @@ if [[ ${tlcdjedgepairhundred} == "1" ]]; then echo "        \\node[label={[rotat
 ((i++))
 unset IFS
 echo '' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(4.5, 0.625) (3.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(8.5, 0.625) (8.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(12.5, 0.625) (12.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(16.5, 0.625) (16.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(20.5, 0.625) (20.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=black,solid] coordinates {(24.5, 0.625) (24.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(28.5, 0.625) (28.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(32.5, 0.625) (32.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(36.5, 0.625) (36.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(40.5, 0.625) (40.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(44.5, 0.625) (44.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=black,solid] coordinates {(48.5, 0.625) (48.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(50.5, 0.625) (50.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(52.5, 0.625) (52.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(54.5, 0.625) (54.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(56.5, 0.625) (56.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(58.5, 0.625) (58.5, 4096)};' >> rq1.tex
-echo '' >> rq1.tex
 echo '    \end{axis}' >> rq1.tex
 echo '' >> rq1.tex
 echo '    \begin{axis}[' >> rq1.tex
@@ -3051,6 +3051,24 @@ echo '        height=3.9cm,' >> rq1.tex
 echo '        width=17cm,' >> rq1.tex
 echo '        major tick length=1pt' >> rq1.tex
 echo '    ]' >> rq1.tex
+echo '' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(4.5, 0.634) (4.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(8.5, 0.634) (8.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(12.5, 0.634) (12.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(16.5, 0.634) (16.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(20.5, 0.634) (20.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=black,solid] coordinates {(24.5, 0.634) (24.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(28.5, 0.634) (28.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(32.5, 0.634) (32.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(36.5, 0.634) (36.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(40.5, 0.634) (40.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(44.5, 0.634) (44.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=black,solid] coordinates {(48.5, 0.634) (48.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(50.5, 0.634) (50.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(52.5, 0.634) (52.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(54.5, 0.634) (54.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(56.5, 0.634) (56.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(58.5, 0.634) (58.5, 63.125)};' >> rq1.tex
 echo '' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\RISCVGWPlusVertexFifty};' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\RISCVGWQRandomVertexFifty};' >> rq1.tex
@@ -3261,24 +3279,6 @@ if [[ ${riscvdjedgepairhundred} == "1" ]]; then echo "        \\node[label={[rot
 ((i++))
 unset IFS
 echo '' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(4.5, 0.625) (3.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(8.5, 0.625) (8.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(12.5, 0.625) (12.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(16.5, 0.625) (16.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(20.5, 0.625) (20.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=black,solid] coordinates {(24.5, 0.625) (24.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(28.5, 0.625) (28.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(32.5, 0.625) (32.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(36.5, 0.625) (36.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(40.5, 0.625) (40.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(44.5, 0.625) (44.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=black,solid] coordinates {(48.5, 0.625) (48.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(50.5, 0.625) (50.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(52.5, 0.625) (52.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(54.5, 0.625) (54.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(56.5, 0.625) (56.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(58.5, 0.625) (58.5, 4096)};' >> rq1.tex
-echo '' >> rq1.tex
 echo '    \end{axis}' >> rq1.tex
 echo '\end{tikzpicture}' >> rq1.tex
 echo '' >> rq1.tex
@@ -3328,6 +3328,24 @@ echo '        height=3.9cm,' >> rq1.tex
 echo '        width=17cm,' >> rq1.tex
 echo '        major tick length=1pt' >> rq1.tex
 echo '    ]' >> rq1.tex
+echo '' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(4.5, 0.634) (4.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(8.5, 0.634) (8.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(12.5, 0.634) (12.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(16.5, 0.634) (16.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(20.5, 0.634) (20.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=black,solid] coordinates {(24.5, 0.634) (24.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(28.5, 0.634) (28.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(32.5, 0.634) (32.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(36.5, 0.634) (36.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(40.5, 0.634) (40.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(44.5, 0.634) (44.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=black,solid] coordinates {(48.5, 0.634) (48.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(50.5, 0.634) (50.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(52.5, 0.634) (52.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(54.5, 0.634) (54.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(56.5, 0.634) (56.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(58.5, 0.634) (58.5, 63.125)};' >> rq1.tex
 echo '' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\ParabankGWPlusVertexFifty};' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\ParabankGWQRandomVertexFifty};' >> rq1.tex
@@ -3538,24 +3556,6 @@ if [[ ${parabankdjedgepairhundred} == "1" ]]; then echo "        \\node[label={[
 ((i++))
 unset IFS
 echo '' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(4.5, 0.625) (3.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(8.5, 0.625) (8.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(12.5, 0.625) (12.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(16.5, 0.625) (16.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(20.5, 0.625) (20.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=black,solid] coordinates {(24.5, 0.625) (24.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(28.5, 0.625) (28.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(32.5, 0.625) (32.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(36.5, 0.625) (36.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(40.5, 0.625) (40.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(44.5, 0.625) (44.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=black,solid] coordinates {(48.5, 0.625) (48.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(50.5, 0.625) (50.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(52.5, 0.625) (52.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(54.5, 0.625) (54.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(56.5, 0.625) (56.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(58.5, 0.625) (58.5, 4096)};' >> rq1.tex
-echo '' >> rq1.tex
 echo '    \end{axis}' >> rq1.tex
 echo '\end{tikzpicture}' >> rq1.tex
 echo '' >> rq1.tex
@@ -3624,6 +3624,24 @@ echo '        height=3.9cm,' >> rq1.tex
 echo '        width=17cm,' >> rq1.tex
 echo '        major tick length=1pt' >> rq1.tex
 echo '    ]' >> rq1.tex
+echo '' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(4.5, 0.634) (4.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(8.5, 0.634) (8.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(12.5, 0.634) (12.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(16.5, 0.634) (16.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(20.5, 0.634) (20.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=black,solid] coordinates {(24.5, 0.634) (24.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(28.5, 0.634) (28.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(32.5, 0.634) (32.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(36.5, 0.634) (36.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(40.5, 0.634) (40.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(44.5, 0.634) (44.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=black,solid] coordinates {(48.5, 0.634) (48.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(50.5, 0.634) (50.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(52.5, 0.634) (52.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(54.5, 0.634) (54.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(56.5, 0.634) (56.5, 63.125)};' >> rq1.tex
+echo '        \addplot+[mark=none,color=gray!50,solid] coordinates {(58.5, 0.634) (58.5, 63.125)};' >> rq1.tex
 echo '' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\TestiniumGWPlusVertexFifty};' >> rq1.tex
 echo '        \addplot[mark=x,mark options={scale=0.5},boxplot,black] table {\TestiniumGWQRandomVertexFifty};' >> rq1.tex
@@ -3833,24 +3851,6 @@ if [[ ${testiniumgwplusedgepairhundred} == "1" ]]; then echo "        \\node[lab
 if [[ ${testiniumdjedgepairhundred} == "1" ]]; then echo "        \\node[label={[rotate=90]0:{\\tiny{\$${testiniumedgepair100min}\$}}},inner sep=0pt,xshift=-.5pt,yshift=-1pt] at (axis cs:${i},1) {};" >> rq1.tex; fi
 ((i++))
 unset IFS
-echo '' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(4.5, 0.625) (3.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(8.5, 0.625) (8.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(12.5, 0.625) (12.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(16.5, 0.625) (16.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(20.5, 0.625) (20.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=black,solid] coordinates {(24.5, 0.625) (24.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(28.5, 0.625) (28.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(32.5, 0.625) (32.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(36.5, 0.625) (36.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(40.5, 0.625) (40.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(44.5, 0.625) (44.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=black,solid] coordinates {(48.5, 0.625) (48.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(50.5, 0.625) (50.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(52.5, 0.625) (52.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(54.5, 0.625) (54.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(56.5, 0.625) (56.5, 4096)};' >> rq1.tex
-echo '        \addplot+[mark=none,color=gray!70,dotted] coordinates {(58.5, 0.625) (58.5, 4096)};' >> rq1.tex
 echo '' >> rq1.tex
 echo '    \end{axis}' >> rq1.tex
 echo '\end{tikzpicture}' >> rq1.tex
