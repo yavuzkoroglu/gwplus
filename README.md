@@ -2,6 +2,7 @@
 
 Computes short test case(s) that satisfies a coverage criterion for a GraphWalker model.
 
+<!--
 ## Table of Contents
 
 * [How to Build](#how-to-build)
@@ -304,10 +305,77 @@ Covered p10 5 times
 
 100%
 ```
+-->
 
 ## Experiments
 
-In this part, we discuss how to reproduce the experiments. Note that we performed these experiments in a MacOS environment.
+In this part, we discuss how to reproduce the experiments. 
+
+### Prerequisites
+
+#### 1. MacOS
+
+Please use a MacOS system. Open a terminal and go the directory that contains this document:
+
+```
+cd <directory-containing-GWPlus>
+```
+
+#### 2. Homebrew (`brew`)
+
+Make sure [Homebrew](https://brew.sh) is installed on your machine.
+
+#### 3. `make`
+
+Our compilation procedures use the `make` command. You can install it on a MacOS using [Homebrew](https://brew.sh):
+
+```
+brew install make
+``` 
+
+#### 4. `clang`
+
+GWPlus's default compiler is `clang`. If this is unavailable, please install Xcode Command Line Tools:
+
+```
+xcode-select --install
+```
+
+#### 3. `git`
+
+GWPlus depends on a third party library called `padkit`. The `make -e MODE=release` command automatically clones this library using the `git` command. You may install `git` on a MacOS using [Homebrew](https://brew.sh):
+
+```
+brew install git
+```
+
+#### 4. `java`
+
+Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker's built-in methods, implemented in Java. You may install `java` on a MacOS using [Homebrew](https://brew.sh):
+
+```
+brew install openjdk
+```
+
+#### 5. `jq`
+
+GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using `jq`. You may install `jq` on a MacOS using [Homebrew](https://brew.sh):
+
+```
+brew install jq
+```
+
+#### 6. `gdate`
+
+Our scripts measure elapsed time using the `gdate` command. You may install `gdate` on a MacOS using [Homebrew](https://brew.sh):
+
+```
+brew install coreutils
+```
+
+#### 7. `pdflatex`
+
+Our scripts create `.tex` files. To obtain `.pdf` files, you must compile these `.tex` files using `pdflatex`. Please go to [https://www.tug.org/mactex/](https://www.tug.org/mactex/) to install MacTeX on a MacOS, so you can perform the final `.pdf` compilation step.
 
 ### RQ1. Test Lengths
 
@@ -335,61 +403,3 @@ pdflatex -interaction nonstopmode rq2.tex
 ```
 
 The above commands generate `rq2.pdf`, which depicts the relative test redundancies. Note that these steps may also take a few hours to complete. 
-
-### Prerequisites
-
-If the experiments fail to produce the pdf files for RQ1 and/or RQ2, some of the following prerequisites may be missing. Note that we performed our experiments on a MacOS system, although GWPlus should compile on both Linux and Windows. We use [Homebrew](https://brew.sh) to install most of the prerequisites of our experiments.
-
-On a Linux machine, it should be possible to execute our experiments by aliasing the GNU's `date` to `gdate` and installing the rest of the components below.
-
-#### 1. `make`
-
-Our compilation procedures use the `make` command. You can install it on a MacOS using `homebrew`:
-
-```
-brew install make
-``` 
-
-#### 2. `clang`
-
-GWPlus's default compiler is `CC=clang`. If you use `gcc`, it will compile using the following command:
-
-```
-make -e MODE=release -e CC=gcc
-```
-
-#### 3. `git`
-
-GWPlus depends on a third party library called `padkit`. It automatically clones this library using the `git` command. You may install `git` on a MacOS using `homebrew`:
-
-```
-brew install git
-```
-
-#### 4. `java`
-
-Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker's built-in methods, implemented in Java. You may install `java` on a MacOS using `homebrew`:
-
-```
-brew install openjdk
-```
-
-#### 5. `jq`
-
-GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using `jq`. You may install `jq` on a MacOS using `homebrew`:
-
-```
-brew install jq
-```
-
-#### 6. `gdate`
-
-Our scripts measure elapsed time using the `gdate` command. You may install `gdate` on a MacOS using `homebrew`:
-
-```
-brew install coreutils
-```
-
-#### 7. `pdflatex`
-
-Our scripts create `.tex` files. To obtain `.pdf` files, you must compile these `.tex` files using `pdflatex`. Please go to [https://www.tug.org/mactex/](https://www.tug.org/mactex/) to install MacTeX on a MacOS.

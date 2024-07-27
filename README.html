@@ -475,31 +475,35 @@ pre[class*="language-"] {
 
 <p>Computes short test case(s) that satisfies a coverage criterion for a GraphWalker model.</p>
 
-<h2 id="toc_1">Table of Contents</h2>
+<!--
+## Table of Contents
 
-<ul>
-<li><a href="#toc_2">How to Build</a></li>
-<li><a href="#toc_3">Usage</a></li>
-<li><a href="#toc_7">Experiments</a></li>
-</ul>
+* [How to Build](#how-to-build)
+* [Usage](#usage)
+* [Experiments](#experiments)
 
-<h2 id="toc_2">How to Build</h2>
+## How to Build
 
-<p>Open a terminal execute the following command to build <code>gwplus</code>:</p>
+Open a terminal execute the following command to build `gwplus`:
 
-<div><pre><code class="language-none">make -e MODE=release</code></pre></div>
+```
+make -e MODE=release
+```
 
-<p>Now, you are ready to use <code>gwplus</code>. Execute the following command to see how to use <code>gwplus</code>.</p>
+Now, you are ready to use `gwplus`. Execute the following command to see how to use `gwplus`.
 
-<div><pre><code class="language-none">bin/gwplus</code></pre></div>
+```
+bin/gwplus
+```
 
-<h2 id="toc_3">Usage</h2>
+## Usage
 
-<p>You should obtain the following output after executing <code>bin/gwplus</code>:</p>
+You should obtain the following output after executing `bin/gwplus`:
 
-<div><pre><code class="language-none">GWPlus: Fast Optimal Test Generator for GraphWalker
+```
+GWPlus: Fast Optimal Test Generator for GraphWalker
 
-Usage: gwplus -i &lt;json-file&gt; [options]
+Usage: gwplus -i <json-file> [options]
 
 GENERAL OPTIONS:
   -c,--coverage COVERAGE       Set the coverage criterion
@@ -532,102 +536,112 @@ COVERAGE OPTIONS:
 EXAMPLE USES:
   bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t t.json -v
   bin/gwplus -i exps/001/m.json -m exps/001/generated/t2.txt
-  bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generated/t2.txt</code></pre></div>
+  bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generated/t2.txt
+```
 
-<h3 id="toc_4">Example #1</h3>
+### Example #1
 
-<div><pre><code class="language-none">bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t t.json -v</code></pre></div>
+```
+bin/gwplus -i exps/001/m.json -c prime3 -s s.dot -p p.dot -f f.dot -t t.json -v
+```
 
-<p>The first option in this example is <code>-i exps/001/m.json</code>. This option sets the input GraphWalker model to a toy graph whose meta information is in <code>exps/001/info.json</code>. When opened in GraphWalker studio, this toy graph appears as follows:</p>
+The first option in this example is `-i exps/001/m.json`. This option sets the input GraphWalker model to a toy graph whose meta information is in `exps/001/info.json`. When opened in GraphWalker studio, this toy graph appears as follows:
 
-<p><img src="exps/001/m.png" alt="The GraphWalker Model of a Toy Graph"></p>
+![The GraphWalker Model of a Toy Graph](exps/001/m.png)
 
-<p>The second option <code>-c prime3</code> sets the coverage criterion to the highest setting.</p>
+The second option `-c prime3` sets the coverage criterion to the highest setting.
 
-<p>The third option <code>-s s.dot</code> saves the simple graph of the toy graph. For coverage criteria settings higher than vertex coverage, the simple graph is a <em>line graph</em>, i.e., a graph where all edges are vertices and vice versa. After executing the example command, you can print the simple graph to the terminal using <code>cat s.dot</code> and produce the following result:</p>
+The third option `-s s.dot` saves the simple graph of the toy graph. For coverage criteria settings higher than vertex coverage, the simple graph is a *line graph*, i.e., a graph where all edges are vertices and vice versa. After executing the example command, you can print the simple graph to the terminal using `cat s.dot` and produce the following result:
 
-<div><pre><code class="language-none">digraph SimpleGraph {
+```
+digraph SimpleGraph {
     rankdir=LR;
-    node [shape=&quot;rectangle&quot;];
-    reset [shape=&quot;none&quot;, label=&quot;&quot;, width=0, height=0];
-    10 [label=&quot;ih&quot;];
-    9 [label=&quot;hi&quot;];
-    8 [label=&quot;bh&quot;];
-    7 [label=&quot;ge&quot;];
-    6 [label=&quot;fg&quot;];
-    5 [label=&quot;ef&quot;];
-    4 [label=&quot;de&quot;];
-    3 [label=&quot;da&quot;];
-    2 [label=&quot;cd&quot;];
-    1 [label=&quot;bc&quot;];
-    0 [label=&quot;ab&quot;];
-    reset -&gt; 0 [label=&quot;a&quot;];
-    10 -&gt; 9 [label=&quot;h&quot;];
-    9 -&gt; 10 [label=&quot;i&quot;];
-    8 -&gt; 9 [label=&quot;h&quot;];
-    7 -&gt; 5 [label=&quot;e&quot;];
-    6 -&gt; 7 [label=&quot;g&quot;];
-    5 -&gt; 6 [label=&quot;f&quot;];
-    4 -&gt; 5 [label=&quot;e&quot;];
-    3 -&gt; 0 [label=&quot;a&quot;];
-    2 -&gt; 4 [label=&quot;d&quot;];
-    2 -&gt; 3 [label=&quot;d&quot;];
-    1 -&gt; 2 [label=&quot;c&quot;];
-    0 -&gt; 8 [label=&quot;b&quot;];
-    0 -&gt; 1 [label=&quot;b&quot;];
-}</code></pre></div>
+    node [shape="rectangle"];
+    reset [shape="none", label="", width=0, height=0];
+    10 [label="ih"];
+    9 [label="hi"];
+    8 [label="bh"];
+    7 [label="ge"];
+    6 [label="fg"];
+    5 [label="ef"];
+    4 [label="de"];
+    3 [label="da"];
+    2 [label="cd"];
+    1 [label="bc"];
+    0 [label="ab"];
+    reset -> 0 [label="a"];
+    10 -> 9 [label="h"];
+    9 -> 10 [label="i"];
+    8 -> 9 [label="h"];
+    7 -> 5 [label="e"];
+    6 -> 7 [label="g"];
+    5 -> 6 [label="f"];
+    4 -> 5 [label="e"];
+    3 -> 0 [label="a"];
+    2 -> 4 [label="d"];
+    2 -> 3 [label="d"];
+    1 -> 2 [label="c"];
+    0 -> 8 [label="b"];
+    0 -> 1 [label="b"];
+}
+```
 
-<p>A visualization of the above DOT graph is as follows:</p>
+A visualization of the above DOT graph is as follows:
 
-<p><img src="exps/001/generated/s.svg" alt="The Simple Graph of the Toy Graph"></p>
+![The Simple Graph of the Toy Graph](exps/001/generated/s.svg)
 
-<p>The fourth option <code>-p p.dot</code> saves the path graph of test requirements. A visualization of the path graph is below:</p>
+The fourth option `-p p.dot` saves the path graph of test requirements. A visualization of the path graph is below:
 
-<p><img src="exps/001/generated/p.svg" alt="The Path Graph of the Toy Graph"></p>
+![The Path Graph of the Toy Graph](exps/001/generated/p.svg)
 
-<p>The fifth option <code>-f f.dot</code> saves the final test plan. A visualization of the test plan is below:</p>
+The fifth option `-f f.dot` saves the final test plan. A visualization of the test plan is below:
 
-<p><img src="exps/001/generated/f.svg" alt="The Final Test Plan of the Toy Graph"></p>
+![The Final Test Plan of the Toy Graph](exps/001/generated/f.svg)
 
-<p>The sixth option <code>-t t.json</code> saves the model + a list of predefinedEdgeIds denoting a test path that satisfies the <em>prime3</em> coverage criterion. For this example, <code>gwplus</code> produces two test models. You can give the second test model to GraphWalker CLI using the following command:</p>
+The sixth option `-t t.json` saves the model + a list of predefinedEdgeIds denoting a test path that satisfies the *prime3* coverage criterion. For this example, `gwplus` produces two test models. You can give the second test model to GraphWalker CLI using the following command:
 
-<div><pre><code class="language-none">java -jar graphwalker-cli-4.3.2.jar offline -m t_2.json &quot;predefined_path(predefined_path)&quot;</code></pre></div>
+```
+java -jar graphwalker-cli-4.3.2.jar offline -m t_2.json "predefined_path(predefined_path)"
+```
 
-<p>The GraphWalker CLI output should look like as follows:</p>
+The GraphWalker CLI output should look like as follows:
 
-<div><pre><code class="language-none">{&quot;currentElementName&quot;:&quot;a&quot;}
-{&quot;currentElementName&quot;:&quot;ab&quot;}
-{&quot;currentElementName&quot;:&quot;b&quot;}
-{&quot;currentElementName&quot;:&quot;bc&quot;}
-{&quot;currentElementName&quot;:&quot;c&quot;}
-{&quot;currentElementName&quot;:&quot;cd&quot;}
-{&quot;currentElementName&quot;:&quot;d&quot;}
-{&quot;currentElementName&quot;:&quot;da&quot;}
-{&quot;currentElementName&quot;:&quot;a&quot;}
-{&quot;currentElementName&quot;:&quot;ab&quot;}
-{&quot;currentElementName&quot;:&quot;b&quot;}
-{&quot;currentElementName&quot;:&quot;bc&quot;}
-{&quot;currentElementName&quot;:&quot;c&quot;}
-{&quot;currentElementName&quot;:&quot;cd&quot;}
-{&quot;currentElementName&quot;:&quot;d&quot;}
-{&quot;currentElementName&quot;:&quot;da&quot;}
-{&quot;currentElementName&quot;:&quot;a&quot;}
-{&quot;currentElementName&quot;:&quot;ab&quot;}
-{&quot;currentElementName&quot;:&quot;b&quot;}
-{&quot;currentElementName&quot;:&quot;bh&quot;}
-{&quot;currentElementName&quot;:&quot;h&quot;}
-{&quot;currentElementName&quot;:&quot;hi&quot;}
-{&quot;currentElementName&quot;:&quot;i&quot;}
-{&quot;currentElementName&quot;:&quot;ih&quot;}
-{&quot;currentElementName&quot;:&quot;h&quot;}
-{&quot;currentElementName&quot;:&quot;hi&quot;}
-{&quot;currentElementName&quot;:&quot;i&quot;}
-{&quot;currentElementName&quot;:&quot;ih&quot;}
-{&quot;currentElementName&quot;:&quot;h&quot;}</code></pre></div>
+```
+{"currentElementName":"a"}
+{"currentElementName":"ab"}
+{"currentElementName":"b"}
+{"currentElementName":"bc"}
+{"currentElementName":"c"}
+{"currentElementName":"cd"}
+{"currentElementName":"d"}
+{"currentElementName":"da"}
+{"currentElementName":"a"}
+{"currentElementName":"ab"}
+{"currentElementName":"b"}
+{"currentElementName":"bc"}
+{"currentElementName":"c"}
+{"currentElementName":"cd"}
+{"currentElementName":"d"}
+{"currentElementName":"da"}
+{"currentElementName":"a"}
+{"currentElementName":"ab"}
+{"currentElementName":"b"}
+{"currentElementName":"bh"}
+{"currentElementName":"h"}
+{"currentElementName":"hi"}
+{"currentElementName":"i"}
+{"currentElementName":"ih"}
+{"currentElementName":"h"}
+{"currentElementName":"hi"}
+{"currentElementName":"i"}
+{"currentElementName":"ih"}
+{"currentElementName":"h"}
+```
 
-<p>The final option <code>-v</code> enables verbose messages in output. A correct execution should produce something similar to the following timestamped output:</p>
+The final option `-v` enables verbose messages in output. A correct execution should produce something similar to the following timestamped output:
 
-<div><pre><code class="language-none">[2024-07-27 13:50:48] - Verbose enabled.
+```
+[2024-07-27 13:50:48] - Verbose enabled.
 [2024-07-27 13:50:48] - MODE = release
 [2024-07-27 13:50:48] - Input Model File = exps/001/m.json
 [2024-07-27 13:50:48] - Coverage Criterion = Prime Edge Path Coverage
@@ -637,12 +651,12 @@ EXAMPLE USES:
 [2024-07-27 13:50:48] - Output Model File with Predefined Edges = t.json
 [2024-07-27 13:50:48] - Coverage Percent = 100%
 [2024-07-27 13:50:48] - Creating Empty GraphWalker Model...
-[2024-07-27 13:50:48] - Filling the GraphWalker Model using &#39;exps/001/m.json&#39;
+[2024-07-27 13:50:48] - Filling the GraphWalker Model using 'exps/001/m.json'
 [2024-07-27 13:50:48] - Filling adjacency lists to optimize path generation...
 [2024-07-27 13:50:48] - Starting Element is a VERTEX
 [2024-07-27 13:50:48] - # Vertices = 9
 [2024-07-27 13:50:48] - # Edges = 11
-[2024-07-27 13:50:48] - Saving the simple graph to &#39;s.dot&#39;...
+[2024-07-27 13:50:48] - Saving the simple graph to 's.dot'...
 [2024-07-27 13:50:48] - Generating/Loading Test Requirements...
 [2024-07-27 13:50:48] - maxLen(primes) = 1
 [2024-07-27 13:50:48] - maxLen(primes) = 2
@@ -655,7 +669,7 @@ EXAMPLE USES:
 [2024-07-27 13:50:48] - # Test Requirements = 11
 [2024-07-27 13:50:48] - Generating Path Graph...
 [2024-07-27 13:50:48] - Optimization Level = 0
-[2024-07-27 13:50:48] - Saving path graph to &#39;p.dot&#39;
+[2024-07-27 13:50:48] - Saving path graph to 'p.dot'
 [2024-07-27 13:50:48] - Generating Hyperpaths...
 [2024-07-27 13:50:48] - Generating Network Flow Graph with Hyperpaths...
 [2024-07-27 13:50:48] - Minimizing Total Flow...
@@ -698,31 +712,35 @@ EXAMPLE USES:
 [2024-07-27 13:50:48] - Generating Test Plan...
 [2024-07-27 13:50:48] - Removing zero flows...
 [2024-07-27 13:50:48] - Deactivating dead vertices...
-[2024-07-27 13:50:48] - Saving the final test plan to &#39;f.dot&#39;
+[2024-07-27 13:50:48] - Saving the final test plan to 'f.dot'
 [2024-07-27 13:50:48] - Creating Tests...
 [2024-07-27 13:50:48] - Consuming s-t path #1
 [2024-07-27 13:50:48] - Converting to path trace #1
 [2024-07-27 13:50:48] - Removing new zero flows
 [2024-07-27 13:50:48] - Constructing test path #1
 [2024-07-27 13:50:48] - LengthOf(Test #1) = 14
-[2024-07-27 13:50:48] - Saving to &#39;t_1.json&#39;
+[2024-07-27 13:50:48] - Saving to 't_1.json'
 [2024-07-27 13:50:48] - Consuming s-t path #2
 [2024-07-27 13:50:48] - Converting to path trace #2
 [2024-07-27 13:50:48] - Removing new zero flows
 [2024-07-27 13:50:48] - Constructing test path #2
 [2024-07-27 13:50:48] - LengthOf(Test #2) = 14
-[2024-07-27 13:50:48] - Saving to &#39;t_2.json&#39;
+[2024-07-27 13:50:48] - Saving to 't_2.json'
 [2024-07-27 13:50:48] - # Tests = 2
 [2024-07-27 13:50:48] - Total Test Length = 28
-[2024-07-27 13:50:48] - Finished.</code></pre></div>
+[2024-07-27 13:50:48] - Finished.
+```
 
-<h3 id="toc_5">Example #2</h3>
+### Example #2
 
-<div><pre><code class="language-none">bin/gwplus -i exps/001/m.json -m exps/001/generated/t2.txt</code></pre></div>
+```
+bin/gwplus -i exps/001/m.json -m exps/001/generated/t2.txt
+```
 
-<p>The above command measures the edge coverage of the test located in <code>t2.txt</code> and produces the following result:</p>
+The above command measures the edge coverage of the test located in `t2.txt` and produces the following result:
 
-<div><pre><code class="language-none">Covered p0 2 times
+```
+Covered p0 2 times
 Covered p1 2 times
 Covered p2 1 times
 Covered p3 0 times
@@ -734,15 +752,19 @@ Covered p8 2 times
 Covered p9 2 times
 Covered p10 3 times
 
-63%</code></pre></div>
+63%
+```
 
-<h3 id="toc_6">Example #3</h3>
+### Example #3
 
-<div><pre><code class="language-none">bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generated/t2.txt</code></pre></div>
+```
+bin/gwplus -i exps/001/m.json -c 0 -m exps/001/generated/t1.txt exps/001/generated/t2.txt
+```
 
-<p>The above command measures the collective vertex coverage of the tests located in <code>t1.txt</code> and <code>t2.txt</code>, producing the following result:</p>
+The above command measures the collective vertex coverage of the tests located in `t1.txt` and `t2.txt`, producing the following result:
 
-<div><pre><code class="language-none">Covered p0 2 times
+```
+Covered p0 2 times
 Covered p1 2 times
 Covered p2 1 times
 Covered p3 2 times
@@ -754,13 +776,67 @@ Covered p8 4 times
 Covered p9 4 times
 Covered p10 5 times
 
-100%</code></pre></div>
+100%
+```
+-->
 
-<h2 id="toc_7">Experiments</h2>
+<h2 id="toc_1">Experiments</h2>
 
-<p>In this part, we discuss how to reproduce the experiments. Note that we performed these experiments in a MacOS environment.</p>
+<p>In this part, we discuss how to reproduce the experiments. </p>
 
-<h3 id="toc_8">RQ1. Test Lengths</h3>
+<h3 id="toc_2">Prerequisites</h3>
+
+<h4 id="toc_3">1. MacOS</h4>
+
+<p>Please use a MacOS system. Open a terminal and go the directory that contains this document:</p>
+
+<div><pre><code class="language-none">cd &lt;directory-containing-GWPlus&gt;</code></pre></div>
+
+<h4 id="toc_4">2. Homebrew (<code>brew</code>)</h4>
+
+<p>Make sure <a href="https://brew.sh">Homebrew</a> is installed on your machine.</p>
+
+<h4 id="toc_5">3. <code>make</code></h4>
+
+<p>Our compilation procedures use the <code>make</code> command. You can install it on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
+
+<div><pre><code class="language-none">brew install make</code></pre></div>
+
+<h4 id="toc_6">4. <code>clang</code></h4>
+
+<p>GWPlus&#39;s default compiler is <code>clang</code>. If this is unavailable, please install Xcode Command Line Tools:</p>
+
+<div><pre><code class="language-none">xcode-select --install</code></pre></div>
+
+<h4 id="toc_7">3. <code>git</code></h4>
+
+<p>GWPlus depends on a third party library called <code>padkit</code>. The <code>make -e MODE=release</code> command automatically clones this library using the <code>git</code> command. You may install <code>git</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
+
+<div><pre><code class="language-none">brew install git</code></pre></div>
+
+<h4 id="toc_8">4. <code>java</code></h4>
+
+<p>Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker&#39;s built-in methods, implemented in Java. You may install <code>java</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
+
+<div><pre><code class="language-none">brew install openjdk</code></pre></div>
+
+<h4 id="toc_9">5. <code>jq</code></h4>
+
+<p>GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using <code>jq</code>. You may install <code>jq</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
+
+<div><pre><code class="language-none">brew install jq</code></pre></div>
+
+<h4 id="toc_10">6. <code>gdate</code></h4>
+
+<p>Our scripts measure elapsed time using the <code>gdate</code> command. You may install <code>gdate</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
+
+<div><pre><code class="language-none">brew install coreutils</code></pre></div>
+
+<h4 id="toc_11">7. <code>pdflatex</code></h4>
+
+<p>Our scripts create <code>.tex</code> files. To obtain <code>.pdf</code> files, you must compile these <code>.tex</code> files using <code>pdflatex</code>. Please go to <a href="https://www.tug.org/mactex/">https://www.tug.org/mactex/</a> to install MacTeX on a MacOS, so you can perform the final <code>.pdf</code> compilation step.</p>
+
+<h3 id="toc_12">RQ1. Test Lengths</h3>
 
 <div><pre><code class="language-none">for i in &quot;002&quot; &quot;003&quot; &quot;004&quot; &quot;005&quot;; do rm -f exps/${i}/generated/*; done
 make -e MODE=release
@@ -771,7 +847,7 @@ pdflatex -interaction nonstopmode rq1.tex</code></pre></div>
 
 <p>The above commands generate <code>rq1.pdf</code>, which depicts the relative test case lengths. Note that <code>rq1_raw.sh</code> generates all test cases from scratch and may take a few hours to complete.</p>
 
-<h3 id="toc_9">RQ2. Test Redundancies</h3>
+<h3 id="toc_13">RQ2. Test Redundancies</h3>
 
 <div><pre><code class="language-none">for i in &quot;002&quot; &quot;003&quot; &quot;004&quot; &quot;005&quot;; do rm -f exps/${i}/generated/*; done
 make -e MODE=release
@@ -782,52 +858,6 @@ bash rq2_tex.sh
 pdflatex -interaction nonstopmode rq2.tex</code></pre></div>
 
 <p>The above commands generate <code>rq2.pdf</code>, which depicts the relative test redundancies. Note that these steps may also take a few hours to complete. </p>
-
-<h3 id="toc_10">Prerequisites</h3>
-
-<p>If the experiments fail to produce the pdf files for RQ1 and/or RQ2, some of the following prerequisites may be missing. Note that we performed our experiments on a MacOS system, although GWPlus should compile on both Linux and Windows. We use <a href="https://brew.sh">Homebrew</a> to install most of the prerequisites of our experiments.</p>
-
-<p>On a Linux machine, it should be possible to execute our experiments by aliasing the GNU&#39;s <code>date</code> to <code>gdate</code> and installing the rest of the components below.</p>
-
-<h4 id="toc_11">1. <code>make</code></h4>
-
-<p>Our compilation procedures use the <code>make</code> command. You can install it on a MacOS using <code>homebrew</code>:</p>
-
-<div><pre><code class="language-none">brew install make</code></pre></div>
-
-<h4 id="toc_12">2. <code>clang</code></h4>
-
-<p>GWPlus&#39;s default compiler is <code>CC=clang</code>. If you use <code>gcc</code>, it will compile using the following command:</p>
-
-<div><pre><code class="language-none">make -e MODE=release -e CC=gcc</code></pre></div>
-
-<h4 id="toc_13">3. <code>git</code></h4>
-
-<p>GWPlus depends on a third party library called <code>padkit</code>. It automatically clones this library using the <code>git</code> command. You may install <code>git</code> on a MacOS using <code>homebrew</code>:</p>
-
-<div><pre><code class="language-none">brew install git</code></pre></div>
-
-<h4 id="toc_14">4. <code>java</code></h4>
-
-<p>Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker&#39;s built-in methods, implemented in Java. You may install <code>java</code> on a MacOS using <code>homebrew</code>:</p>
-
-<div><pre><code class="language-none">brew install openjdk</code></pre></div>
-
-<h4 id="toc_15">5. <code>jq</code></h4>
-
-<p>GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using <code>jq</code>. You may install <code>jq</code> on a MacOS using <code>homebrew</code>:</p>
-
-<div><pre><code class="language-none">brew install jq</code></pre></div>
-
-<h4 id="toc_16">6. <code>gdate</code></h4>
-
-<p>Our scripts measure elapsed time using the <code>gdate</code> command. You may install <code>gdate</code> on a MacOS using <code>homebrew</code>:</p>
-
-<div><pre><code class="language-none">brew install coreutils</code></pre></div>
-
-<h4 id="toc_17">7. <code>pdflatex</code></h4>
-
-<p>Our scripts create <code>.tex</code> files. To obtain <code>.pdf</code> files, you must compile these <code>.tex</code> files using <code>pdflatex</code>. Please go to <a href="https://www.tug.org/mactex/">https://www.tug.org/mactex/</a> to install MacTeX on a MacOS.</p>
 
 
 
