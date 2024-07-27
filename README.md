@@ -167,86 +167,94 @@ The GraphWalker CLI output should look like as follows:
 The final option `-v` enables verbose messages in output. A correct execution should produce something similar to the following timestamped output:
 
 ```
-[2024-06-15 06:42:42] - Verbose enabled.
-[2024-06-15 06:42:42] - MODE = release
-[2024-06-15 06:42:42] - Input Model File = exps/001/m.json
-[2024-06-15 06:42:42] - Coverage Criterion = Prime Edge Path Coverage
-[2024-06-15 06:42:42] - Simple Graph Name = s.dot
-[2024-06-15 06:42:42] - Path Graph File = p.dot
-[2024-06-15 06:42:42] - Final Test Plan File = f.dot
-[2024-06-15 06:42:42] - Output Model File with Predefined Edges = t.json
-[2024-06-15 06:42:42] - Coverage Percent = 100%
-[2024-06-15 06:42:42] - Creating Empty GraphWalker Model...
-[2024-06-15 06:42:42] - Filling the GraphWalker Model using 'exps/001/m.json'
-[2024-06-15 06:42:42] - Filling adjacency lists to optimize path generation...
-[2024-06-15 06:42:42] - Starting Element is a VERTEX
-[2024-06-15 06:42:42] - # Vertices = 9
-[2024-06-15 06:42:42] - # Edges = 11
-[2024-06-15 06:42:42] - Saving the simple graph to 's.dot'...
-[2024-06-15 06:42:42] - Generating/Loading Test Requirements...
-[2024-06-15 06:42:42] - # Test Requirements = 11
-[2024-06-15 06:42:42] - Generating Path Graph...
-[2024-06-15 06:42:42] - Optimization Level = 0
-[2024-06-15 06:42:42] - Saving path graph to 'p.dot'
-[2024-06-15 06:42:42] - Generating Hyperpaths...
-[2024-06-15 06:42:42] - Generating Network Flow Graph with Hyperpaths...
-[2024-06-15 06:42:42] - Minimizing Total Flow...
-[2024-06-15 06:42:42] - Expanding the Network Flow Graph...
-[2024-06-15 06:42:42] - Expanding h2
-[2024-06-15 06:42:42] - Initializing flow with test requirement constraints...
-[2024-06-15 06:42:42] - Computing a feasible flow...
-[2024-06-15 06:42:42] - 3%
-[2024-06-15 06:42:42] - 15%
-[2024-06-15 06:42:42] - Activating backwards edges...
-[2024-06-15 06:42:42] - Minimizing the flow...
-[2024-06-15 06:42:42] - 33%
-[2024-06-15 06:42:42] - Deactivating backwards edges...
-[2024-06-15 06:42:42] - Generating the Final Test Plan...
-[2024-06-15 06:42:42] - Removing zero flows...
-[2024-06-15 06:42:42] - Deactivating dead vertices...
-[2024-06-15 06:42:42] - Expanding h1
-[2024-06-15 06:42:42] - Initializing flow with test requirement constraints...
-[2024-06-15 06:42:42] - Computing a feasible flow...
-[2024-06-15 06:42:42] - 6%
-[2024-06-15 06:42:42] - 23%
-[2024-06-15 06:42:42] - 26%
-[2024-06-15 06:42:42] - Activating backwards edges...
-[2024-06-15 06:42:42] - Minimizing the flow...
-[2024-06-15 06:42:42] - 25%
-[2024-06-15 06:42:42] - 50%
-[2024-06-15 06:42:42] - Deactivating backwards edges...
-[2024-06-15 06:42:42] - Generating the Final Test Plan...
-[2024-06-15 06:42:42] - Removing zero flows...
-[2024-06-15 06:42:42] - Deactivating dead vertices...
-[2024-06-15 06:42:42] - Expanding h0
-[2024-06-15 06:42:42] - Initializing flow with test requirement constraints...
-[2024-06-15 06:42:42] - Computing a feasible flow...
-[2024-06-15 06:42:42] - 16%
-[2024-06-15 06:42:42] - 33%
-[2024-06-15 06:42:42] - Activating backwards edges...
-[2024-06-15 06:42:42] - Minimizing the flow...
-[2024-06-15 06:42:42] - 33%
-[2024-06-15 06:42:42] - Deactivating backwards edges...
-[2024-06-15 06:42:42] - Generating the Final Test Plan...
-[2024-06-15 06:42:42] - Removing zero flows...
-[2024-06-15 06:42:42] - Deactivating dead vertices...
-[2024-06-15 06:42:42] - Saving the final test plan to 'f.dot'
-[2024-06-15 06:42:42] - Creating Tests...
-[2024-06-15 06:42:42] - Consuming s-t path #1
-[2024-06-15 06:42:42] - Converting to path trace #1
-[2024-06-15 06:42:42] - Removing new zero flows
-[2024-06-15 06:42:42] - Constructing test path #1
-[2024-06-15 06:42:42] - LengthOf(Test #1) = 14
-[2024-06-15 06:42:42] - Saving to 't_1.json'
-[2024-06-15 06:42:42] - Consuming s-t path #2
-[2024-06-15 06:42:42] - Converting to path trace #2
-[2024-06-15 06:42:42] - Removing new zero flows
-[2024-06-15 06:42:42] - Constructing test path #2
-[2024-06-15 06:42:42] - LengthOf(Test #2) = 14
-[2024-06-15 06:42:42] - Saving to 't_2.json'
-[2024-06-15 06:42:42] - # Tests = 2
-[2024-06-15 06:42:42] - Total Test Length = 28
-[2024-06-15 06:42:42] - Finished.
+[2024-07-27 13:50:48] - Verbose enabled.
+[2024-07-27 13:50:48] - MODE = release
+[2024-07-27 13:50:48] - Input Model File = exps/001/m.json
+[2024-07-27 13:50:48] - Coverage Criterion = Prime Edge Path Coverage
+[2024-07-27 13:50:48] - Simple Graph Name = s.dot
+[2024-07-27 13:50:48] - Path Graph File = p.dot
+[2024-07-27 13:50:48] - Final Test Plan File = f.dot
+[2024-07-27 13:50:48] - Output Model File with Predefined Edges = t.json
+[2024-07-27 13:50:48] - Coverage Percent = 100%
+[2024-07-27 13:50:48] - Creating Empty GraphWalker Model...
+[2024-07-27 13:50:48] - Filling the GraphWalker Model using 'exps/001/m.json'
+[2024-07-27 13:50:48] - Filling adjacency lists to optimize path generation...
+[2024-07-27 13:50:48] - Starting Element is a VERTEX
+[2024-07-27 13:50:48] - # Vertices = 9
+[2024-07-27 13:50:48] - # Edges = 11
+[2024-07-27 13:50:48] - Saving the simple graph to 's.dot'...
+[2024-07-27 13:50:48] - Generating/Loading Test Requirements...
+[2024-07-27 13:50:48] - maxLen(primes) = 1
+[2024-07-27 13:50:48] - maxLen(primes) = 2
+[2024-07-27 13:50:48] - maxLen(primes) = 3
+[2024-07-27 13:50:48] - maxLen(primes) = 4
+[2024-07-27 13:50:48] - maxLen(primes) = 5
+[2024-07-27 13:50:48] - maxLen(primes) = 6
+[2024-07-27 13:50:48] - maxLen(primes) = 7
+[2024-07-27 13:50:48] - maxLen(primes) = 8
+[2024-07-27 13:50:48] - # Test Requirements = 11
+[2024-07-27 13:50:48] - Generating Path Graph...
+[2024-07-27 13:50:48] - Optimization Level = 0
+[2024-07-27 13:50:48] - Saving path graph to 'p.dot'
+[2024-07-27 13:50:48] - Generating Hyperpaths...
+[2024-07-27 13:50:48] - Generating Network Flow Graph with Hyperpaths...
+[2024-07-27 13:50:48] - Minimizing Total Flow...
+[2024-07-27 13:50:48] - Expanding the Network Flow Graph...
+[2024-07-27 13:50:48] - Expanding h2
+[2024-07-27 13:50:48] - Initializing flow with test requirement constraints...
+[2024-07-27 13:50:48] - Computing a feasible flow...
+[2024-07-27 13:50:48] - 3%
+[2024-07-27 13:50:48] - 15%
+[2024-07-27 13:50:48] - Activating backwards edges...
+[2024-07-27 13:50:48] - Minimizing the flow...
+[2024-07-27 13:50:48] - 33%
+[2024-07-27 13:50:48] - Deactivating backwards edges...
+[2024-07-27 13:50:48] - Generating Test Plan...
+[2024-07-27 13:50:48] - Removing zero flows...
+[2024-07-27 13:50:48] - Deactivating dead vertices...
+[2024-07-27 13:50:48] - Expanding h1
+[2024-07-27 13:50:48] - Initializing flow with test requirement constraints...
+[2024-07-27 13:50:48] - Computing a feasible flow...
+[2024-07-27 13:50:48] - 6%
+[2024-07-27 13:50:48] - 23%
+[2024-07-27 13:50:48] - 26%
+[2024-07-27 13:50:48] - Activating backwards edges...
+[2024-07-27 13:50:48] - Minimizing the flow...
+[2024-07-27 13:50:48] - 25%
+[2024-07-27 13:50:48] - 50%
+[2024-07-27 13:50:48] - Deactivating backwards edges...
+[2024-07-27 13:50:48] - Generating Test Plan...
+[2024-07-27 13:50:48] - Removing zero flows...
+[2024-07-27 13:50:48] - Deactivating dead vertices...
+[2024-07-27 13:50:48] - Expanding h0
+[2024-07-27 13:50:48] - Initializing flow with test requirement constraints...
+[2024-07-27 13:50:48] - Computing a feasible flow...
+[2024-07-27 13:50:48] - 16%
+[2024-07-27 13:50:48] - 33%
+[2024-07-27 13:50:48] - Activating backwards edges...
+[2024-07-27 13:50:48] - Minimizing the flow...
+[2024-07-27 13:50:48] - 33%
+[2024-07-27 13:50:48] - Deactivating backwards edges...
+[2024-07-27 13:50:48] - Generating Test Plan...
+[2024-07-27 13:50:48] - Removing zero flows...
+[2024-07-27 13:50:48] - Deactivating dead vertices...
+[2024-07-27 13:50:48] - Saving the final test plan to 'f.dot'
+[2024-07-27 13:50:48] - Creating Tests...
+[2024-07-27 13:50:48] - Consuming s-t path #1
+[2024-07-27 13:50:48] - Converting to path trace #1
+[2024-07-27 13:50:48] - Removing new zero flows
+[2024-07-27 13:50:48] - Constructing test path #1
+[2024-07-27 13:50:48] - LengthOf(Test #1) = 14
+[2024-07-27 13:50:48] - Saving to 't_1.json'
+[2024-07-27 13:50:48] - Consuming s-t path #2
+[2024-07-27 13:50:48] - Converting to path trace #2
+[2024-07-27 13:50:48] - Removing new zero flows
+[2024-07-27 13:50:48] - Constructing test path #2
+[2024-07-27 13:50:48] - LengthOf(Test #2) = 14
+[2024-07-27 13:50:48] - Saving to 't_2.json'
+[2024-07-27 13:50:48] - # Tests = 2
+[2024-07-27 13:50:48] - Total Test Length = 28
+[2024-07-27 13:50:48] - Finished.
 ```
 
 ### Example #2
@@ -299,11 +307,12 @@ Covered p10 5 times
 
 ## Experiments
 
-In this part, we discuss how to reproduce the experiments in ...
+In this part, we discuss how to reproduce the experiments. Note that we performed these experiments in a MacOS environment.
 
 ### RQ1. Test Lengths
 
 ```
+for i in "002 003 004 005"; do rm exps/${i}/generated/*; done
 make -e MODE=release
 bash rq1_raw.sh
 bash rq1_raw2.sh
@@ -311,4 +320,76 @@ bash rq1_tex.sh
 pdflatex -interaction nonstopmode rq1.tex
 ```
 
-The above five commands generate `rq1.pdf`, which depicts the relative test case lengths. Note that `rq1_raw.sh` generates all test cases from scratch and may take a few hours to complete.
+The above commands generate `rq1.pdf`, which depicts the relative test case lengths. Note that `rq1_raw.sh` generates all test cases from scratch and may take a few hours to complete.
+
+### RQ2. Test Redundancies
+
+```
+for i in "002 003 004 005"; do rm exps/${i}/generated/*; done
+make -e MODE=release
+bash generateTests.sh
+bash rq2_raw.sh
+bash rq2_raw2.sh
+bash rq2_tex.sh
+pdflatex -interaction nonstopmode rq2.tex
+```
+
+The above commands generate `rq2.pdf`, which depicts the relative test redundancies. Note that these steps may also take a few hours to complete. 
+
+### Prerequisites
+
+If the experiments fail to produce the pdf files for RQ1 and/or RQ2, some of the following prerequisites may be missing. Note that we performed our experiments on a MacOS system, although GWPlus should compile on both Linux and Windows. We use [Homebrew](https://brew.sh) to install most of the prerequisites of our experiments.
+
+On a Linux machine, it should be possible to execute our experiments by aliasing the GNU's `date` to `gdate` and installing the rest of the components below.
+
+#### 1. `make`
+
+Our compilation procedures use the `make` command. You can install it on a MacOS using `homebrew`:
+
+```
+brew install make
+``` 
+
+#### 2. `clang`
+
+GWPlus's default compiler is `CC=clang`. If you use `gcc`, it will compile using the following command:
+
+```
+make -e MODE=release -e CC=gcc
+```
+
+#### 3. `git`
+
+GWPlus depends on a third party library called `padkit`. It automatically clones this library using the `git` command. You may install `git` on a MacOS using `homebrew`:
+
+```
+brew install git
+```
+
+#### 4. `java`
+
+Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker's built-in methods, implemented in Java. You may install `java` on a MacOS using `homebrew`:
+
+```
+brew install openjdk
+```
+
+#### 5. `jq`
+
+GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using `jq`. You may install `jq` on a MacOS using `homebrew`:
+
+```
+brew install jq
+```
+
+#### 6. `gdate`
+
+Our scripts measure elapsed time using the `gdate` command. You may install `gdate` on a MacOS using `homebrew`:
+
+```
+brew install coreutils
+```
+
+#### 7. `pdflatex`
+
+Our scripts create `.tex` files. To obtain `.pdf` files, you must compile these `.tex` files using `pdflatex`. Please go to [https://www.tug.org/mactex/](https://www.tug.org/mactex/) to install MacTeX on a MacOS.

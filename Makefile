@@ -3,7 +3,7 @@ include padkit/compile.mk
 INCLUDES=-Iinclude -Ipadkit/include
 OBJECTS=obj/eflowgraph.o obj/gwmodel.o obj/gwplus.o obj/hpathgraph.o obj/nflowgraph.o obj/sgi.o obj/vpath.o obj/vpatharray.o obj/vpathgraph.o
 
-all: bin/gwplus
+all: bin/gwplus bin/rq2
 
 .PHONY: all clean cleanobjects cleanpadkit documentation objects
 
@@ -15,6 +15,8 @@ bin/gwplus:                             \
     padkit/compile.mk                   \
     padkit/lib/libpadkit.a              \
     ; ${COMPILE} ${OBJECTS} padkit/lib/libpadkit.a -o bin/gwplus
+
+bin/rq2: src/rq2.c; ${COMPILE} src/rq2.c -o bin/rq2
 
 clean: ; rm -rf obj bin padkit *.gcno *.gcda *.gcov html latex
 
