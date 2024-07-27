@@ -1,6 +1,6 @@
 # Gwplus: GraphWalker Plus
 
-Computes the short test case(s) that satisfies a coverage criterion for a GraphWalker model.
+Computes short test case(s) that satisfies a coverage criterion for a GraphWalker model.
 
 ## Table of Contents
 
