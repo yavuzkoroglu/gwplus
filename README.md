@@ -312,7 +312,7 @@ In this part, we discuss how to reproduce the experiments. Note that we performe
 ### RQ1. Test Lengths
 
 ```
-for i in "002" "003" "004 "005"; do rm -f exps/${i}/generated/*; done
+for i in "002" "003" "004" "005"; do rm -f exps/${i}/generated/*; done
 make -e MODE=release
 bash rq1_raw.sh
 bash rq1_raw2.sh
