@@ -318,7 +318,7 @@ In this part, we discuss how to reproduce the experiments.
 Please use a MacOS system. Open a terminal and go the directory that contains this document:
 
 ```
-cd <directory-containing-GWPlus>
+cd <directory-containing-this-README.html>
 ```
 
 #### 2. Homebrew (`brew`)
@@ -335,7 +335,7 @@ brew install make
 
 #### 4. `clang`
 
-GWPlus's default compiler is `clang`. If this is unavailable, please install Xcode Command Line Tools:
+GWPlus's default compiler is `clang`. To be able to use it, please make sure you've installed Xcode Command Line Tools:
 
 ```
 xcode-select --install
@@ -351,7 +351,7 @@ brew install git
 
 #### 4. `java`
 
-Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker's built-in methods, implemented in Java. You may install `java` on a MacOS using [Homebrew](https://brew.sh):
+Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker's built-in methods, implemented in Java. Install `java` on a MacOS using [Homebrew](https://brew.sh):
 
 ```
 brew install openjdk
@@ -359,7 +359,7 @@ brew install openjdk
 
 #### 5. `jq`
 
-GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using `jq`. You may install `jq` on a MacOS using [Homebrew](https://brew.sh):
+GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using `jq`. Install `jq` on a MacOS using [Homebrew](https://brew.sh):
 
 ```
 brew install jq
@@ -367,7 +367,7 @@ brew install jq
 
 #### 6. `gdate`
 
-Our scripts measure elapsed time using the `gdate` command. You may install `gdate` on a MacOS using [Homebrew](https://brew.sh):
+Our scripts measure elapsed time using the `gdate` command. Install `gdate` on a MacOS using [Homebrew](https://brew.sh):
 
 ```
 brew install coreutils
@@ -388,7 +388,7 @@ bash rq1_tex.sh
 pdflatex -interaction nonstopmode rq1.tex
 ```
 
-The above commands generate `rq1.pdf`, which depicts the relative test case lengths. Note that `rq1_raw.sh` generates all test cases from scratch and may take a few hours to complete.
+The above commands generate `rq1.pdf`, which depicts the relative test case lengths. Please answer `y` to any prompt. Note that `rq1_raw.sh` generates all test cases from scratch and may take a few hours to complete.
 
 ### RQ2. Test Redundancies
 
@@ -402,4 +402,4 @@ bash rq2_tex.sh
 pdflatex -interaction nonstopmode rq2.tex
 ```
 
-The above commands generate `rq2.pdf`, which depicts the relative test redundancies. Note that these steps may also take a few hours to complete. 
+The above commands generate `rq2.pdf`, which depicts the relative test redundancies. Please answer `y` to any prompt. Note that these steps may also take a few hours to complete. 

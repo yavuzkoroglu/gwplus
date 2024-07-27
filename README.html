@@ -790,7 +790,7 @@ Covered p10 5 times
 
 <p>Please use a MacOS system. Open a terminal and go the directory that contains this document:</p>
 
-<div><pre><code class="language-none">cd &lt;directory-containing-GWPlus&gt;</code></pre></div>
+<div><pre><code class="language-none">cd &lt;directory-containing-this-README.html&gt;</code></pre></div>
 
 <h4 id="toc_4">2. Homebrew (<code>brew</code>)</h4>
 
@@ -804,7 +804,7 @@ Covered p10 5 times
 
 <h4 id="toc_6">4. <code>clang</code></h4>
 
-<p>GWPlus&#39;s default compiler is <code>clang</code>. If this is unavailable, please install Xcode Command Line Tools:</p>
+<p>GWPlus&#39;s default compiler is <code>clang</code>. To be able to use it, please make sure you&#39;ve installed Xcode Command Line Tools:</p>
 
 <div><pre><code class="language-none">xcode-select --install</code></pre></div>
 
@@ -816,19 +816,19 @@ Covered p10 5 times
 
 <h4 id="toc_8">4. <code>java</code></h4>
 
-<p>Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker&#39;s built-in methods, implemented in Java. You may install <code>java</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
+<p>Although GWPlus is written in C, some of the experiments generate tests using the GraphWalker&#39;s built-in methods, implemented in Java. Install <code>java</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
 
 <div><pre><code class="language-none">brew install openjdk</code></pre></div>
 
 <h4 id="toc_9">5. <code>jq</code></h4>
 
-<p>GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using <code>jq</code>. You may install <code>jq</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
+<p>GraphWalker outputs tests in JSON format. However, our coverage measurement tool expects a plain TXT file. We convert GraphWalker tests to TXT files using <code>jq</code>. Install <code>jq</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
 
 <div><pre><code class="language-none">brew install jq</code></pre></div>
 
 <h4 id="toc_10">6. <code>gdate</code></h4>
 
-<p>Our scripts measure elapsed time using the <code>gdate</code> command. You may install <code>gdate</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
+<p>Our scripts measure elapsed time using the <code>gdate</code> command. Install <code>gdate</code> on a MacOS using <a href="https://brew.sh">Homebrew</a>:</p>
 
 <div><pre><code class="language-none">brew install coreutils</code></pre></div>
 
@@ -845,7 +845,7 @@ bash rq1_raw2.sh
 bash rq1_tex.sh
 pdflatex -interaction nonstopmode rq1.tex</code></pre></div>
 
-<p>The above commands generate <code>rq1.pdf</code>, which depicts the relative test case lengths. Note that <code>rq1_raw.sh</code> generates all test cases from scratch and may take a few hours to complete.</p>
+<p>The above commands generate <code>rq1.pdf</code>, which depicts the relative test case lengths. Please answer <code>y</code> to any prompt. Note that <code>rq1_raw.sh</code> generates all test cases from scratch and may take a few hours to complete.</p>
 
 <h3 id="toc_13">RQ2. Test Redundancies</h3>
 
@@ -857,7 +857,7 @@ bash rq2_raw2.sh
 bash rq2_tex.sh
 pdflatex -interaction nonstopmode rq2.tex</code></pre></div>
 
-<p>The above commands generate <code>rq2.pdf</code>, which depicts the relative test redundancies. Note that these steps may also take a few hours to complete. </p>
+<p>The above commands generate <code>rq2.pdf</code>, which depicts the relative test redundancies. Please answer <code>y</code> to any prompt. Note that these steps may also take a few hours to complete. </p>
 
 
 
