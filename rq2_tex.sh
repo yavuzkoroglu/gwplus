@@ -120,7 +120,7 @@ echo "        & DJ & \$${riscv_dj_vertex}\\%$ & \$${riscv_dj_edge}\\%$ & \$${ris
 echo "        & GW-Random & \$${riscv_random_vertex}\%$ & \$${riscv_random_edge}\%$ & - \\\\" >> rq2.tex
 echo '        \cline{1-5}' >> rq2.tex
 echo "        \\parbox[t]{2.125mm}{\\multirow{3}{*}{\\rotatebox[origin=c]{90}{\\scriptsize \\bf Parab.}}} & GW-QRandom & \$${parabank_qrandom_vertex}\\%$ & \$${parabank_qrandom_edge}\\%$ & - \\\\" >> rq2.tex
-echo "        & DJ & \$${parabank_dj_vertex}.00\\%$ & \$${parabank_dj_edge}\\%$ & \$${parabank_dj_edgepair}\\%$ \\\\" >> rq2.tex
+echo "        & DJ & \$${parabank_dj_vertex}\\%$ & \$${parabank_dj_edge}\\%$ & \$${parabank_dj_edgepair}\\%$ \\\\" >> rq2.tex
 echo "        & GW-Random & \$${parabank_random_vertex}\%$ & \$${parabank_random_edge}\%$ & - \\\\" >> rq2.tex
 echo '        \cline{1-5}' >> rq2.tex
 echo "        \\parbox[t]{2.125mm}{\\multirow{3}{*}{\\rotatebox[origin=c]{90}{\\scriptsize \\bf Testin.}}} & GW-QRandom & \$${testinium_qrandom_vertex}\\%$ & \$${testinium_qrandom_edge}\\%$ & - \\\\" >> rq2.tex
