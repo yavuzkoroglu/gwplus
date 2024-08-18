@@ -1773,8 +1773,7 @@ void addVertex_gwshared(GWShared* const shared_vertex, uint32_t const v_id) {
 
     REALLOC_IF_NECESSARY(
         uint32_t, shared_vertex->vertices,
-        uint32_t, shared_vertex->cap_vertices, shared_vertex->size_vertices,
-        REALLOC_ERROR
+        uint32_t, shared_vertex->cap_vertices, shared_vertex->size_vertices
     )
 
     /* Binary search, shared_vertex->local_vertices is sorted ;) */
@@ -1854,7 +1853,7 @@ void addEdge_gwma(GWModelArray* const gwma, GWModel* const gwm) {
 
     if (gwm->size_edges == 0) gwm->first_e_id = gwma->size_edges;
 
-    REALLOC_IF_NECESSARY(GWEdge, gwma->edges, uint32_t, gwma->cap_edges, gwma->size_edges, REALLOC_ERROR)
+    REALLOC_IF_NECESSARY(GWEdge, gwma->edges, uint32_t, gwma->cap_edges, gwma->size_edges)
     gwma->edges[gwma->size_edges++] = NOT_A_GWEDGE;
 
     gwm->size_edges++;
@@ -1872,7 +1871,7 @@ void addModel_gwma(GWModelArray* const gwma) {
     DEBUG_ERROR_IF(add_chunk(chunk_model_names, "", 0) == 0xFFFFFFFF)
     NDEBUG_EXECUTE(add_chunk(chunk_model_names, "", 0))
 
-    REALLOC_IF_NECESSARY(GWModel, gwma->models, uint32_t, gwma->cap_models, gwma->size_models, REALLOC_ERROR)
+    REALLOC_IF_NECESSARY(GWModel, gwma->models, uint32_t, gwma->cap_models, gwma->size_models)
     gwma->models[gwma->size_models++] = (GWModel){ gwma->size_vertices, gwma->size_edges, 0, 0 };
 }
 
@@ -1891,8 +1890,7 @@ void addTransition_gwma(GWModelArray* const gwma) {
 
     REALLOC_IF_NECESSARY(
         uint32_t, from->edges,
-        uint32_t, from->cap_edges, from->size_edges,
-        REALLOC_ERROR
+        uint32_t, from->cap_edges, from->size_edges
     )
 
     /* Binary search, the array of edges is sorted ;) */
@@ -1928,7 +1926,7 @@ void addVertex_gwma(GWModelArray* const gwma) {
     DEBUG_ERROR_IF(add_chunk(chunk_vertex_names, "", 0) == 0xFFFFFFFF)
     NDEBUG_EXECUTE(add_chunk(chunk_vertex_names, "", 0))
 
-    REALLOC_IF_NECESSARY(GWModel, gwma->vertices, uint32_t, gwma->cap_vertices, gwma->size_vertices, REALLOC_ERROR)
+    REALLOC_IF_NECESSARY(GWModel, gwma->vertices, uint32_t, gwma->cap_vertices, gwma->size_vertices)
     construct_gwvertex(gwma->vertices + gwma->size_vertices, gwma->size_vertices, gwma->guess_edge_count_per_vertex);
     gwma->size_vertices++;
 
@@ -3081,8 +3079,7 @@ void shareVertex_gwma(GWModelArray* const gwma, char const* const shared_name, s
         /* Add a new shared vertex */
         REALLOC_IF_NECESSARY(
             GWShared, gwma->shared_vertices,
-            uint32_t, gwma->cap_shared_vertices, gwma->size_shared_vertices,
-            REALLOC_ERROR
+            uint32_t, gwma->cap_shared_vertices, gwma->size_shared_vertices
         )
 
         GWShared* const shared_vertex = gwma->shared_vertices + gwma->size_shared_vertices++;

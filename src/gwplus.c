@@ -542,7 +542,7 @@ static void generateDotOfHyperPathGraph(FILE* const output, SimpleGraph const* c
                     if (hpath->array[i] < s_id) {
                         fprintf(output, "p%"PRIu32"\\l", hpath->array[i]);
                     } else {
-                        REALLOC_IF_NECESSARY(uint32_t, stack, uint32_t, cap_stack, size_stack, REALLOC_ERROR)
+                        REALLOC_IF_NECESSARY(uint32_t, stack, uint32_t, cap_stack, size_stack)
                         stack[size_stack++] = hpath->array[i];
                     }
                 }

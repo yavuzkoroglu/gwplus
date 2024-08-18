@@ -196,8 +196,7 @@ bool cacheComputeShortest_vpath(VertexPath* const shortestPath, SimpleGraph cons
 
                 RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
-                    uint32_t, stack_A_cap, stack_A_size,
-                    RECALLOC_ERROR
+                    uint32_t, stack_A_cap, stack_A_size
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
@@ -358,8 +357,7 @@ bool computeShortestAvoidVertices_vpath(
 
                 RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
-                    uint32_t, stack_A_cap, stack_A_size,
-                    RECALLOC_ERROR
+                    uint32_t, stack_A_cap, stack_A_size
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
@@ -487,8 +485,7 @@ bool computeShortestAvoidPath_vpath(
 
                 RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
-                    uint32_t, stack_A_cap, stack_A_size,
-                    RECALLOC_ERROR
+                    uint32_t, stack_A_cap, stack_A_size
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
@@ -583,8 +580,7 @@ bool computeShortestCycle_vpath(VertexPath* const cycle, SimpleGraph const* cons
 
                 RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
-                    uint32_t, stack_A_cap, stack_A_size,
-                    RECALLOC_ERROR
+                    uint32_t, stack_A_cap, stack_A_size
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
@@ -667,8 +663,7 @@ bool computeShortestCyclePivot_vpath(VertexPath* const cycle, SimpleGraph const*
 
                 RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
-                    uint32_t, stack_A_cap, stack_A_size,
-                    RECALLOC_ERROR
+                    uint32_t, stack_A_cap, stack_A_size
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);
@@ -781,8 +776,7 @@ bool computeShortestInitializer_vpath(VertexPath* const initializer, SimpleGraph
 
                 RECALLOC_IF_NECESSARY(
                     VertexPath, stack_A,
-                    uint32_t, stack_A_cap, stack_A_size,
-                    RECALLOC_ERROR
+                    uint32_t, stack_A_cap, stack_A_size
                 )
                 VertexPath* const vpath_to_extend = stack_A + stack_A_size++;
                 clone_vpath(vpath_to_extend, vpath);

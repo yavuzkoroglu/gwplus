@@ -253,7 +253,7 @@ void free_vpa(VertexPathArray* const vpaths) {
 
 void increaseCapIfNecessary_vpa(VertexPathArray* const vpaths) {
     DEBUG_ASSERT(isValid_vpa(vpaths))
-    RECALLOC_IF_NECESSARY(VertexPath, vpaths->array, uint32_t, vpaths->cap, vpaths->size, RECALLOC_ERROR)
+    RECALLOC_IF_NECESSARY(VertexPath, vpaths->array, uint32_t, vpaths->cap, vpaths->size)
 }
 
 bool isValid_vpa(VertexPathArray const* const vpaths) {
