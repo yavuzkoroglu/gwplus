@@ -7,6 +7,7 @@
 #include <string.h>
 #include "gwmodel.h"
 #include "padkit/chunk.h"
+#include "padkit/debug.h"
 #include "padkit/graphmatrix.h"
 #include "padkit/jsonparser.h"
 #include "padkit/reallocate.h"
@@ -1991,37 +1992,37 @@ void constructEmpty_gwma(
     ChunkTable* const ctbl_edge_ids         = gwma->tables + GWMA_TBL_EDGE_IDS;
     ChunkTable* const ctbl_shared_states    = gwma->tables + GWMA_TBL_SHARED_STATES;
 
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
+    constructEmpty_chunk(
         chunk_model_ids, (size_t)initial_cap_models * guess_id_str_len, initial_cap_models
-    ))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
+    );
+    constructEmpty_chunk(
         chunk_model_names, (size_t)initial_cap_models * guess_name_len, initial_cap_models
-    ))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
+    );
+    constructEmpty_chunk(
         chunk_vertex_ids, (size_t)initial_cap_vertices * guess_id_str_len, initial_cap_vertices
-    ))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
+    );
+    constructEmpty_chunk(
         chunk_vertex_names, (size_t)initial_cap_vertices * guess_name_len, initial_cap_vertices
-    ))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
+    );
+    constructEmpty_chunk(
         chunk_edge_ids, (size_t)initial_cap_edges * guess_id_str_len, initial_cap_edges
-    ))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
+    );
+    constructEmpty_chunk(
         chunk_edge_names, (size_t)initial_cap_edges * guess_name_len, initial_cap_edges
-    ))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(
+    );
+    constructEmpty_chunk(
         chunk_shared_states, (size_t)initial_cap_shared_vertices * guess_name_len, initial_cap_shared_vertices
-    ))
+    );
 
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_ctbl(
+    constructEmpty_ctbl(
         ctbl_vertex_ids, initial_cap_vertices, CHUNK_TABLE_RECOMMENDED_LOAD_PERCENT
-    ))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_ctbl(
+    );
+    constructEmpty_ctbl(
         ctbl_edge_ids, initial_cap_edges, CHUNK_TABLE_RECOMMENDED_LOAD_PERCENT
-    ))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_ctbl(
+    );
+    constructEmpty_ctbl(
         ctbl_shared_states, initial_cap_shared_vertices, CHUNK_TABLE_RECOMMENDED_LOAD_PERCENT
-    ))
+    );
 
     gwma->s_id                          = 0xFFFFFFFF;
     gwma->useLineGraph                  = useLineGraph;
@@ -2447,26 +2448,24 @@ void fillUsingJSON_gwma(GWModelArray* const gwma, FILE* const jsonFile) {
     DEBUG_ASSERT(json_start_pos >= 0L)
 
     /* Prepare to parse vertices */
-    DEBUG_ASSERT_NDEBUG_EXECUTE(
-        construct_jsonp(
-            jp, jsonFile,
-            emptyVoidEvent_jsonp,   /* atArrayEnd */
-            emptyVoidEvent_jsonp,   /* atArrayStart */
-            emptyVoidEvent_jsonp,   /* atFalse */
-            emptyVoidEvent_jsonp,   /* atNameEnd */
-            emptyVoidEvent_jsonp,   /* atNameStart */
-            emptyVoidEvent_jsonp,   /* atNull */
-            emptyNumberEvent_jsonp, /* atNumber */
-            emptyVoidEvent_jsonp,   /* atObjectEnd */
-            emptyVoidEvent_jsonp,   /* atObjectStart */
-            emptyVoidEvent_jsonp,   /* atRootEnd */
-            s00,                    /* atRootStart */
-            emptyStringEvent_jsonp, /* atString */
-            emptyVoidEvent_jsonp,   /* atTrue */
-            emptyVoidEvent_jsonp,   /* atValueEnd */
-            emptyVoidEvent_jsonp    /* atValueStart */
-        )
-    )
+    construct_jsonp(
+        jp, jsonFile,
+        emptyVoidEvent_jsonp,   /* atArrayEnd */
+        emptyVoidEvent_jsonp,   /* atArrayStart */
+        emptyVoidEvent_jsonp,   /* atFalse */
+        emptyVoidEvent_jsonp,   /* atNameEnd */
+        emptyVoidEvent_jsonp,   /* atNameStart */
+        emptyVoidEvent_jsonp,   /* atNull */
+        emptyNumberEvent_jsonp, /* atNumber */
+        emptyVoidEvent_jsonp,   /* atObjectEnd */
+        emptyVoidEvent_jsonp,   /* atObjectStart */
+        emptyVoidEvent_jsonp,   /* atRootEnd */
+        s00,                    /* atRootStart */
+        emptyStringEvent_jsonp, /* atString */
+        emptyVoidEvent_jsonp,   /* atTrue */
+        emptyVoidEvent_jsonp,   /* atValueEnd */
+        emptyVoidEvent_jsonp    /* atValueStart */
+    );
 
     /* Set the static models variable to gwma */
     models = gwma;

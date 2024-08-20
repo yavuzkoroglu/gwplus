@@ -5,6 +5,7 @@
  */
 #include <inttypes.h>
 #include <string.h>
+#include "padkit/debug.h"
 #include "padkit/reallocate.h"
 #include "padkit/timestamp.h"
 #include "vpatharray.h"

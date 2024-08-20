@@ -21,7 +21,7 @@ void construct_vpg(
     uint32_t const sz   = vpaths->size;
     vpgraph->graph      = graph;
     vpgraph->vpaths     = vpaths;
-    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(vpgraph->spliceMtx, sz + 1, sz))
+    construct_gmtx(vpgraph->spliceMtx, sz + 1, sz);
 
     VertexPath splice[1] = {NOT_A_VPATH};
 
@@ -231,7 +231,7 @@ void dumpVertex_vpg(void const* const graphPtr, FILE* const output, uint32_t con
 void free_vpg(void* const graphPtr) {
     DEBUG_ASSERT(isValid_vpg(graphPtr))
     VertexPathGraph* const vpgraph = (VertexPathGraph*)graphPtr;
-    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(vpgraph->spliceMtx))
+    free_gmtx(vpgraph->spliceMtx);
     *vpgraph = NOT_A_VPATH_GRAPH;
 }
 
@@ -255,7 +255,10 @@ bool isValid_vitr_vpg(VertexIterator const* const itr) {
 
 bool isValid_vpg(void const* const graphPtr) {
     VertexPathGraph const* const vpgraph = (VertexPathGraph const*)graphPtr;
-    return vpgraph != NULL && isValid_sg(vpgraph->graph) && isValid_vpa(vpgraph->vpaths) && isValid_gmtx(vpgraph->spliceMtx);
+    return  vpgraph != NULL                 &&
+            isValid_sg(vpgraph->graph)      &&
+            isValid_vpa(vpgraph->vpaths)    &&
+            isValid_gmtx(vpgraph->spliceMtx);
 }
 
 bool isValidEdge_vpg(void const* const graphPtr, uint32_t sourceVertexId, uint32_t const targetVertexId) {

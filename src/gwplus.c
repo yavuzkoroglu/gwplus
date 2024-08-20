@@ -11,6 +11,7 @@
 #include "hpathgraph.h"
 #include "nflowgraph.h"
 #include "vpathgraph.h"
+#include "padkit/debug.h"
 #include "padkit/graphmatrix.h"
 #include "padkit/reallocate.h"
 #include "padkit/repeat.h"
@@ -41,7 +42,9 @@ static uint64_t constructTestPath(
         DEBUG_ASSERT(i < pathTrace->len)
     }
 
-    DEBUG_ASSERT_NDEBUG_EXECUTE(computeShortestInitializer_vpath(testPath, graph, requirements->array[pathTrace->array[i]].array[0]))
+    DEBUG_ASSERT_NDEBUG_EXECUTE(
+        computeShortestInitializer_vpath(testPath, graph, requirements->array[pathTrace->array[i]].array[0])
+    )
 
     while (i < pathTrace->len && currentCoverage < maxCoverage) {
         uint32_t const pathId = pathTrace->array[i++];
@@ -62,13 +65,15 @@ static uint64_t constructTestPath(
     return currentCoverage;
 }
 
-static void convertSTPathToPathTrace(VertexPath* const pathTrace, SimpleGraph const* const pathGraph, VertexPath const* const stPath) {
+static void convertSTPathToPathTrace(
+    VertexPath* const pathTrace, SimpleGraph const* const pathGraph, VertexPath const* const stPath
+) {
     DEBUG_ERROR_IF(pathTrace == NULL)
     DEBUG_ASSERT(isValid_sg(pathGraph))
     DEBUG_ASSERT(isValid_vpath(stPath))
 
     GraphMatrix coverMtx[1] = { NOT_A_GRAPH_MATRIX };
-    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, pathGraph->countVertices(pathGraph->graphPtr)))
+    construct_gmtx(coverMtx, 1, pathGraph->countVertices(pathGraph->graphPtr));
 
     if (pathTrace->isAllocated) {
         flush_vpath(pathTrace);
@@ -94,12 +99,12 @@ static void convertSTPathToPathTrace(VertexPath* const pathTrace, SimpleGraph co
         DEBUG_ASSERT_NDEBUG_EXECUTE(splice_vpath(pathTrace, tmp))
 
         while (j < pathTrace->len)
-            DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, pathTrace->array[j++]))
+            connect_gmtx(coverMtx, 0, pathTrace->array[j++]);
     }
 
     eliminateMultiCycles_vpath(pathTrace);
 
-    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
+    free_gmtx(coverMtx);
     free_vpath(tmp);
 }
 
@@ -133,7 +138,7 @@ static void convertSTPathToPathTraceExpand(
     VertexPath tmp[2]       = { NOT_A_VPATH, NOT_A_VPATH };
     VertexPath* pathA       = tmp;
     VertexPath* pathB       = pathA + 1;
-    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, hpgraph->hpaths->size))
+    construct_gmtx(coverMtx, 1, hpgraph->hpaths->size);
     constructEmpty_vpath(pathA, hyperPathGraph);
     constructEmpty_vpath(pathB, hyperPathGraph);
 
@@ -182,7 +187,10 @@ static void convertSTPathToPathTraceExpand(
                 if (i < pathB->len - 1) {
                     uint32_t last   = (first + hpath->len - 1) % hpath->len;
                     uint32_t k      = 0;
-                    while (!isConnected_gmtx(hpgraph->edgeMtx, hpath->array[last], pathB->array[i + 1]) && k < hpath->len) {
+                    while (
+                        !isConnected_gmtx(hpgraph->edgeMtx, hpath->array[last], pathB->array[i + 1]) &&
+                        k < hpath->len
+                    ) {
                         last = (last + 1) % hpath->len;
                         k++;
                     }
@@ -298,7 +306,7 @@ static void convertToEdgePathsAndIncludeRemainingEdges(
     construct_sgi_gwma(newGraph, newGwma);
 
     GraphMatrix edgeMtx[1];
-    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(edgeMtx, 1, gwma->size_edges))
+    construct_gmtx(edgeMtx, 1, gwma->size_edges);
 
     constructEmpty_vpa(newRequirements, requirements->cap);
     for (uint32_t requirementId = 0; requirementId < requirements->size; requirementId++) {
@@ -345,9 +353,9 @@ static void convertToEdgePathsAndIncludeRemainingEdges(
                                 break;
                             }
                         }
-                        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(edgeMtx, 0, e_id))
+                        connect_gmtx(edgeMtx, 0, e_id);
                     } else {
-                        DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(edgeMtx, 0, e_id))
+                        connect_gmtx(edgeMtx, 0, e_id);
                     }
                     DEBUG_ASSERT_NDEBUG_EXECUTE(extend_vpath(newRequirement, e_id, 1))
                     break;
@@ -365,7 +373,7 @@ static void convertToEdgePathsAndIncludeRemainingEdges(
 
     freeAdjLists_gwma(gwma);
     memcpy(gwma, newGwma, sizeof(GWModelArray));
-    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(edgeMtx))
+    free_gmtx(edgeMtx);
 
     for (uint32_t requirementId = 0; requirementId < newRequirements->size; requirementId++) {
         VertexPath* const requirement = newRequirements->array + requirementId;
@@ -570,7 +578,9 @@ static void generateDotOfHyperPathGraph(FILE* const output, SimpleGraph const* c
 }
 */
 
-static void generateDotOfPathGraph(FILE* const output, SimpleGraph const* const pathGraph, GWModelArray const* const gwma) {
+static void generateDotOfPathGraph(
+    FILE* const output, SimpleGraph const* const pathGraph, GWModelArray const* const gwma
+) {
     DEBUG_ERROR_IF(output == NULL)
     DEBUG_ASSERT(isValid_sg(pathGraph))
     DEBUG_ASSERT(isValid_gwma(gwma))
@@ -860,7 +870,9 @@ static void saveHyperpaths(FILE* const output, SimpleGraph const* const hyperPat
     }
 }
 
-static void saveTestRequirements(FILE* const requirementsFile, VertexPathArray const* const requirements, GWModelArray const* const gwma) {
+static void saveTestRequirements(
+    FILE* const requirementsFile, VertexPathArray const* const requirements, GWModelArray const* const gwma
+) {
     DEBUG_ERROR_IF(requirementsFile == NULL)
     DEBUG_ASSERT(isValid_vpa(requirements))
     DEBUG_ASSERT(isValid_gwma(gwma))
@@ -1567,7 +1579,7 @@ int main(int argc, char* argv[]) {
                     return EXIT_FAILURE;
                 }
 
-                DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(requirementsChunk, CHUNK_RECOMMENDED_PARAMETERS))
+                constructEmpty_chunk(requirementsChunk, CHUNK_RECOMMENDED_PARAMETERS);
                 DEBUG_ERROR_IF(fromStream_chunk(requirementsChunk, customRequirements, "\n") == 0xFFFFFFFF)
                 NDEBUG_EXECUTE(fromStream_chunk(requirementsChunk, customRequirements, "\n"))
 
@@ -1580,7 +1592,7 @@ int main(int argc, char* argv[]) {
                     useLineGraph = 1;
                 } else {
                     showErrorInvalidInputSyntax(coverageString);
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+                    free_chunk(requirementsChunk);
                     DEBUG_ASSERT(fclose(customRequirements) == 0)
                     NDEBUG_EXECUTE(fclose(customRequirements))
                     return EXIT_FAILURE;
@@ -1603,7 +1615,7 @@ int main(int argc, char* argv[]) {
         showErrorMustSpecifyInputFile();
 
         if (isValid_chunk(requirementsChunk))
-            DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+            free_chunk(requirementsChunk);
 
         return EXIT_FAILURE;
     }
@@ -1618,7 +1630,7 @@ int main(int argc, char* argv[]) {
         showErrorCannotOpenFile(inputFileName);
 
         if (isValid_chunk(requirementsChunk))
-            DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+            free_chunk(requirementsChunk);
 
         free_sg(graph);
 
@@ -1654,7 +1666,7 @@ int main(int argc, char* argv[]) {
             showErrorCannotOpenFile(unifiedModelName);
 
             if (isValid_chunk(requirementsChunk))
-                DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+                free_chunk(requirementsChunk);
 
             free_sg(graph);
 
@@ -1675,7 +1687,7 @@ int main(int argc, char* argv[]) {
             showErrorCannotOpenFile(simpleGraphName);
 
             if (isValid_chunk(requirementsChunk))
-                DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+                free_chunk(requirementsChunk);
 
             free_sg(graph);
 
@@ -1702,7 +1714,7 @@ int main(int argc, char* argv[]) {
             showErrorCannotOpenFile(requirementsName);
 
             if (isValid_chunk(requirementsChunk))
-                DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(requirementsChunk))
+                free_chunk(requirementsChunk);
 
             free_sg(graph);
 
@@ -1846,7 +1858,10 @@ int main(int argc, char* argv[]) {
 
             uint32_t const hprime = EFG_PRIME(efg, h);
             if (isValidVertex_efg(efg, hprime)) {
-                VERBOSE_MSG("Swapping h%"PRIu32" and h%"PRIu32"'", h - requirements->size - 1, h - requirements->size - 1)
+                VERBOSE_MSG(
+                    "Swapping h%"PRIu32" and h%"PRIu32"'",
+                    h - requirements->size - 1, h - requirements->size - 1
+                )
                 swapVertices_efg(expandedFlowGraph, h, hprime);
             }
 
@@ -1981,7 +1996,7 @@ int main(int argc, char* argv[]) {
         char* fileName          = malloc(fileNameLn);
         DEBUG_ERROR_IF(fileName == NULL)
 
-        DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, requirements->size))
+        construct_gmtx(coverMtx, 1, requirements->size);
         uint32_t totalTestLength    = 0;
         uint64_t currentCoverage    = 0;
         uint64_t maxCoverage        = (uint64_t)requirements->size * percent;
@@ -2010,7 +2025,9 @@ int main(int argc, char* argv[]) {
             }
 
             VERBOSE_MSG("Constructing test path #%.*"PRIu32, nDigits, testId)
-            currentCoverage = constructTestPath(testPath, pathTrace, graph, requirements, coverMtx, currentCoverage, maxCoverage, dj);
+            currentCoverage = constructTestPath(
+                testPath, pathTrace, graph, requirements, coverMtx, currentCoverage, maxCoverage, dj
+            );
 
             totalTestLength += testPath->len;
             if (nTests > 1) {
@@ -2034,7 +2051,7 @@ int main(int argc, char* argv[]) {
                 free_vpath(stPath);
                 free_vpath(pathTrace);
                 free_vpath(testPath);
-                DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
+                free_gmtx(coverMtx);
                 free_sg(flowGraph);
                 free_sg(hyperPathGraph);
                 free_sg(pathGraph);
@@ -2064,7 +2081,7 @@ int main(int argc, char* argv[]) {
         free_vpath(stPath);
         free_vpath(pathTrace);
         free_vpath(testPath);
-        DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
+        free_gmtx(coverMtx);
     }
 
     if (isValid_sg(expandedFlowGraph))
@@ -2083,7 +2100,7 @@ int main(int argc, char* argv[]) {
         DEBUG_ASSERT(isValid_vpa(requirements))
 
         Chunk testFileChunk[1];
-        DEBUG_ASSERT_NDEBUG_EXECUTE(constructEmpty_chunk(testFileChunk, CHUNK_RECOMMENDED_PARAMETERS))
+        constructEmpty_chunk(testFileChunk, CHUNK_RECOMMENDED_PARAMETERS);
 
         Chunk const* const chunk_ids = gwma->useLineGraph
             ? gwma->chunks + GWMA_CHUNK_EDGE_IDS
@@ -2097,7 +2114,7 @@ int main(int argc, char* argv[]) {
         constructEmpty_vpath(testPath, graph);
 
         GraphMatrix coverMtx[1];
-        DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(coverMtx, 1, requirements->size))
+        construct_gmtx(coverMtx, 1, requirements->size);
 
         uint64_t nCovered = 0;
 
@@ -2150,11 +2167,11 @@ int main(int argc, char* argv[]) {
                     continue;
 
                 nCovered += 100;
-                DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(coverMtx, 0, requirementId))
+                connect_gmtx(coverMtx, 0, requirementId);
             }
 
             flush_vpath(testPath);
-            DEBUG_ASSERT_NDEBUG_EXECUTE(flush_chunk(testFileChunk))
+            flush_chunk(testFileChunk);
         }
 
         for (uint32_t requirementId = 0; requirementId < requirements->size; requirementId++) {
@@ -2163,9 +2180,8 @@ int main(int argc, char* argv[]) {
         free(k);
 
         free_vpath(testPath);
-        DEBUG_ASSERT_NDEBUG_EXECUTE(free_chunk(testFileChunk))
-
-        DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(coverMtx))
+        free_chunk(testFileChunk);
+        free_gmtx(coverMtx);
 
         uint64_t const coveragePercent = nCovered / requirements->size;
         printf("\n%"PRIu64"%%\n\n", coveragePercent);

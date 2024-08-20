@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
+#include "padkit/debug.h"
 #include "padkit/graphmatrix.h"
 #include "padkit/reallocate.h"
 #include "padkit/streq.h"

@@ -56,8 +56,8 @@ void construct_hpg(
     DEBUG_ASSERT(cap > sz)
 
     constructVerticesAsPaths_vpa(hpgraph->hpaths, pathGraph);
-    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(hpgraph->edgeMtx, cap, cap))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(construct_gmtx(hpgraph->subsumptionMtx, 1, cap))
+    construct_gmtx(hpgraph->edgeMtx, cap, cap);
+    construct_gmtx(hpgraph->subsumptionMtx, 1, cap);
 
     VertexIterator vitr[1];
     construct_vitr_sg(vitr, pathGraph);
@@ -127,7 +127,7 @@ void constructAcyclic_hpg(
 
         for (uint32_t i = 0; i < hpath->len; i++) {
             uint32_t childId = hpath->array[i];
-            DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(hpgraph->subsumptionMtx, 0, childId))
+            connect_gmtx(hpgraph->subsumptionMtx, 0, childId);
 
             VertexIterator itr[1];
             construct_vitr_sg(itr, hyperPathGraph);
@@ -137,10 +137,10 @@ void constructAcyclic_hpg(
             ) {
                 if (pathId == parentId || contains_vpath(hpath, pathId)) continue;
                 if (isConnected_gmtx(hpgraph->edgeMtx, childId, pathId)) {
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(hpgraph->edgeMtx, parentId, pathId))
+                    connect_gmtx(hpgraph->edgeMtx, parentId, pathId);
                 }
                 if (isConnected_gmtx(hpgraph->edgeMtx, pathId, childId)) {
-                    DEBUG_ASSERT_NDEBUG_EXECUTE(connect_gmtx(hpgraph->edgeMtx, pathId, parentId))
+                    connect_gmtx(hpgraph->edgeMtx, pathId, parentId);
                 }
             }
         }
@@ -228,8 +228,8 @@ void free_hpg(void* const graphPtr) {
     HyperPathGraph* const hpgraph = (HyperPathGraph*)graphPtr;
 
     free_vpa(hpgraph->hpaths);
-    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(hpgraph->edgeMtx))
-    DEBUG_ASSERT_NDEBUG_EXECUTE(free_gmtx(hpgraph->subsumptionMtx))
+    free_gmtx(hpgraph->edgeMtx);
+    free_gmtx(hpgraph->subsumptionMtx);
     *hpgraph = NOT_A_HPATH_GRAPH;
 }
 
